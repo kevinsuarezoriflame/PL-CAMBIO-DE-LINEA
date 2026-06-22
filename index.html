@@ -522,7 +522,7 @@ function runFaltantesPL(){
   updateFaltantesAlert();
 }
 function setResult(title,rows,note){currentTitle=title;currentRows=rows;resultTitle.textContent=title;resultNote.textContent=note;searchBox.value='';renderTable(rows);updateKpis();updateFaltantesAlert();}
-function renderTable(rows){
+function getDisplayedRows(rows){
   const q=(searchBox.value||'').toLowerCase();
   let data=(rows||[]).filter(r=>!q || Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
   if(sortState.key){data=[...data].sort((a,b)=>{
@@ -531,6 +531,10 @@ function renderTable(rows){
     if(!isNaN(an)&&!isNaN(bn)) return (an-bn)*sortState.dir;
     return String(av??'').localeCompare(String(bv??''))*sortState.dir;
   });}
+  return data;
+}
+function renderTable(rows){
+  const data=getDisplayedRows(rows);
   if(!data.length){resultTable.innerHTML='<tr><td style="padding:18px">Sin resultados.</td></tr>';return;}
   const keys=Object.keys(data[0]);
   resultTable.innerHTML='<thead><tr>'+keys.map(k=>`<th onclick="sortBy('${k.replace(/'/g,"\\'")}')">${k} ⇅</th>`).join('')+'</tr></thead><tbody>'+data.map(r=>'<tr>'+keys.map(k=>`<td>${formatCell(k,r[k])}</td>`).join('')+'</tr>').join('')+'</tbody>';
@@ -574,11 +578,31 @@ function updateFaltantesAlert(){
   if(count) count.textContent=n?`(${n})`:'';
   if(btn) btn.classList.toggle('alert-pulse', n>0 && currentTitle!=='🚨 Faltantes en PL');
 }
+function shortDesc(value){
+  return String(value??'').trim().split(/\s+/).filter(Boolean).slice(0,2).join(' ');
+}
 function printResult(){
   if(!currentRows.length){alert('No hay resultado para imprimir.');return;}
-  const keys=Object.keys(currentRows[0]);
-  const rows=currentRows.map(r=>'<tr>'+keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')+'</tr>').join('');
-  const html=`<html><head><title>${escapeHtml(currentTitle)}</title><style>body{font-family:Segoe UI,Arial,sans-serif;color:#123c3a}h1{color:#007c70}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#dff5ef;color:#006d62;text-align:left}th,td{border:1px solid #d7ece7;padding:6px}p{color:#496966}</style></head><body><h1>${escapeHtml(currentTitle)}</h1><p>${escapeHtml(resultNote.textContent||'')}</p><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  const data=getDisplayedRows(currentRows);
+  if(!data.length){alert('No hay resultado visible para imprimir.');return;}
+  const keys=Object.keys(data[0]).filter(k=>k!=='Motivo');
+  const rows=data.map(r=>'<tr>'+keys.map(k=>{
+    const value = k==='Descripción' ? shortDesc(r[k]) : r[k];
+    return `<td>${escapeHtml(value)}</td>`;
+  }).join('')+'</tr>').join('');
+  const html=`<html><head><title>${escapeHtml(currentTitle)}</title><style>
+    @page{size:landscape;margin:6mm}
+    *{box-sizing:border-box}
+    body{font-family:Segoe UI,Arial,sans-serif;color:#123c3a;margin:0;font-size:9px}
+    h1{color:#007c70;font-size:18px;margin:0 0 4px}
+    p{color:#496966;margin:0 0 8px;font-size:9px}
+    .meta{font-size:8px;color:#496966;margin-bottom:6px}
+    table{width:100%;border-collapse:collapse;table-layout:auto;font-size:8px}
+    th{background:#dff5ef;color:#006d62;text-align:left;font-weight:800}
+    th,td{border:1px solid #d7ece7;padding:3px 4px;vertical-align:top;line-height:1.15}
+    td:nth-child(2),th:nth-child(2){max-width:110px}
+    td{word-break:break-word}
+  </style></head><body><h1>${escapeHtml(currentTitle)}</h1><p>${escapeHtml(resultNote.textContent||'')}</p><div class="meta">Impreso según el orden y filtro visible en pantalla · Registros: ${data.length}</div><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
   const w=window.open('', '_blank');
   w.document.write(html);w.document.close();w.focus();w.print();
 }
