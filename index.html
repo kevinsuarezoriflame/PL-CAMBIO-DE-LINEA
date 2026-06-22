@@ -199,6 +199,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const DATA_REF = db.collection('principal').doc('principal');
+const CHUNKS_REF = DATA_REF.collection('payload_chunks');
+const CHUNK_SIZE = 350000; // evita superar el límite de 1 MiB por documento de Firestore
 let unsubscribeRealtime=null;
 let loadingFromCloud=false;
 
@@ -290,37 +292,93 @@ function applyCloudData(data, showResult=true){
   if(showResult && consolidado.length && (!currentRows || !currentRows.length)) showConsolidado();
   loadingFromCloud=false;
 }
+function buildPayload(){
+  return {
+    order:txtOrder.value,
+    venta:txtVenta.value,
+    stock:txtStock.value,
+    consolidado,
+    ventaRows,
+    usuario:getUsuario(),
+    fechaActualizacion:new Date().toISOString()
+  };
+}
+function splitPayload(text){
+  const chunks=[];
+  for(let i=0;i<text.length;i+=CHUNK_SIZE) chunks.push(text.slice(i,i+CHUNK_SIZE));
+  return chunks;
+}
+async function deleteOldChunks(){
+  const old=await CHUNKS_REF.get();
+  if(old.empty) return;
+  let batch=db.batch();
+  let ops=0;
+  for(const doc of old.docs){
+    batch.delete(doc.ref);
+    ops++;
+    if(ops>=450){await batch.commit();batch=db.batch();ops=0;}
+  }
+  if(ops>0) await batch.commit();
+}
 async function saveInputs(showAlert=true){
   try{
-    const usuario=getUsuario();
-    const data={
-      order:txtOrder.value,
-      venta:txtVenta.value,
-      stock:txtStock.value,
-      consolidado,
-      ventaRows,
-      usuario,
+    const data=buildPayload();
+    const payload=JSON.stringify(data);
+    const chunks=splitPayload(payload);
+
+    await deleteOldChunks();
+
+    let batch=db.batch();
+    chunks.forEach((chunk,index)=>{
+      const id='chunk_'+String(index).padStart(4,'0');
+      batch.set(CHUNKS_REF.doc(id),{index,chunk});
+    });
+    batch.set(DATA_REF,{
+      chunkCount:chunks.length,
+      payloadVersion:2,
+      usuario:data.usuario,
       actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
-      fechaActualizacion: new Date().toISOString()
-    };
-    await DATA_REF.set(data,{merge:true});
+      fechaActualizacion:data.fechaActualizacion,
+      totalCaracteres:payload.length
+    },{merge:false});
+    await batch.commit();
+
     setCloudStatus(true,'Conectado a Firebase');
     if(showAlert) alert('Guardado en nube. Todos verán esta misma data.');
   }catch(err){
     console.error(err);
     setCloudStatus(false,'Error al guardar en Firebase');
-    alert('No se pudo guardar en Firebase. Revisa reglas de Firestore o conexión.');
+    alert('No se pudo guardar en Firebase. Revisa la consola; si el archivo es muy grande, esta versión ya lo divide en partes.');
   }
+}
+async function readCloudPayload(){
+  const meta=await DATA_REF.get();
+  if(!meta.exists) return null;
+  const metaData=meta.data()||{};
+
+  // Compatibilidad con una versión anterior que guardaba todo en un solo documento.
+  if(!metaData.chunkCount){
+    return metaData;
+  }
+
+  const snap=await CHUNKS_REF.orderBy('index','asc').get();
+  if(snap.empty) return null;
+  const payload=snap.docs.map(d=>(d.data()||{}).chunk||'').join('');
+  const data=JSON.parse(payload);
+  data.actualizadoEn=metaData.actualizadoEn || data.actualizadoEn;
+  data.fechaActualizacion=metaData.fechaActualizacion || data.fechaActualizacion;
+  data.usuario=metaData.usuario || data.usuario;
+  return data;
 }
 async function loadInputs(silent=true){
   try{
-    const snap=await DATA_REF.get();
-    if(!snap.exists){
+    const data=await readCloudPayload();
+    if(!data){
       setCloudStatus(true,'Conectado a Firebase. Aún no hay data guardada.');
       if(!silent) alert('Firebase está conectado, pero todavía no hay información guardada.');
       return;
     }
-    applyCloudData(snap.data(), true);
+    applyCloudData(data, true);
     setCloudStatus(true,'Conectado a Firebase');
     if(!silent) alert('Data sincronizada desde Firebase.');
   }catch(err){
@@ -332,9 +390,17 @@ async function loadInputs(silent=true){
 function setupRealtime(){
   try{
     if(unsubscribeRealtime) unsubscribeRealtime();
-    unsubscribeRealtime=DATA_REF.onSnapshot((snap)=>{
+    unsubscribeRealtime=DATA_REF.onSnapshot(async (snap)=>{
       setCloudStatus(true,'Conectado a Firebase en tiempo real');
-      if(snap.exists) applyCloudData(snap.data(), false);
+      if(snap.exists){
+        try{
+          const data=await readCloudPayload();
+          if(data) applyCloudData(data, false);
+        }catch(err){
+          console.error(err);
+          setCloudStatus(false,'Error al sincronizar data');
+        }
+      }
     },(err)=>{
       console.error(err);
       setCloudStatus(false,'Sin conexión en tiempo real');
