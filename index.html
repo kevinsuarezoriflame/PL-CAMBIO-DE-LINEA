@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Picking Line ABC Control</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <style>
+    :root{
+      --ori-bg:#eaf8f5;
+      --ori-bg2:#dff5ef;
+      --ori-green:#00a88e;
+      --ori-dark:#007c70;
+      --ori-soft:#bdece2;
+      --ori-card:#ffffff;
+      --ori-text:#123c3a;
+      --ori-muted:#6a8581;
+      --danger:#e86666;
+      --warn:#f3b84b;
+      --blue:#4da3ff;
+      --shadow:0 16px 40px rgba(0,92,80,.12);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(135deg,var(--ori-bg),#f8fffd 55%,var(--ori-bg2));
+      color:var(--ori-text);
+    }
+    .hero{
+      padding:24px 28px 18px;
+      background:rgba(234,248,245,.75);
+      border-bottom:1px solid rgba(0,168,142,.12);
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(10px);
+    }
+    .topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .pill{border:1px solid var(--ori-soft);background:rgba(255,255,255,.45);padding:10px 18px;border-radius:999px;color:var(--ori-dark);font-weight:800;font-size:13px;letter-spacing:.5px}
+    h1{margin:18px 0 6px;font-size:42px;color:var(--ori-green);line-height:1}
+    .subtitle{color:var(--ori-muted);margin:0;font-weight:600}
+    .tabs{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .tab-btn{border:0;border-radius:16px;padding:13px 18px;background:#fff;color:var(--ori-dark);font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
+    .tab-btn.active{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}
+    main{padding:24px 28px 50px;max-width:1500px;margin:auto}
+    .tab{display:none}.tab.active{display:block}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:rgba(255,255,255,.88);border:1px solid rgba(0,168,142,.13);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .card h2,.card h3{margin:0 0 12px;color:var(--ori-dark)}
+    textarea{width:100%;height:280px;border:1px solid var(--ori-soft);border-radius:16px;padding:14px;resize:vertical;font-family:Consolas,monospace;font-size:13px;outline:none;background:#fbfffe;color:#173d39}
+    textarea:focus{border-color:var(--ori-green);box-shadow:0 0 0 4px rgba(0,168,142,.08)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button{border:0;border-radius:14px;padding:12px 15px;font-weight:800;cursor:pointer;transition:.15s;white-space:nowrap}
+    button:hover{transform:translateY(-1px)}
+    .primary{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}
+    .secondary{background:#e7f8f4;color:var(--ori-dark);border:1px solid var(--ori-soft)}
+    .danger{background:#fff1f1;color:#b73535;border:1px solid #ffd0d0}
+    .warning{background:#fff8e7;color:#9b6600;border:1px solid #ffe2a5}
+    .info{background:#eef7ff;color:#1766aa;border:1px solid #cde8ff}
+    .print-btn{width:46px;height:46px;padding:0;border-radius:14px;background:#fff;color:var(--ori-dark);border:1px solid var(--ori-soft);font-size:19px;display:inline-flex;align-items:center;justify-content:center}
+    .print-btn:hover{background:#e7f8f4}
+    .alert-pulse{animation:pulseAlert 1.15s infinite;box-shadow:0 0 0 0 rgba(232,102,102,.55)!important}
+    @keyframes pulseAlert{0%{box-shadow:0 0 0 0 rgba(232,102,102,.65);transform:translateY(0)}70%{box-shadow:0 0 0 10px rgba(232,102,102,0);transform:translateY(-1px)}100%{box-shadow:0 0 0 0 rgba(232,102,102,0);transform:translateY(0)}}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+    .kpi{background:#fff;border:1px solid rgba(0,168,142,.13);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
+    .kpi .num{font-size:28px;font-weight:900;color:var(--ori-green)}
+    .kpi .lbl{font-size:12px;color:var(--ori-muted);font-weight:800;text-transform:uppercase}
+    .table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(0,168,142,.14);background:#fff;max-height:560px}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
+    th{position:sticky;top:0;background:#dff5ef;color:#006d62;text-align:left;padding:10px;border-bottom:1px solid var(--ori-soft);z-index:5;cursor:pointer}
+    td{padding:8px 10px;border-bottom:1px solid #edf5f3;vertical-align:top}
+    tr:hover td{background:#f3fffb}
+    .badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block}
+    .b-green{background:#e1f7f0;color:#007c70}.b-red{background:#ffeaea;color:#b73535}.b-yellow{background:#fff4d6;color:#9b6600}.b-blue{background:#e8f3ff;color:#1766aa}
+    .note{background:#f6fffc;border:1px dashed var(--ori-soft);padding:13px 15px;border-radius:16px;color:#496966;font-size:14px;margin-top:12px}
+    input[type="search"]{border:1px solid var(--ori-soft);border-radius:14px;padding:12px 14px;min-width:280px;outline:none}
+    .hidden{display:none!important}
+
+    .syncbar{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;margin-top:14px}
+    .syncbox{background:#fff;border:1px solid rgba(0,168,142,.16);border-radius:18px;padding:13px 15px;box-shadow:var(--shadow)}
+    .syncbox label{display:block;font-size:12px;color:var(--ori-muted);font-weight:900;text-transform:uppercase;margin-bottom:6px}
+    .syncbox input{width:100%;border:1px solid var(--ori-soft);border-radius:12px;padding:10px 12px;outline:none;color:var(--ori-text);font-weight:700}
+    .sync-meta{font-size:13px;color:var(--ori-muted);line-height:1.55;font-weight:700}
+    .online-dot{width:10px;height:10px;border-radius:999px;background:#bbb;display:inline-block;margin-right:6px;vertical-align:middle}
+    .online-dot.ok{background:var(--ori-green);box-shadow:0 0 0 4px rgba(0,168,142,.10)}
+    .online-dot.bad{background:var(--danger);box-shadow:0 0 0 4px rgba(232,102,102,.10)}
+    @media print{.hero,.actions,.tabs,input[type="search"],button{display:none!important}.card{box-shadow:none;border:0}.table-wrap{max-height:none;overflow:visible}main{padding:0}body{background:#fff}}
+    @media(max-width:1000px){.grid,.kpis{grid-template-columns:1fr}h1{font-size:34px}.hero{position:static}main{padding:16px}.card{padding:14px}}
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="topline">
+      <div class="pill">ORIFLAME - OPERACIONES</div>
+      <div class="pill">Picking Line ABC Control</div>
+    </div>
+    <h1>Picking Line ABC Control</h1>
+    <p class="subtitle">Cambio de línea PL por catálogo · ABC · Zona T · Ubicaciones prime · Faltantes en PL</p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('carga', this)">📥 Pegar reportes</button>
+      <button class="tab-btn" onclick="openTab('acciones', this)">⚙️ Acciones PL</button>
+    </div>
+  </section>
+
+  <main>
+    <section id="carga" class="tab active">
+      <div class="grid">
+        <div class="card">
+          <h2>📄 Order Lite / FRC</h2>
+          <textarea id="txtOrder" placeholder="Pega aquí el reporte Order Lite. Debe contener Code, Description y la columna FRC del catálogo..."></textarea>
+          <div class="note">El sistema detecta el código, descripción y toma como FRC la última columna numérica útil.</div>
+        </div>
+        <div class="card">
+          <h2>📊 Venta Real / Reserved</h2>
+          <textarea id="txtVenta" placeholder="Pega aquí el reporte de venta real. Debe contener Código Producto, Descripción y Reserved..."></textarea>
+          <div class="note">Reserved será usado como venta real. Más de 70 = venta alta.</div>
+        </div>
+        <div class="card">
+          <h2>📦 Stock PL</h2>
+          <textarea id="txtStock" placeholder="Pega aquí el stock PL. Debe contener Variante, Caja y Physical Quantity..."></textarea>
+          <div class="note">Variante = código, Caja = ubicación PL, Physical Quantity = stock.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="syncbar">
+          <div class="syncbox">
+            <label>Responsable de actualización</label>
+            <input id="txtUsuario" type="text" placeholder="Ej: Kevin, María, Luisa..." />
+          </div>
+          <div class="syncbox sync-meta">
+            <div><span id="cloudDot" class="online-dot"></span><span id="cloudStatus">Conectando con Firebase...</span></div>
+            <div>Última actualización: <span id="lastUpdate">Sin registro</span></div>
+            <div>Responsable: <span id="lastUser">Sin registro</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" onclick="generateConsolidado()">✅ Generar consolidado</button>
+          <button class="secondary" onclick="saveInputs(true)">☁️ Guardar en nube</button>
+          <button class="warning" onclick="loadInputs(false)">🔄 Sincronizar nube</button>
+          <button class="danger" onclick="clearAll()">🗑️ Limpiar nube</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="acciones" class="tab">
+      <div class="kpis">
+        <div class="kpi"><div class="num" id="kTotal">0</div><div class="lbl">Consolidado</div></div>
+        <div class="kpi"><div class="num" id="kT">0</div><div class="lbl">Enviar a T</div></div>
+        <div class="kpi"><div class="num" id="kOutT">0</div><div class="lbl">Sacar de T</div></div>
+        <div class="kpi"><div class="num" id="kLib">0</div><div class="lbl">Liberar A</div></div>
+        <div class="kpi"><div class="num" id="kMax">0</div><div class="lbl">Venta Max</div></div>
+      </div>
+
+      <div class="card">
+        <h2>⚙️ Botones de análisis</h2>
+        <div class="actions">
+          <button class="secondary" onclick="showConsolidado()">📋 Ver consolidado</button>
+          <button class="warning" onclick="runEnviarT()">📤 Enviar a T</button>
+          <button class="info" onclick="runSacarT()">📥 Sacar de T</button>
+          <button class="secondary" onclick="runLiberarA()">🧹 Liberar ubicaciones A</button>
+          <button class="primary" onclick="runVentaMax()">🔥 Venta Max</button>
+          <button class="danger" id="btnFaltantesPL" onclick="runFaltantesPL()">🚨 Faltantes en PL <span id="faltantesCount"></span></button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="toolbar">
+          <div>
+            <h3 id="resultTitle">Resultado</h3>
+            <div class="note" id="resultNote">Genera el consolidado y luego selecciona una acción.</div>
+          </div>
+          <div class="actions">
+            <input type="search" id="searchBox" placeholder="Buscar en resultado..." oninput="renderTable(currentRows)" />
+            <button class="print-btn" title="Imprimir resultado" onclick="printResult()">🖨️</button>
+            <button class="secondary" onclick="copyResult()">📋 Copiar tabla</button>
+            <button class="primary" onclick="downloadExcel()">📥 Descargar Excel</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="resultTable"></table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA55v2QMxVuK2lQnJf1fJFYMNbExCgFEsg",
+  authDomain: "pl-cambio-de-linea.firebaseapp.com",
+  projectId: "pl-cambio-de-linea",
+  storageBucket: "pl-cambio-de-linea.firebasestorage.app",
+  messagingSenderId: "151215234702",
+  appId: "1:151215234702:web:d7d23360a4244d5ddef3df"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const DATA_REF = db.collection('principal').doc('principal');
+let unsubscribeRealtime=null;
+let loadingFromCloud=false;
+
+const T_LOCS = new Set(['T01A','T01B','T01C','T01D','T02A','T02B','T02C','T03D']);
+const ARMADOS = new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
+const GOOD_ENDINGS = new Set(['B','C','L']);
+let consolidado=[];
+let ventaRows=[];
+let currentRows=[];
+let currentTitle='Resultado';
+let sortState={key:null,dir:1};
+
+function openTab(id, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+function norm(s){return String(s??'').trim();}
+function normCode(s){return norm(s).replace(/\.0$/,'').toUpperCase();}
+function toNum(v){
+  if(v===null||v===undefined||v==='') return 0;
+  let s=String(v).replace(/,/g,'').trim();
+  let n=Number(s);
+  return isNaN(n)?0:n;
+}
+function parseTSV(text){
+  text=(text||'').trim();
+  if(!text) return [];
+  const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
+  const header=lines[0].split('\t').map(h=>norm(h));
+  return lines.slice(1).map(line=>{
+    const cells=line.split('\t');
+    const obj={};
+    header.forEach((h,i)=>obj[h]=cells[i]??'');
+    return obj;
+  });
+}
+function findKey(obj, candidates){
+  const keys=Object.keys(obj||{});
+  const low=keys.map(k=>[k,k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')]);
+  for(const c of candidates){
+    const cc=c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const hit=low.find(([orig,l])=>l===cc || l.includes(cc));
+    if(hit) return hit[0];
+  }
+  return null;
+}
+function getFrcKey(row){
+  const keys=Object.keys(row||{});
+  const explicit=keys.find(k=>/frc/i.test(k));
+  if(explicit) return explicit;
+  for(let i=keys.length-1;i>=0;i--){
+    const k=keys[i];
+    if(k && k.trim()!=='' && !/description|descripcion|code|codigo/i.test(k)) return k;
+  }
+  return keys[keys.length-1];
+}
+function getUsuario(){
+  const u=(document.getElementById('txtUsuario')?.value||'').trim();
+  return u || 'Usuario no identificado';
+}
+function setCloudStatus(ok,msg){
+  const dot=document.getElementById('cloudDot');
+  const status=document.getElementById('cloudStatus');
+  if(dot){dot.classList.remove('ok','bad');dot.classList.add(ok?'ok':'bad');}
+  if(status) status.textContent=msg;
+}
+function formatDateTime(value){
+  try{
+    const d=value?.toDate ? value.toDate() : (value ? new Date(value) : null);
+    if(!d || isNaN(d.getTime())) return 'Sin registro';
+    return d.toLocaleString('es-EC',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }catch(e){return 'Sin registro';}
+}
+function applyCloudData(data, showResult=true){
+  if(!data) return;
+  loadingFromCloud=true;
+  txtOrder.value=data.order||'';
+  txtVenta.value=data.venta||'';
+  txtStock.value=data.stock||'';
+  consolidado=Array.isArray(data.consolidado)?data.consolidado:[];
+  ventaRows=Array.isArray(data.ventaRows)?data.ventaRows:[];
+  if(data.usuario && document.getElementById('txtUsuario') && !txtUsuario.value) txtUsuario.value=data.usuario;
+  if(document.getElementById('lastUpdate')) lastUpdate.textContent=formatDateTime(data.actualizadoEn || data.fechaActualizacion);
+  if(document.getElementById('lastUser')) lastUser.textContent=data.usuario||'Sin registro';
+  updateKpis();
+  updateFaltantesAlert();
+  if(showResult && consolidado.length && (!currentRows || !currentRows.length)) showConsolidado();
+  loadingFromCloud=false;
+}
+async function saveInputs(showAlert=true){
+  try{
+    const usuario=getUsuario();
+    const data={
+      order:txtOrder.value,
+      venta:txtVenta.value,
+      stock:txtStock.value,
+      consolidado,
+      ventaRows,
+      usuario,
+      actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
+      fechaActualizacion: new Date().toISOString()
+    };
+    await DATA_REF.set(data,{merge:true});
+    setCloudStatus(true,'Conectado a Firebase');
+    if(showAlert) alert('Guardado en nube. Todos verán esta misma data.');
+  }catch(err){
+    console.error(err);
+    setCloudStatus(false,'Error al guardar en Firebase');
+    alert('No se pudo guardar en Firebase. Revisa reglas de Firestore o conexión.');
+  }
+}
+async function loadInputs(silent=true){
+  try{
+    const snap=await DATA_REF.get();
+    if(!snap.exists){
+      setCloudStatus(true,'Conectado a Firebase. Aún no hay data guardada.');
+      if(!silent) alert('Firebase está conectado, pero todavía no hay información guardada.');
+      return;
+    }
+    applyCloudData(snap.data(), true);
+    setCloudStatus(true,'Conectado a Firebase');
+    if(!silent) alert('Data sincronizada desde Firebase.');
+  }catch(err){
+    console.error(err);
+    setCloudStatus(false,'Error al leer Firebase');
+    if(!silent) alert('No se pudo leer Firebase. Revisa reglas de Firestore o conexión.');
+  }
+}
+function setupRealtime(){
+  try{
+    if(unsubscribeRealtime) unsubscribeRealtime();
+    unsubscribeRealtime=DATA_REF.onSnapshot((snap)=>{
+      setCloudStatus(true,'Conectado a Firebase en tiempo real');
+      if(snap.exists) applyCloudData(snap.data(), false);
+    },(err)=>{
+      console.error(err);
+      setCloudStatus(false,'Sin conexión en tiempo real');
+    });
+  }catch(err){
+    console.error(err);
+    setCloudStatus(false,'No se pudo activar sincronización');
+  }
+}
+async function clearAll(){
+  if(!confirm('¿Seguro que deseas limpiar reportes y resultados en la nube para todos?')) return;
+  txtOrder.value=txtVenta.value=txtStock.value='';
+  consolidado=[];ventaRows=[];currentRows=[];renderTable([]);updateKpis();updateFaltantesAlert();
+  await saveInputs(false);
+  alert('Información limpiada en Firebase.');
+}
+async function generateConsolidado(){
+  const order=parseTSV(txtOrder.value);
+  const venta=parseTSV(txtVenta.value);
+  const stock=parseTSV(txtStock.value);
+  if(!order.length||!venta.length||!stock.length){alert('Pega los 3 reportes antes de generar.');return;}
+
+  const orderMap=new Map();
+  const okCode=findKey(order[0],['Code','Código','Codigo']);
+  const okDesc=findKey(order[0],['Description','Description (eng)','Descripción','Descripcion']);
+  const okFrc=getFrcKey(order[0]);
+  order.forEach(r=>{
+    const code=normCode(r[okCode]); if(!code) return;
+    orderMap.set(code,{frc:toNum(r[okFrc]),desc:norm(r[okDesc])});
+  });
+
+  const ventaMap=new Map();
+  const vkCode=findKey(venta[0],['Código Producto','Codigo Producto','Code','Código','Codigo']);
+  const vkDesc=findKey(venta[0],['Descripción','Descripcion','Description']);
+  const vkReserved=findKey(venta[0],['Reserved']);
+  ventaRows=venta.map(r=>({
+    codigo:normCode(r[vkCode]),
+    descripcion:norm(r[vkDesc]),
+    reserved:toNum(r[vkReserved])
+  })).filter(r=>r.codigo);
+  ventaRows.forEach(r=>ventaMap.set(r.codigo,r));
+
+  const skCode=findKey(stock[0],['Variante','Código','Codigo','Code']);
+  const skZona=findKey(stock[0],['Zona']);
+  const skCaja=findKey(stock[0],['Caja','Ubicación','Ubicacion']);
+  const skQty=findKey(stock[0],['Physical Quantity','Cantidad','Qty']);
+  const grouped=new Map();
+  stock.forEach(r=>{
+    const code=normCode(r[skCode]); if(!code) return;
+    const caja=norm(r[skCaja]);
+    const qty=toNum(r[skQty]);
+    const zona=norm(skZona?r[skZona]:'');
+    if(!grouped.has(code)) grouped.set(code,{codigo:code,stockPL:0,ubicaciones:[],zona});
+    const g=grouped.get(code);
+    g.stockPL+=qty;
+    if(caja) g.ubicaciones.push(caja);
+    if(zona && !g.zona) g.zona=zona;
+  });
+
+  consolidado=[...grouped.values()].map(g=>{
+    const v=ventaMap.get(g.codigo)||{};
+    const o=orderMap.get(g.codigo)||{};
+    const desc=v.descripcion || o.desc || '';
+    const ubicUnicas=[...new Set(g.ubicaciones)].join(' | ');
+    return {
+      Código:g.codigo,
+      Descripción:desc,
+      Zona:g.zona||'PL',
+      'Ubicación PL':ubicUnicas,
+      'Stock PL':g.stockPL,
+      Venta:toNum(v.reserved),
+      FRC:toNum(o.frc),
+      Estado: ubicUnicas.includes('0-0000')?'Revisar ubicación':'OK'
+    };
+  });
+  await saveInputs(false);
+  updateKpis();
+  updateFaltantesAlert();
+  showConsolidado();
+  document.querySelectorAll('.tab-btn')[1].click();
+}
+function locList(row){return String(row['Ubicación PL']||'').split('|').map(x=>x.trim()).filter(Boolean);}
+function isTLoc(loc){return String(loc||'').trim().toUpperCase().startsWith('T');}
+function excludedEnviarTLoc(loc){
+  const l=String(loc||'').trim().toUpperCase().replace(/\s+/g,' ');
+  return l.startsWith('T') || l.startsWith('M') || l.startsWith('R') || l.startsWith('J 10-');
+}
+function rowHasExcludedEnviarTLoc(row){return locList(row).some(excludedEnviarTLoc);}
+function rowInT(row){return locList(row).some(isTLoc);}
+function lastLetter(loc){const m=String(loc).trim().match(/([A-Z])$/i);return m?m[1].toUpperCase():'';}
+function hasGoodLoc(row){return locList(row).some(l=>!isTLoc(l)&&GOOD_ENDINGS.has(lastLetter(l)));}
+function isCatalogo(row){return /cat[aá]logo/i.test(row.Descripción||'');}
+function isArmado(row){return ARMADOS.has(normCode(row.Código));}
+function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:motivo}));}
+function showConsolidado(){setResult('📋 Consolidado general',consolidado,'Tabla cruzada: Stock PL + Venta Real + FRC.');}
+function runEnviarT(){
+  const rows=consolidado.filter(r=>r.Venta===0 && r.FRC>=0 && r.FRC<=4 && !rowHasExcludedEnviarTLoc(r) && !isArmado(r) && !isCatalogo(r));
+  setResult('📤 Enviar a T',addMotivo(rows,'Venta 0 y FRC 0 a 4; no está en T/M/R/J10'),'Códigos candidatos para mover a zona T. Excluye armados, catálogos y ubicaciones que empiezan con T, M, R o J 10-.');
+}
+function runSacarT(){
+  const vendidos=consolidado.filter(r=>rowInT(r) && r.Venta>0).map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T y tiene venta mayor a 0'}));
+  const topFrc=consolidado.filter(r=>rowInT(r) && r.Venta===0 && r.FRC>1000)
+    .sort((a,b)=>b.FRC-a.FRC)
+    .slice(0,10)
+    .map(r=>({...r,Grupo:'Top 10 FRC sin venta',Motivo:'FRC mayor a 1000 sin venta; revisar salida de T por pronóstico alto'}));
+  setResult('📥 Sacar de T', [...topFrc, ...vendidos], 'Incluye productos en T con venta mayor a 0 y un Top 10 con FRC mayor a 1000 aunque venta sea 0.');
+}
+function runLiberarA(){
+  const rows=consolidado.filter(r=>hasGoodLoc(r) && !rowInT(r) && r.Venta<=10 && r.FRC<=300);
+  setResult('🧹 Liberar ubicaciones A',addMotivo(rows,'Venta hasta 10 y FRC hasta 300 en buena ubicación B/C/L'),'Productos realmente de baja venta y bajo pronóstico ocupando ubicaciones buenas.');
+}
+function runVentaMax(){
+  const rows=consolidado.filter(r=>r.Venta>70 && !rowInT(r) && !hasGoodLoc(r));
+  setResult('🔥 Venta Max',addMotivo(rows,'Alta venta en mala ubicación'),'Productos de alta venta que deberían pasar a mejores ubicaciones.');
+}
+function runFaltantesPL(){
+  const rows=getFaltantesRows();
+  setResult('🚨 Faltantes en PL',rows,'Códigos vendidos/reservados que no existen en la línea PL.');
+  updateFaltantesAlert();
+}
+function setResult(title,rows,note){currentTitle=title;currentRows=rows;resultTitle.textContent=title;resultNote.textContent=note;searchBox.value='';renderTable(rows);updateKpis();updateFaltantesAlert();}
+function renderTable(rows){
+  const q=(searchBox.value||'').toLowerCase();
+  let data=(rows||[]).filter(r=>!q || Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
+  if(sortState.key){data=[...data].sort((a,b)=>{
+    const av=a[sortState.key], bv=b[sortState.key];
+    const an=Number(av), bn=Number(bv);
+    if(!isNaN(an)&&!isNaN(bn)) return (an-bn)*sortState.dir;
+    return String(av??'').localeCompare(String(bv??''))*sortState.dir;
+  });}
+  if(!data.length){resultTable.innerHTML='<tr><td style="padding:18px">Sin resultados.</td></tr>';return;}
+  const keys=Object.keys(data[0]);
+  resultTable.innerHTML='<thead><tr>'+keys.map(k=>`<th onclick="sortBy('${k.replace(/'/g,"\\'")}')">${k} ⇅</th>`).join('')+'</tr></thead><tbody>'+data.map(r=>'<tr>'+keys.map(k=>`<td>${formatCell(k,r[k])}</td>`).join('')+'</tr>').join('')+'</tbody>';
+}
+function formatCell(k,v){
+  if(k==='Motivo'||k==='Estado') return `<span class="badge b-blue">${escapeHtml(v)}</span>`;
+  if(['Venta','FRC','Stock PL','Reserved'].includes(k)) return `<b>${escapeHtml(v)}</b>`;
+  return escapeHtml(v);
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));}
+function sortBy(k){sortState.dir=sortState.key===k?sortState.dir*-1:1;sortState.key=k;renderTable(currentRows);}
+function copyResult(){
+  if(!currentRows.length){alert('No hay resultado para copiar.');return;}
+  const keys=Object.keys(currentRows[0]);
+  const text=[keys.join('\t'),...currentRows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');
+  navigator.clipboard.writeText(text).then(()=>alert('Tabla copiada.'));
+}
+function downloadExcel(){
+  if(!currentRows.length){alert('No hay resultado para descargar.');return;}
+  const ws=XLSX.utils.json_to_sheet(currentRows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Resultado');
+  const name=currentTitle.replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,'_')+'.xlsx';
+  XLSX.writeFile(wb,name);
+}
+
+function getFaltantesRows(){
+  const stockCodes=new Set(consolidado.map(r=>normCode(r.Código)));
+  return ventaRows.filter(v=>v.reserved>0 && !stockCodes.has(normCode(v.codigo))).map(v=>({
+    Código:v.codigo,
+    Descripción:v.descripcion,
+    Reserved:v.reserved,
+    Estado:'Vendido, pero no está en PL',
+    Motivo:'Reserved > 0 y no existe en Stock PL'
+  }));
+}
+function updateFaltantesAlert(){
+  const n=getFaltantesRows().length;
+  const btn=document.getElementById('btnFaltantesPL');
+  const count=document.getElementById('faltantesCount');
+  if(count) count.textContent=n?`(${n})`:'';
+  if(btn) btn.classList.toggle('alert-pulse', n>0 && currentTitle!=='🚨 Faltantes en PL');
+}
+function printResult(){
+  if(!currentRows.length){alert('No hay resultado para imprimir.');return;}
+  const keys=Object.keys(currentRows[0]);
+  const rows=currentRows.map(r=>'<tr>'+keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')+'</tr>').join('');
+  const html=`<html><head><title>${escapeHtml(currentTitle)}</title><style>body{font-family:Segoe UI,Arial,sans-serif;color:#123c3a}h1{color:#007c70}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#dff5ef;color:#006d62;text-align:left}th,td{border:1px solid #d7ece7;padding:6px}p{color:#496966}</style></head><body><h1>${escapeHtml(currentTitle)}</h1><p>${escapeHtml(resultNote.textContent||'')}</p><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  const w=window.open('', '_blank');
+  w.document.write(html);w.document.close();w.focus();w.print();
+}
+
+function updateKpis(){
+  kTotal.textContent=consolidado.length;
+  kT.textContent=consolidado.filter(r=>r.Venta===0 && r.FRC>=0 && r.FRC<=4 && !rowHasExcludedEnviarTLoc(r) && !isArmado(r) && !isCatalogo(r)).length;
+  kOutT.textContent=consolidado.filter(r=>rowInT(r) && r.Venta>0).length;
+  kLib.textContent=consolidado.filter(r=>hasGoodLoc(r) && !rowInT(r) && r.Venta<=10 && r.FRC<=300).length;
+  kMax.textContent=consolidado.filter(r=>r.Venta>70 && !rowInT(r) && !hasGoodLoc(r)).length;
+}
+window.addEventListener('load',()=>{setupRealtime();loadInputs(true);});
+</script>
+</body>
+</html>
