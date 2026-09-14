@@ -76,8 +76,28 @@
     .badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block}
     .b-green{background:#e1f7f0;color:#007c70}.b-red{background:#ffeaea;color:#b73535}.b-yellow{background:#fff4d6;color:#9b6600}.b-blue{background:#e8f3ff;color:#1766aa}
     .note{background:#f6fffc;border:1px dashed var(--ori-soft);padding:13px 15px;border-radius:16px;color:#496966;font-size:14px;margin-top:12px}
-    input[type="search"]{border:1px solid var(--ori-soft);border-radius:14px;padding:12px 14px;min-width:280px;outline:none}
+    input[type="search"],input[type="text"],select{border:1px solid var(--ori-soft);border-radius:14px;padding:12px 14px;outline:none;background:#fff;color:var(--ori-text);font:inherit}
     .hidden{display:none!important}
+
+    .profile-landing{min-height:100dvh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 15% 10%,#c9f4e9,transparent 34%),linear-gradient(135deg,#e8faf5,#fafffe)}
+    .profile-box{width:min(900px,100%);text-align:center}.profile-box h1{margin:0 0 10px}.profile-box>p{color:var(--ori-muted);font-weight:700;margin:0 0 28px}
+    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .profile-card{padding:28px;border-radius:24px;background:#fff;border:1px solid var(--ori-soft);box-shadow:var(--shadow);cursor:pointer;text-align:left;transition:.18s}
+    .profile-card:hover{transform:translateY(-3px);border-color:var(--ori-green)}.profile-icon{font-size:38px}.profile-card h2{margin:12px 0 6px;color:var(--ori-dark)}.profile-card p{margin:0;color:var(--ori-muted);line-height:1.5}
+    .profile-back{position:fixed;right:18px;top:16px;z-index:80}
+
+    .operator-page{min-height:100dvh;padding:16px;background:linear-gradient(180deg,#e8faf5,#f9fffd)}
+    .operator-wrap{max-width:760px;margin:auto}.operator-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.operator-head h1{font-size:25px;margin:0}.operator-status{font-size:13px;color:var(--ori-muted);font-weight:800}
+    .operator-card{background:#fff;border:1px solid var(--ori-soft);border-radius:22px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+    .operator-card h2{font-size:20px;margin:0 0 14px;color:var(--ori-dark)}.operator-field{display:grid;gap:6px;margin-bottom:12px}.operator-field label{font-weight:900;font-size:13px;color:var(--ori-muted)}.operator-field input,.operator-field select{width:100%;font-size:16px}
+    .activity-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.activity-btn{white-space:normal;text-align:left;min-height:94px;background:#f6fffc;border:1px solid var(--ori-soft);color:var(--ori-dark)}.activity-btn.active{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}.activity-btn:disabled{cursor:not-allowed;opacity:.62;background:#eef4f2;color:#667b77;transform:none}.activity-state{display:block;margin-top:7px;font-size:12px;font-weight:900;color:#007c70}.activity-btn.active .activity-state{color:#fff}.activity-btn:disabled .activity-state{color:#667b77}
+    .task-card{border:2px solid var(--ori-green);background:linear-gradient(180deg,#fff,#f6fffc)}.task-step{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.task-code{font-size:28px;font-weight:950;color:var(--ori-dark)}
+    .move-route{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:14px 0}.move-place{padding:14px;border-radius:16px;border:1px solid var(--ori-soft);background:#fff}.move-place span{display:block;font-size:12px;color:var(--ori-muted);font-weight:900}.move-place b{display:block;font-size:19px;margin-top:4px}.move-arrow{font-size:24px}
+    .operator-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.operator-actions button{font-size:15px;min-height:48px}.operator-actions .full{grid-column:1/-1}.empty-state{text-align:center;padding:24px;color:var(--ori-muted);font-weight:800}
+
+    .plan-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.plan-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0}.plan-kpi{background:#fff;border:1px solid var(--ori-soft);border-radius:16px;padding:13px}.plan-kpi span{display:block;color:var(--ori-muted);font-size:11px;font-weight:900;text-transform:uppercase}.plan-kpi b{display:block;font-size:24px;color:var(--ori-dark);margin-top:4px}
+    .progress-track{height:12px;background:#dfeeea;border-radius:999px;overflow:hidden}.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--ori-green),#42d5b4);transition:.25s}.station-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.station-card{border:1px solid var(--ori-soft);border-radius:15px;padding:12px;background:#fff}.station-card b{font-size:18px;color:var(--ori-dark)}.station-card span{display:block;color:var(--ori-muted);font-size:12px;margin-top:4px}
+    .status-pending{background:#fff4d6;color:#9b6600}.status-progress{background:#e8f3ff;color:#1766aa}.status-done{background:#e1f7f0;color:#007c70}.status-blocked{background:#eee;color:#666}.status-issue{background:#ffeaea;color:#b73535}
 
     .syncbar{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;margin-top:14px}
     .syncbox{background:#fff;border:1px solid rgba(0,168,142,.16);border-radius:18px;padding:13px 15px;box-shadow:var(--shadow)}
@@ -88,10 +108,53 @@
     .online-dot.ok{background:var(--ori-green);box-shadow:0 0 0 4px rgba(0,168,142,.10)}
     .online-dot.bad{background:var(--danger);box-shadow:0 0 0 4px rgba(232,102,102,.10)}
     @media print{.hero,.actions,.tabs,input[type="search"],button{display:none!important}.card{box-shadow:none;border:0}.table-wrap{max-height:none;overflow:visible}main{padding:0}body{background:#fff}}
-    @media(max-width:1000px){.grid,.kpis{grid-template-columns:1fr}h1{font-size:34px}.hero{position:static}main{padding:16px}.card{padding:14px}}
+    @media(max-width:1000px){.grid,.kpis,.plan-kpis{grid-template-columns:repeat(2,1fr)}h1{font-size:34px}.hero{position:static}main{padding:16px}.card{padding:14px}.station-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.profile-grid,.activity-grid,.operator-actions,.plan-kpis,.station-grid{grid-template-columns:1fr}.move-route{grid-template-columns:1fr}.move-arrow{text-align:center;transform:rotate(90deg)}.profile-card{padding:20px}.operator-page{padding:10px}}
   </style>
 </head>
 <body>
+  <section id="profileLanding" class="profile-landing">
+    <div class="profile-box">
+      <div class="pill" style="display:inline-block;margin-bottom:16px">ORIFLAME · OPERACIONES</div>
+      <h1>Picking Line ABC Control</h1>
+      <p>Selecciona el perfil para planificar o ejecutar el cambio de línea.</p>
+      <div class="profile-grid">
+        <button class="profile-card" onclick="enterProfile('operator')">
+          <span class="profile-icon">👷</span><h2>Operador</h2><p>Selecciona una actividad y ejecuta movimientos asignados desde el celular.</p>
+        </button>
+        <button class="profile-card" onclick="enterProfile('supervisor')">
+          <span class="profile-icon">🔒</span><h2>Supervisor</h2><p>Carga reportes, genera el plan, distribuye tareas y controla el avance.</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="operatorShell" class="operator-page hidden">
+    <button class="secondary profile-back" onclick="changeProfile()">↩ Cambiar perfil</button>
+    <div class="operator-wrap">
+      <div class="operator-head"><div><div class="pill" style="display:inline-block;margin-bottom:8px">MODO OPERADOR</div><h1>📦 Cambio de línea</h1></div><div id="operatorCloudStatus" class="operator-status">Conectando…</div></div>
+      <div id="operatorSetup" class="operator-card">
+        <h2>1. Identifícate</h2>
+        <div class="operator-field"><label>Nombre del operario</label><input id="operatorName" type="text" placeholder="Ej: Yuri Correa" oninput="renderActivityAssignments()"></div>
+        <h2 style="margin-top:20px">2. Elige una actividad</h2>
+        <div class="activity-grid">
+          <button class="activity-btn" data-activity="enviar_t" onclick="selectActivity(this)">📤 <b>Enviar a T/M/R</b><br><small>Mover productos sin Reserved</small><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="sacar_baja" onclick="selectActivity(this)">📥 <b>Sacar de T/M/R</b><br><small>Llevar prioritarios a la línea</small><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="liberar_prime" onclick="selectActivity(this)">🧹 <b>Liberar prime</b><br><small>Mover a posiciones A/D/J/M</small><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="reubicar_prioridad" onclick="selectActivity(this)">🔥 <b>Venta Max</b><br><small>Reubicar venta alta y ofertas</small><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="verificar" onclick="selectActivity(this)">✅ <b>Verificar</b><br><small>Comprobar movimientos terminados</small><span class="activity-state">Consultando…</span></button>
+        </div>
+        <button id="startOperatorWork" class="primary" style="width:100%;margin-top:14px" onclick="startOperatorWork()">Tomar actividad</button>
+      </div>
+      <div id="operatorTaskPanel" class="hidden">
+        <div id="operatorTaskCard" class="operator-card task-card"></div>
+        <div class="operator-card"><div class="operator-status" id="operatorProgress">Sin actividad</div><div class="progress-track" style="margin-top:8px"><div id="operatorProgressBar" class="progress-bar"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="supervisorShell" class="hidden">
+  <button class="secondary profile-back" onclick="changeProfile()">↩ Cambiar perfil</button>
   <section class="hero">
     <div class="topline">
       <div class="pill">ORIFLAME - OPERACIONES</div>
@@ -102,6 +165,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="openTab('carga', this)">📥 Pegar reportes</button>
       <button class="tab-btn" onclick="openTab('acciones', this)">⚙️ Acciones PL</button>
+      <button class="tab-btn" onclick="openTab('plan', this);loadPlanDashboard()">🗺️ Plan de cambio</button>
     </div>
   </section>
 
@@ -110,8 +174,8 @@
       <div class="grid">
         <div class="card">
           <h2>📄 Order Lite / FRC</h2>
-          <textarea id="txtOrder" placeholder="Pega aquí el reporte Order Lite. Debe contener Code, Description y la columna FRC del catálogo..."></textarea>
-          <div class="note">El sistema detecta el código, descripción y toma como FRC la última columna numérica útil.</div>
+          <textarea id="txtOrder" placeholder="Pega aquí Code, Description, FRC y Oferta..."></textarea>
+          <div class="note">Oferta reconoce Offer-New, Offer-Top, Offer-BO y Offer-Aldeas. La prioridad principal continúa siendo Reserved.</div>
         </div>
         <div class="card">
           <h2>📊 Venta Real / Reserved</h2>
@@ -123,6 +187,12 @@
           <textarea id="txtStock" placeholder="Pega aquí el stock PL. Debe contener Variante, Caja y Physical Quantity..."></textarea>
           <div class="note">Variante = código, Caja = ubicación PL, Physical Quantity = stock.</div>
         </div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h2>🗺️ Maestro de ubicaciones</h2>
+        <textarea id="txtLocations" style="height:150px" placeholder="Pega PuestoCaja y ubicación. Las terminaciones P/N se excluyen; estación 10 se reserva para viales."></textarea>
+        <div class="note">Prime: B/C/K/L · Secundarias: A/D/J/M · T admite varios códigos · Cada MA/MB/… y RB/RC/… admite un solo código.</div>
       </div>
 
       <div class="card" style="margin-top:18px">
@@ -149,9 +219,9 @@
     <section id="acciones" class="tab">
       <div class="kpis">
         <div class="kpi"><div class="num" id="kTotal">0</div><div class="lbl">Consolidado</div></div>
-        <div class="kpi"><div class="num" id="kT">0</div><div class="lbl">Enviar a T</div></div>
-        <div class="kpi"><div class="num" id="kOutT">0</div><div class="lbl">Sacar de T</div></div>
-        <div class="kpi"><div class="num" id="kLib">0</div><div class="lbl">Liberar A</div></div>
+        <div class="kpi"><div class="num" id="kT">0</div><div class="lbl">Mover baja venta</div></div>
+        <div class="kpi"><div class="num" id="kOutT">0</div><div class="lbl">Sacar de T/M/R</div></div>
+        <div class="kpi"><div class="num" id="kLib">0</div><div class="lbl">Liberar prime</div></div>
         <div class="kpi"><div class="num" id="kMax">0</div><div class="lbl">Venta Max</div></div>
       </div>
 
@@ -159,9 +229,9 @@
         <h2>⚙️ Botones de análisis</h2>
         <div class="actions">
           <button class="secondary" onclick="showConsolidado()">📋 Ver consolidado</button>
-          <button class="warning" onclick="runEnviarT()">📤 Enviar a T</button>
-          <button class="info" onclick="runSacarT()">📥 Sacar de T</button>
-          <button class="secondary" onclick="runLiberarA()">🧹 Liberar ubicaciones A</button>
+          <button class="warning" onclick="runEnviarT()">📤 Enviar a T/M/R</button>
+          <button class="info" onclick="runSacarT()">📥 Sacar de T/M/R</button>
+          <button class="secondary" onclick="runLiberarA()">🧹 Liberar posiciones prime</button>
           <button class="primary" onclick="runVentaMax()">🔥 Venta Max</button>
           <button class="danger" id="btnFaltantesPL" onclick="runFaltantesPL()">🚨 Faltantes en PL <span id="faltantesCount"></span></button>
         </div>
@@ -185,7 +255,32 @@
         </div>
       </div>
     </section>
+
+    <section id="plan" class="tab">
+      <div class="card">
+        <div class="toolbar">
+          <div><h2>🗺️ Plan operativo de cambio</h2><div class="note">Calcula primero el destino final y publica tareas dependientes para los celulares.</div></div>
+          <div class="plan-toolbar"><button class="primary" onclick="generateMovementPlan()">⚙️ Generar plan</button><button class="secondary" onclick="publishMovementPlan()">📲 Publicar para operadores</button><button class="warning" onclick="loadPlanDashboard()">🔄 Actualizar</button></div>
+        </div>
+        <div class="plan-kpis">
+          <div class="plan-kpi"><span>Total movimientos</span><b id="planTotal">0</b></div>
+          <div class="plan-kpi"><span>Disponibles</span><b id="planAvailable">0</b></div>
+          <div class="plan-kpi"><span>En proceso</span><b id="planProgress">0</b></div>
+          <div class="plan-kpi"><span>Completados</span><b id="planDone">0</b></div>
+          <div class="plan-kpi"><span>Bloqueados</span><b id="planBlocked">0</b></div>
+          <div class="plan-kpi"><span>Novedades</span><b id="planIssues">0</b></div>
+        </div>
+        <div class="progress-track"><div id="planProgressBar" class="progress-bar"></div></div>
+      </div>
+      <div class="card" style="margin-top:18px"><h3>👥 Responsables por actividad</h3><div id="activityAssignmentsPanel" class="station-grid"><div class="empty-state">Publica un plan para asignar las actividades.</div></div></div>
+      <div class="card" style="margin-top:18px"><h3>⚖️ Carga proyectada por estación</h3><div id="stationBalance" class="station-grid"><div class="empty-state">Genera un plan para calcular el balance.</div></div></div>
+      <div class="card" style="margin-top:18px">
+        <div class="toolbar"><div><h3>📋 Movimientos</h3><div id="planMeta" class="operator-status">Sin plan publicado</div></div><select id="planStatusFilter" onchange="renderPlanTable()"><option value="todos">Todos los estados</option><option value="disponible">Disponibles</option><option value="asignada">En proceso</option><option value="completada">Completados</option><option value="bloqueada">Bloqueados</option><option value="novedad">Novedades</option></select></div>
+        <div class="table-wrap"><table id="planTable"></table></div>
+      </div>
+    </section>
   </main>
+  </div>
 
 <script>
 const firebaseConfig = {
@@ -200,18 +295,82 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const DATA_REF = db.collection('principal').doc('principal');
 const CHUNKS_REF = DATA_REF.collection('payload_chunks');
+const PLAN_META_REF = db.collection('planes_cambio_linea').doc('activo');
+const PLAN_TASKS_REF = PLAN_META_REF.collection('tareas');
+const PLAN_ACTIVITIES_REF = PLAN_META_REF.collection('actividades');
 const CHUNK_SIZE = 350000; // evita superar el límite de 1 MiB por documento de Firestore
 let unsubscribeRealtime=null;
 let loadingFromCloud=false;
+let planUnsubscribe=null;
+let operatorTaskUnsubscribe=null;
+let activityAssignmentUnsubscribe=null;
 
 const T_LOCS = new Set(['T01A','T01B','T01C','T01D','T02A','T02B','T02C','T03D']);
 const ARMADOS = new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
-const GOOD_ENDINGS = new Set(['B','C','L']);
+const GOOD_ENDINGS = new Set(['B','C','K','L']);
+const SECONDARY_ENDINGS = new Set(['A','D','J','M']);
+const PRIORITY_OFFERS = new Set(['OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
+const OPERATOR_ACTIVITIES = ['enviar_t','sacar_baja','liberar_prime','reubicar_prioridad','verificar'];
+const DEFAULT_LOCATIONS="PuestoCaja\tUbicación\n1\tA 01-01A\n1\tA 01-01B\n1\tA 01-01C\n1\tA 01-01D\n1\tA 01-01J\n1\tA 01-01K\n1\tA 01-01L\n1\tA 01-01M\n1\tA 01-01P\n1\tA 01-02A\n1\tA 01-02B\n1\tA 01-02C\n1\tA 01-02D\n1\tA 01-02J\n1\tA 01-02K\n1\tA 01-02L\n1\tA 01-02M\n1\tA 01-02P\n1\tA 01-03A\n1\tA 01-03B\n1\tA 01-03C\n1\tA 01-03D\n1\tA 01-03J\n1\tA 01-03K\n1\tA 01-03L\n1\tA 01-03M\n1\tA 01-04A\n1\tA 01-04B\n1\tA 01-04C\n1\tA 01-04D\n1\tA 01-04J\n1\tA 01-04K\n1\tA 01-04L\n1\tA 01-04M\n1\tA 01-05A\n1\tA 01-05B\n1\tA 01-05C\n1\tA 01-05D\n1\tA 01-05J\n1\tA 01-05K\n1\tA 01-05L\n1\tA 01-05M\n1\tA 01-06A\n1\tA 01-06B\n1\tA 01-06C\n1\tA 01-06D\n1\tA 01-06J\n1\tA 01-06K\n1\tA 01-06L\n1\tA 01-06M\n1\tA 01-07A\n1\tA 01-07B\n1\tA 01-07C\n1\tA 01-07D\n1\tA 01-07J\n1\tA 01-07K\n1\tA 01-07L\n1\tA 01-07M\n1\tA 01-08J\n1\tA 01-08K\n1\tA 01-08L\n1\tA 01-08M\n2\tB 02-01A\n2\tB 02-01B\n2\tB 02-01C\n2\tB 02-01D\n2\tB 02-01J\n2\tB 02-01K\n2\tB 02-01L\n2\tB 02-01M\n2\tB 02-01N\n2\tB 02-01P\n2\tB 02-02A\n2\tB 02-02B\n2\tB 02-02C\n2\tB 02-02D\n2\tB 02-02J\n2\tB 02-02K\n2\tB 02-02L\n2\tB 02-02M\n2\tB 02-03A\n2\tB 02-03B\n2\tB 02-03C\n2\tB 02-03D\n2\tB 02-03J\n2\tB 02-03K\n2\tB 02-03L\n2\tB 02-03M\n2\tB 02-04A\n2\tB 02-04B\n2\tB 02-04C\n2\tB 02-04D\n2\tB 02-04J\n2\tB 02-04K\n2\tB 02-04L\n2\tB 02-04M\n2\tB 02-05A\n2\tB 02-05B\n2\tB 02-05C\n2\tB 02-05D\n2\tB 02-05J\n2\tB 02-05K\n2\tB 02-05L\n2\tB 02-05M\n2\tB 02-06A\n2\tB 02-06B\n2\tB 02-06C\n2\tB 02-06D\n2\tB 02-06J\n2\tB 02-06K\n2\tB 02-06L\n2\tB 02-06M\n2\tB 02-07A\n2\tB 02-07B\n2\tB 02-07C\n2\tB 02-07D\n2\tB 02-07J\n2\tB 02-07K\n2\tB 02-07L\n2\tB 02-07M\n2\tB 02-07P\n2\tB 02-08J\n2\tB 02-08K\n2\tB 02-08L\n2\tB 02-08M\n2\tB 02-08N\n2\tB 02-09M\n2\tB 02-10M\n2\tB 02-11M\n2\tB 02-12M\n3\tC 03-01A\n3\tC 03-01B\n3\tC 03-01C\n3\tC 03-01D\n3\tC 03-01J\n3\tC 03-01K\n3\tC 03-01L\n3\tC 03-01M\n3\tC 03-01N\n3\tC 03-01P\n3\tC 03-02A\n3\tC 03-02B\n3\tC 03-02C\n3\tC 03-02D\n3\tC 03-02J\n3\tC 03-02K\n3\tC 03-02L\n3\tC 03-02M\n3\tC 03-03A\n3\tC 03-03B\n3\tC 03-03C\n3\tC 03-03D\n3\tC 03-03J\n3\tC 03-03K\n3\tC 03-03L\n3\tC 03-03M\n3\tC 03-04A\n3\tC 03-04B\n3\tC 03-04C\n3\tC 03-04D\n3\tC 03-04J\n3\tC 03-04K\n3\tC 03-04L\n3\tC 03-04M\n3\tC 03-05A\n3\tC 03-05B\n3\tC 03-05C\n3\tC 03-05D\n3\tC 03-05J\n3\tC 03-05K\n3\tC 03-05L\n3\tC 03-05M\n3\tC 03-06A\n3\tC 03-06B\n3\tC 03-06C\n3\tC 03-06D\n3\tC 03-06J\n3\tC 03-06K\n3\tC 03-06L\n3\tC 03-06M\n3\tC 03-07A\n3\tC 03-07B\n3\tC 03-07C\n3\tC 03-07D\n3\tC 03-07J\n3\tC 03-07K\n3\tC 03-07L\n3\tC 03-07M\n3\tC 03-08J\n3\tC 03-08K\n3\tC 03-08L\n3\tC 03-08M\n3\tC 03-08N\n3\tC 03-09M\n3\tC 03-10M\n3\tC 03-11M\n3\tC 03-12M\n4\tD 04-01A\n4\tD 04-01B\n4\tD 04-01C\n4\tD 04-01D\n4\tD 04-01J\n4\tD 04-01K\n4\tD 04-01L\n4\tD 04-01M\n4\tD 04-01P\n4\tD 04-02A\n4\tD 04-02B\n4\tD 04-02C\n4\tD 04-02D\n4\tD 04-02J\n4\tD 04-02K\n4\tD 04-02L\n4\tD 04-02M\n4\tD 04-02N\n4\tD 04-03A\n4\tD 04-03B\n4\tD 04-03C\n4\tD 04-03D\n4\tD 04-03J\n4\tD 04-03K\n4\tD 04-03L\n4\tD 04-03M\n4\tD 04-04A\n4\tD 04-04B\n4\tD 04-04C\n4\tD 04-04D\n4\tD 04-04J\n4\tD 04-04K\n4\tD 04-04L\n4\tD 04-04M\n4\tD 04-05A\n4\tD 04-05B\n4\tD 04-05C\n4\tD 04-05D\n4\tD 04-05J\n4\tD 04-05K\n4\tD 04-05L\n4\tD 04-05M\n4\tD 04-06A\n4\tD 04-06B\n4\tD 04-06C\n4\tD 04-06D\n4\tD 04-06J\n4\tD 04-06K\n4\tD 04-06L\n4\tD 04-06M\n4\tD 04-07A\n4\tD 04-07B\n4\tD 04-07C\n4\tD 04-07D\n4\tD 04-07J\n4\tD 04-07K\n4\tD 04-07L\n4\tD 04-07M\n4\tD 04-07N\n4\tD 04-07P\n4\tD 04-08J\n4\tD 04-08K\n4\tD 04-08L\n4\tD 04-08M\n4\tD 04-09J\n4\tD 04-09K\n4\tD 04-09L\n4\tD 04-09M\n5\tE 05-01A\n5\tE 05-01B\n5\tE 05-01C\n5\tE 05-01D\n5\tE 05-01J\n5\tE 05-01K\n5\tE 05-01L\n5\tE 05-01M\n5\tE 05-01P\n5\tE 05-02A\n5\tE 05-02B\n5\tE 05-02C\n5\tE 05-02D\n5\tE 05-02J\n5\tE 05-02K\n5\tE 05-02L\n5\tE 05-02M\n5\tE 05-03A\n5\tE 05-03B\n5\tE 05-03C\n5\tE 05-03D\n5\tE 05-03J\n5\tE 05-03K\n5\tE 05-03L\n5\tE 05-03M\n5\tE 05-04A\n5\tE 05-04B\n5\tE 05-04C\n5\tE 05-04D\n5\tE 05-04J\n5\tE 05-04K\n5\tE 05-04L\n5\tE 05-04M\n5\tE 05-04N\n5\tE 05-05A\n5\tE 05-05B\n5\tE 05-05D\n5\tE 05-05J\n5\tE 05-05K\n5\tE 05-05L\n5\tE 05-05M\n5\tE 05-06A\n5\tE 05-06B\n5\tE 05-06C\n5\tE 05-06D\n5\tE 05-06J\n5\tE 05-06K\n5\tE 05-06L\n5\tE 05-06M\n5\tE 05-07A\n5\tE 05-07B\n5\tE 05-07C\n5\tE 05-07D\n5\tE 05-07J\n5\tE 05-07K\n5\tE 05-07L\n5\tE 05-07M\n5\tE 05-08J\n5\tE 05-08K\n5\tE 05-08L\n5\tE 05-08M\n5\tE 05-09J\n5\tE 05-09K\n5\tE 05-09L\n5\tE 05-09M\n6\tF 06-01A\n6\tF 06-01B\n6\tF 06-01C\n6\tF 06-01D\n6\tF 06-01J\n6\tF 06-01K\n6\tF 06-01L\n6\tF 06-01M\n6\tF 06-01P\n6\tF 06-02A\n6\tF 06-02B\n6\tF 06-02C\n6\tF 06-02D\n6\tF 06-02J\n6\tF 06-02K\n6\tF 06-02L\n6\tF 06-02M\n6\tF 06-03A\n6\tF 06-03B\n6\tF 06-03C\n6\tF 06-03D\n6\tF 06-03J\n6\tF 06-03K\n6\tF 06-03L\n6\tF 06-03M\n6\tF 06-04A\n6\tF 06-04B\n6\tF 06-04C\n6\tF 06-04D\n6\tF 06-04J\n6\tF 06-04K\n6\tF 06-04L\n6\tF 06-04M\n6\tF 06-05A\n6\tF 06-05B\n6\tF 06-05C\n6\tF 06-05D\n6\tF 06-05J\n6\tF 06-05K\n6\tF 06-05L\n6\tF 06-05M\n6\tF 06-06A\n6\tF 06-06B\n6\tF 06-06C\n6\tF 06-06D\n6\tF 06-06J\n6\tF 06-06K\n6\tF 06-06L\n6\tF 06-06M\n6\tF 06-07A\n6\tF 06-07B\n6\tF 06-07C\n6\tF 06-07D\n6\tF 06-07J\n6\tF 06-07K\n6\tF 06-07L\n6\tF 06-07M\n6\tF 06-07N\n6\tF 06-08J\n6\tF 06-08K\n6\tF 06-08L\n6\tF 06-08M\n7\tG 07-01A\n7\tG 07-01B\n7\tG 07-01C\n7\tG 07-01D\n7\tG 07-01J\n7\tG 07-01K\n7\tG 07-01L\n7\tG 07-01M\n7\tG 07-01P\n7\tG 07-02A\n7\tG 07-02B\n7\tG 07-02C\n7\tG 07-02D\n7\tG 07-02J\n7\tG 07-02K\n7\tG 07-02L\n7\tG 07-02M\n7\tG 07-03A\n7\tG 07-03B\n7\tG 07-03C\n7\tG 07-03D\n7\tG 07-03J\n7\tG 07-03K\n7\tG 07-03L\n7\tG 07-03M\n7\tG 07-04A\n7\tG 07-04B\n7\tG 07-04C\n7\tG 07-04D\n7\tG 07-04J\n7\tG 07-04K\n7\tG 07-04L\n7\tG 07-04M\n7\tG 07-05A\n7\tG 07-05B\n7\tG 07-05C\n7\tG 07-05D\n7\tG 07-05J\n7\tG 07-05K\n7\tG 07-05L\n7\tG 07-05M\n7\tG 07-06A\n7\tG 07-06B\n7\tG 07-06C\n7\tG 07-06D\n7\tG 07-06J\n7\tG 07-06K\n7\tG 07-06L\n7\tG 07-06M\n7\tG 07-07A\n7\tG 07-07B\n7\tG 07-07C\n7\tG 07-07D\n7\tG 07-07J\n7\tG 07-07K\n7\tG 07-07L\n7\tG 07-07M\n7\tG 07-08J\n7\tG 07-08K\n7\tG 07-08L\n7\tG 07-08M\n8\tH 08-01A\n8\tH 08-01B\n8\tH 08-01C\n8\tH 08-01D\n8\tH 08-01J\n8\tH 08-01K\n8\tH 08-01L\n8\tH 08-01M\n8\tH 08-01P\n8\tH 08-02A\n8\tH 08-02B\n8\tH 08-02C\n8\tH 08-02D\n8\tH 08-02J\n8\tH 08-02K\n8\tH 08-02L\n8\tH 08-02M\n8\tH 08-03A\n8\tH 08-03B\n8\tH 08-03C\n8\tH 08-03D\n8\tH 08-03K\n8\tH 08-03L\n8\tH 08-03M\n8\tH 08-04A\n8\tH 08-04B\n8\tH 08-04C\n8\tH 08-04D\n8\tH 08-04J\n8\tH 08-04K\n8\tH 08-04L\n8\tH 08-04M\n8\tH 08-05A\n8\tH 08-05B\n8\tH 08-05C\n8\tH 08-05D\n8\tH 08-05J\n8\tH 08-05K\n8\tH 08-05L\n8\tH 08-05M\n8\tH 08-06B\n8\tH 08-06C\n8\tH 08-06D\n8\tH 08-06J\n8\tH 08-06K\n8\tH 08-06L\n8\tH 08-06M\n8\tH 08-07A\n8\tH 08-07B\n8\tH 08-07C\n8\tH 08-07D\n8\tH 08-07J\n8\tH 08-07K\n8\tH 08-07L\n8\tH 08-07M\n8\tH 08-08J\n8\tH 08-08K\n8\tH 08-08L\n8\tH 08-08M\n8\tH 08-09J\n8\tH 08-09K\n8\tH 08-09L\n8\tH 08-09M\n8\tH 08-10J\n8\tH 08-10K\n8\tH 08-10L\n8\tH 08-10M\n8\tH 08-11J\n8\tH 08-11K\n8\tH 08-11L\n8\tH 08-11M\n8\tH 08-12J\n8\tH 08-12K\n8\tH 08-12L\n8\tH 08-12M\n9\tI 09-01A\n9\tI 09-01B\n9\tI 09-01D\n9\tI 09-01J\n9\tI 09-01K\n9\tI 09-01L\n9\tI 09-01M\n9\tI 09-01P\n9\tI 09-02A\n9\tI 09-02B\n9\tI 09-02C\n9\tI 09-02D\n9\tI 09-02J\n9\tI 09-02K\n9\tI 09-02L\n9\tI 09-02M\n9\tI 09-03A\n9\tI 09-03B\n9\tI 09-03C\n9\tI 09-03D\n9\tI 09-03J\n9\tI 09-03K\n9\tI 09-03L\n9\tI 09-03M\n9\tI 09-04A\n9\tI 09-04B\n9\tI 09-04C\n9\tI 09-04D\n9\tI 09-04J\n9\tI 09-04K\n9\tI 09-04L\n9\tI 09-04M\n9\tI 09-05A\n9\tI 09-05B\n9\tI 09-05C\n9\tI 09-05D\n9\tI 09-05J\n9\tI 09-05K\n9\tI 09-05L\n9\tI 09-05M\n9\tI 09-06A\n9\tI 09-06B\n9\tI 09-06C\n9\tI 09-06D\n9\tI 09-06J\n9\tI 09-06K\n9\tI 09-06L\n9\tI 09-06M\n9\tI 09-07A\n9\tI 09-07B\n9\tI 09-07C\n9\tI 09-07D\n9\tI 09-07J\n9\tI 09-07K\n9\tI 09-07L\n9\tI 09-07M\n9\tI 09-08J\n9\tI 09-08K\n9\tI 09-08L\n9\tI 09-08M\n9\tI 09-09J\n9\tI 09-09K\n9\tI 09-09L\n9\tI 09-09M\n9\tI 09-10J\n9\tI 09-10K\n9\tI 09-10L\n9\tI 09-10M\n10\tJ 10-01H\n10\tJ 10-01J\n10\tJ 10-01K\n10\tJ 10-01L\n10\tJ 10-01M\n10\tJ 10-01P\n10\tJ 10-02H\n10\tJ 10-02J\n10\tJ 10-02K\n10\tJ 10-02L\n10\tJ 10-02M\n10\tJ 10-02P\n10\tJ 10-03H\n10\tJ 10-03K\n10\tJ 10-03L\n10\tJ 10-03M\n10\tJ 10-03P\n10\tJ 10-04H\n10\tJ 10-04J\n10\tJ 10-04K\n10\tJ 10-04L\n10\tJ 10-04M\n10\tJ 10-04P\n10\tJ 10-05H\n10\tJ 10-05J\n10\tJ 10-05K\n10\tJ 10-05L\n10\tJ 10-05M\n10\tJ 10-05P\n10\tJ 10-06H\n10\tJ 10-06J\n10\tJ 10-06K\n10\tJ 10-06L\n10\tJ 10-06M\n10\tJ 10-06P\n10\tJ 10-07H\n10\tJ 10-07J\n10\tJ 10-07K\n10\tJ 10-07L\n10\tJ 10-07M\n10\tJ 10-07P\n0\tMA01\n0\tMA02\n0\tMA03\n0\tMA04\n0\tMA05\n0\tMA06\n0\tMA07\n0\tMA08\n0\tMA09\n0\tMA10\n0\tMB01\n0\tMB02\n0\tMB03\n0\tMB04\n0\tMB05\n0\tMB06\n0\tMB07\n0\tMB08\n0\tMB09\n0\tMB10\n0\tMC01\n0\tMC02\n0\tMC03\n0\tMC04\n0\tMC05\n0\tMC06\n0\tMC07\n0\tMC08\n0\tMC09\n0\tMC10\n0\tMD01\n0\tMD02\n0\tMD03\n0\tMD04\n0\tMD05\n0\tMD06\n0\tMD07\n0\tMD08\n0\tMD09\n0\tMD10\n0\tME01\n0\tME02\n0\tME03\n0\tME04\n0\tME05\n0\tME06\n0\tME07\n0\tME08\n0\tME09\n0\tME10\n0\tPLT-01\n0\tRB01\n0\tRB02\n0\tRB03\n0\tRB04\n0\tRB05\n0\tRB06\n0\tRB07\n0\tRB08\n0\tRC01\n0\tRC02\n0\tRC03\n0\tRC04\n0\tRC05\n0\tRC06\n0\tRC07\n0\tRC08\n0\tRD01\n0\tRD02\n0\tRD03\n0\tRD04\n0\tRD05\n0\tRD06\n0\tRD07\n0\tRD08\n0\tRE01\n0\tRE02\n0\tRE03\n0\tRE04\n0\tRE05\n0\tRE06\n0\tRE07\n0\tRE08\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E";
 let consolidado=[];
 let ventaRows=[];
 let currentRows=[];
 let currentTitle='Resultado';
 let sortState={key:null,dir:1};
+let generatedPlan=[];
+let livePlanRows=[];
+let stationLoads={};
+let selectedActivity='';
+let currentOperatorTask=null;
+let activityAssignments={};
+let activityAssignmentsLoaded=false;
+
+function enterProfile(profile){
+  profileLanding.classList.add('hidden');
+  operatorShell.classList.toggle('hidden',profile!=='operator');
+  supervisorShell.classList.toggle('hidden',profile!=='supervisor');
+  if(profile==='operator'){operatorCloudStatus.textContent='Firebase conectado';subscribeActivityAssignments();refreshOperatorProgress();}
+  if(profile==='supervisor'){subscribeActivityAssignments();loadPlanDashboard();}
+}
+function changeProfile(){
+  operatorShell.classList.add('hidden');supervisorShell.classList.add('hidden');profileLanding.classList.remove('hidden');
+  if(operatorTaskUnsubscribe){operatorTaskUnsubscribe();operatorTaskUnsubscribe=null}
+}
+function selectActivity(btn){
+  document.querySelectorAll('.activity-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');selectedActivity=btn.dataset.activity;
+}
+function subscribeActivityAssignments(){
+  if(activityAssignmentUnsubscribe)return;
+  activityAssignmentUnsubscribe=PLAN_ACTIVITIES_REF.onSnapshot(snap=>{
+    activityAssignments={};snap.docs.forEach(d=>activityAssignments[d.id]={id:d.id,...d.data()});activityAssignmentsLoaded=true;renderActivityAssignments();
+  },err=>{console.error(err);activityAssignmentsLoaded=false;renderActivityAssignments()});
+}
+function renderActivityAssignments(){
+  const currentName=norm(typeof operatorName==='undefined'?'':operatorName.value);
+  const ownActivity=OPERATOR_ACTIVITIES.find(activity=>activityAssignments[activity]?.status==='asignada'&&sameOperatorName(activityAssignments[activity]?.operator,currentName));
+  document.querySelectorAll('.activity-btn').forEach(btn=>{
+    const activity=btn.dataset.activity,data=activityAssignments[activity],state=btn.querySelector('.activity-state');
+    btn.disabled=false;
+    if(!activityAssignmentsLoaded){btn.disabled=true;if(state)state.textContent='Consultando…';return}
+    if(!data){btn.disabled=true;if(state)state.textContent='Sin plan publicado';return}
+    if(data.status==='completada'){btn.disabled=true;if(state)state.textContent='Actividad completada';return}
+    if(data.status==='asignada'){
+      const own=currentName&&sameOperatorName(data.operator,currentName);btn.disabled=!own;
+      if(state)state.textContent=own?'Asignada a ti':`Asignada a ${data.operator||'otro operario'}`;
+      return;
+    }
+    if(ownActivity&&ownActivity!==activity){btn.disabled=true;if(state)state.textContent=`Ya tienes ${planActivityLabel(ownActivity)}`;return}
+    if(state)state.textContent='Disponible';
+  });
+  const panel=document.getElementById('activityAssignmentsPanel');if(!panel)return;
+  const rows=OPERATOR_ACTIVITIES.map(activity=>activityAssignments[activity]).filter(Boolean);
+  if(!rows.length){panel.innerHTML='<div class="empty-state">Publica un plan para habilitar las actividades.</div>';return}
+  panel.innerHTML=rows.map(data=>{
+    const status=data.status==='asignada'?`Asignada a ${escapeHtml(data.operator||'Sin nombre')}`:data.status==='completada'?'Completada':'Disponible';
+    const action=data.status==='asignada'?`<button class="secondary" style="margin-top:10px" onclick="supervisorReleaseActivity('${data.id}')">Liberar actividad</button>`:'';
+    return `<div class="station-card"><b>${escapeHtml(planActivityLabel(data.id))}</b><span>${status}</span>${action}</div>`;
+  }).join('');
+}
 
 function openTab(id, btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -221,6 +380,8 @@ function openTab(id, btn){
 }
 function norm(s){return String(s??'').trim();}
 function normCode(s){return norm(s).replace(/\.0$/,'').toUpperCase();}
+function sameOperatorName(a,b){return norm(a).toLocaleLowerCase('es')===norm(b).toLocaleLowerCase('es')}
+function normalizeOffer(s){return norm(s).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+(NEW|TOP|BO|ALDEAS)$/,'OFFER-$1')}
 function toNum(v){
   if(v===null||v===undefined||v==='') return 0;
   let s=String(v).replace(/,/g,'').trim();
@@ -231,9 +392,11 @@ function parseTSV(text){
   text=(text||'').trim();
   if(!text) return [];
   const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
-  const header=lines[0].split('\t').map(h=>norm(h));
-  return lines.slice(1).map(line=>{
-    const cells=line.split('\t');
+  const markdown=lines[0].trim().startsWith('|');
+  const split=line=>markdown?line.trim().replace(/^\||\|$/g,'').split('|').map(norm):line.split('\t').map(norm);
+  const header=split(lines[0]);
+  return lines.slice(1).filter(line=>!markdown||!split(line).every(v=>/^:?-{2,}:?$/.test(v)||v==='')).map(line=>{
+    const cells=split(line);
     const obj={};
     header.forEach((h,i)=>obj[h]=cells[i]??'');
     return obj;
@@ -282,6 +445,7 @@ function applyCloudData(data, showResult=true){
   txtOrder.value=data.order||'';
   txtVenta.value=data.venta||'';
   txtStock.value=data.stock||'';
+  if(data.locations)txtLocations.value=data.locations;
   consolidado=Array.isArray(data.consolidado)?data.consolidado:[];
   ventaRows=Array.isArray(data.ventaRows)?data.ventaRows:[];
   if(data.usuario && document.getElementById('txtUsuario') && !txtUsuario.value) txtUsuario.value=data.usuario;
@@ -297,6 +461,7 @@ function buildPayload(){
     order:txtOrder.value,
     venta:txtVenta.value,
     stock:txtStock.value,
+    locations:txtLocations.value,
     consolidado,
     ventaRows,
     usuario:getUsuario(),
@@ -412,7 +577,7 @@ function setupRealtime(){
 }
 async function clearAll(){
   if(!confirm('¿Seguro que deseas limpiar reportes y resultados en la nube para todos?')) return;
-  txtOrder.value=txtVenta.value=txtStock.value='';
+  txtOrder.value=txtVenta.value=txtStock.value=txtLocations.value='';
   consolidado=[];ventaRows=[];currentRows=[];renderTable([]);updateKpis();updateFaltantesAlert();
   await saveInputs(false);
   alert('Información limpiada en Firebase.');
@@ -427,9 +592,10 @@ async function generateConsolidado(){
   const okCode=findKey(order[0],['Code','Código','Codigo']);
   const okDesc=findKey(order[0],['Description','Description (eng)','Descripción','Descripcion']);
   const okFrc=getFrcKey(order[0]);
+  const okOffer=findKey(order[0],['Oferta','Offer']);
   order.forEach(r=>{
     const code=normCode(r[okCode]); if(!code) return;
-    orderMap.set(code,{frc:toNum(r[okFrc]),desc:norm(r[okDesc])});
+    orderMap.set(code,{frc:toNum(r[okFrc]),desc:norm(r[okDesc]),offer:normalizeOffer(okOffer?r[okOffer]:'')});
   });
 
   const ventaMap=new Map();
@@ -460,9 +626,13 @@ async function generateConsolidado(){
     if(zona && !g.zona) g.zona=zona;
   });
 
-  consolidado=[...grouped.values()].map(g=>{
-    const v=ventaMap.get(g.codigo)||{};
-    const o=orderMap.get(g.codigo)||{};
+  const selectedCodes=new Set(grouped.keys());
+  orderMap.forEach((o,code)=>{if(PRIORITY_OFFERS.has(o.offer)||o.offer==='OFFER-NEW')selectedCodes.add(code)});
+  ventaMap.forEach((v,code)=>{if(Number(v.reserved)>0)selectedCodes.add(code)});
+  consolidado=[...selectedCodes].map(code=>{
+    const g=grouped.get(code)||{codigo:code,stockPL:0,ubicaciones:[],zona:'FUERA DE PL'};
+    const v=ventaMap.get(code)||{};
+    const o=orderMap.get(code)||{};
     const desc=v.descripcion || o.desc || '';
     const ubicUnicas=[...new Set(g.ubicaciones)].join(' | ');
     return {
@@ -473,6 +643,7 @@ async function generateConsolidado(){
       'Stock PL':g.stockPL,
       Venta:toNum(v.reserved),
       FRC:toNum(o.frc),
+      Oferta:o.offer||'',
       Estado: ubicUnicas.includes('0-0000')?'Revisar ubicación':'OK'
     };
   });
@@ -484,37 +655,57 @@ async function generateConsolidado(){
 }
 function locList(row){return String(row['Ubicación PL']||'').split('|').map(x=>x.trim()).filter(Boolean);}
 function isTLoc(loc){return String(loc||'').trim().toUpperCase().startsWith('T');}
+function isLowZoneLoc(loc){const l=String(loc||'').trim().toUpperCase();return l.startsWith('T')||l.startsWith('M')||l.startsWith('R')}
+function isReservedLoc(loc){return ['P','N'].includes(lastLetter(loc))}
+function stationFromLoc(loc){const m=String(loc||'').toUpperCase().match(/\s(0?[1-9]|10)-/);return m?Number(m[1]):0}
+function isStation10(loc){return stationFromLoc(loc)===10}
+function isPrimeLoc(loc){return stationFromLoc(loc)>=1&&stationFromLoc(loc)<=9&&GOOD_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
+function isSecondaryLoc(loc){return stationFromLoc(loc)>=1&&stationFromLoc(loc)<=9&&SECONDARY_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
 function excludedEnviarTLoc(loc){
   const l=String(loc||'').trim().toUpperCase().replace(/\s+/g,' ');
   return l.startsWith('T') || l.startsWith('M') || l.startsWith('R') || l.startsWith('J 10-');
 }
 function rowHasExcludedEnviarTLoc(row){return locList(row).some(excludedEnviarTLoc);}
 function rowInT(row){return locList(row).some(isTLoc);}
+function rowInLowZone(row){return locList(row).some(isLowZoneLoc)}
 function lastLetter(loc){const m=String(loc).trim().match(/([A-Z])$/i);return m?m[1].toUpperCase():'';}
-function hasGoodLoc(row){return locList(row).some(l=>!isTLoc(l)&&GOOD_ENDINGS.has(lastLetter(l)));}
+function hasGoodLoc(row){return locList(row).some(isPrimeLoc);}
 function isCatalogo(row){return /cat[aá]logo/i.test(row.Descripción||'');}
 function isArmado(row){return ARMADOS.has(normCode(row.Código));}
+function isVial(row){return /\bvial\b/i.test(row.Descripción||'')}
+function isPriorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.Oferta))}
+function isNewOffer(row){return normalizeOffer(row.Oferta)==='OFFER-NEW'}
+function isProtectedOffer(row){return isPriorityOffer(row)||isNewOffer(row)}
 function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:motivo}));}
+// Mapa de prioridad entre acciones: un código asignado a Enviar a T
+// ya no puede aparecer también en Liberar ubicaciones A.
+function getEnviarTRows(){
+  return consolidado.filter(r=>r.Venta===0 && r.FRC>=0 && r.FRC<=4 && !rowHasExcludedEnviarTLoc(r) && !isArmado(r) && !isCatalogo(r) && !isProtectedOffer(r) && !isVial(r));
+}
+function getLiberarARows(){
+  const assignedCodes=new Set(getEnviarTRows().map(r=>normCode(r.Código)));
+  return consolidado.filter(r=>hasGoodLoc(r) && !rowInLowZone(r) && r.Venta<=10 && r.FRC<=300 && !assignedCodes.has(normCode(r.Código)) && !isProtectedOffer(r) && !isVial(r));
+}
 function showConsolidado(){setResult('📋 Consolidado general',consolidado,'Tabla cruzada: Stock PL + Venta Real + FRC.');}
 function runEnviarT(){
-  const rows=consolidado.filter(r=>r.Venta===0 && r.FRC>=0 && r.FRC<=4 && !rowHasExcludedEnviarTLoc(r) && !isArmado(r) && !isCatalogo(r));
-  setResult('📤 Enviar a T',addMotivo(rows,'Venta 0 y FRC 0 a 4; no está en T/M/R/J10'),'Códigos candidatos para mover a zona T. Excluye armados, catálogos y ubicaciones que empiezan con T, M, R o J 10-.');
+  const rows=getEnviarTRows();
+  setResult('📤 Enviar a T/M/R',addMotivo(rows,'Venta 0 y FRC 0 a 4; baja rotación'),'Códigos candidatos para salir de la línea. El plan decide T o una posición M/R libre según cantidad.');
 }
 function runSacarT(){
-  const vendidos=consolidado.filter(r=>rowInT(r) && r.Venta>0).map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T y tiene venta mayor a 0'}));
-  const topFrc=consolidado.filter(r=>rowInT(r) && r.Venta===0 && r.FRC>1000)
+  const vendidos=consolidado.filter(r=>rowInLowZone(r) && r.Venta>0).map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T/M/R y tiene venta actual'}));
+  const topFrc=consolidado.filter(r=>rowInLowZone(r) && r.Venta===0 && (r.FRC>1000||isProtectedOffer(r)))
     .sort((a,b)=>b.FRC-a.FRC)
     .slice(0,10)
     .map(r=>({...r,Grupo:'Top 10 FRC sin venta',Motivo:'FRC mayor a 1000 sin venta; revisar salida de T por pronóstico alto'}));
-  setResult('📥 Sacar de T', [...topFrc, ...vendidos], 'Incluye productos en T con venta mayor a 0 y un Top 10 con FRC mayor a 1000 aunque venta sea 0.');
+  setResult('📥 Sacar de T/M/R', [...topFrc, ...vendidos], 'Prioriza venta actual; después ofertas especiales y FRC alto ubicados fuera de la línea principal.');
 }
 function runLiberarA(){
-  const rows=consolidado.filter(r=>hasGoodLoc(r) && !rowInT(r) && r.Venta<=10 && r.FRC<=300);
-  setResult('🧹 Liberar ubicaciones A',addMotivo(rows,'Venta hasta 10 y FRC hasta 300 en buena ubicación B/C/L'),'Productos realmente de baja venta y bajo pronóstico ocupando ubicaciones buenas.');
+  const rows=getLiberarARows();
+  setResult('🧹 Liberar posiciones prime',addMotivo(rows,'Candidato de baja rotación; mover solo si su posición se necesita para un producto prioritario'),'El plan conserva los productos en su ubicación actual y libera únicamente las posiciones necesarias. Reserved 0 tiene prioridad de salida.');
 }
 function runVentaMax(){
-  const rows=consolidado.filter(r=>r.Venta>70 && !rowInT(r) && !hasGoodLoc(r));
-  setResult('🔥 Venta Max',addMotivo(rows,'Alta venta en mala ubicación'),'Productos de alta venta que deberían pasar a mejores ubicaciones.');
+  const rows=consolidado.filter(r=>(r.Venta>70||isPriorityOffer(r)) && !hasGoodLoc(r) && !isVial(r));
+  setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación B/C/K/L'),'Reserved tiene prioridad; después se consideran Offer-Top, Offer-BO y Offer-Aldeas.');
 }
 function runFaltantesPL(){
   const rows=getFaltantesRows();
@@ -562,7 +753,7 @@ function downloadExcel(){
 }
 
 function getFaltantesRows(){
-  const stockCodes=new Set(consolidado.map(r=>normCode(r.Código)));
+  const stockCodes=new Set(consolidado.filter(r=>Number(r['Stock PL']||0)>0||locList(r).length).map(r=>normCode(r.Código)));
   return ventaRows.filter(v=>v.reserved>0 && !stockCodes.has(normCode(v.codigo))).map(v=>({
     Código:v.codigo,
     Descripción:v.descripcion,
@@ -607,14 +798,315 @@ function printResult(){
   w.document.write(html);w.document.close();w.focus();w.print();
 }
 
+// ---------- PLAN DE CAMBIO DE LÍNEA ----------
+function parseLocationMaster(){
+  const rows=[];
+  String(txtLocations.value||'').split(/\r?\n/).forEach(line=>{
+    const clean=line.trim();if(!clean||/^\|?\s*-+/.test(clean)||/PuestoCaja/i.test(clean))return;
+    const cells=clean.startsWith('|')?clean.replace(/^\||\|$/g,'').split('|').map(norm):clean.split('\t').map(norm);
+    const station=Number(cells[0]);const location=norm(cells[cells.length-1]);
+    if(Number.isFinite(station)&&location)rows.push({station,location});
+  });
+  return rows;
+}
+function demandLoad(row){const sale=Number(row.Venta||0),frc=Number(row.FRC||0);return sale>0?sale:frc}
+function currentMainLocation(row){return locList(row).find(l=>stationFromLoc(l)>=1&&stationFromLoc(l)<=9&&!isReservedLoc(l))||''}
+function firstSourceLocation(row){return locList(row)[0]||'FUERA DE PL'}
+function planActivityLabel(v){return ({enviar_t:'Enviar a T/M/R',liberar_prime:'Liberar prime',sacar_baja:'Sacar de T/M/R',ingresar_nuevo:'Ingresar nuevos · Supervisor',reubicar_prioridad:'Venta Max',verificar:'Verificar'})[v]||v}
+function taskStatusLabel(v){return ({disponible:'Disponible',asignada:'En proceso',completada:'Completada',bloqueada:'Bloqueada',novedad:'Novedad'})[v]||v}
+function taskStatusClass(v){return ({disponible:'status-pending',asignada:'status-progress',completada:'status-done',bloqueada:'status-blocked',novedad:'status-issue'})[v]||'status-blocked'}
+function locationOccupancy(){
+  const map=new Map();consolidado.forEach(row=>locList(row).forEach(loc=>{const key=loc.toUpperCase();if(!map.has(key))map.set(key,[]);map.get(key).push(row)}));return map;
+}
+function planPriority(row){
+  if(Number(row.Venta||0)>70)return 1;
+  if(isPriorityOffer(row))return 2;
+  if(isNewOffer(row))return 3;
+  if(Number(row.FRC||0)>1000)return 4;
+  return 5;
+}
+function createPlanTask(activity,row,origin,destination,motive,dependency='',step=1){
+  return {id:'',activity,step,status:dependency?'bloqueada':'disponible',dependency,dependents:[],code:normCode(row.Código),description:row.Descripción||'',units:Number(row['Stock PL']||0),sale:Number(row.Venta||0),frc:Number(row.FRC||0),offer:row.Oferta||'',origin:origin||'POR DEFINIR',destination:destination||'POR DEFINIR',station:stationFromLoc(destination),motive,operator:'',startedAt:null,completedAt:null,issue:''};
+}
+function generateMovementPlan(){
+  if(!consolidado.length)return alert('Primero genera el consolidado.');
+  const master=parseLocationMaster();if(!master.length)return alert('Carga el maestro de ubicaciones antes de generar el plan.');
+  const occupancy=locationOccupancy();
+  const uniqueMain=[...new Map(master.filter(x=>x.station>=1&&x.station<=9&&!isReservedLoc(x.location)&&!isStation10(x.location)).map(x=>[x.location.toUpperCase(),x])).values()];
+  const primeMaster=uniqueMain.filter(x=>isPrimeLoc(x.location));
+  const secondaryMaster=uniqueMain.filter(x=>isSecondaryLoc(x.location));
+  const lowUnique=[...new Map(master.filter(x=>/^[MR]/i.test(x.location)).map(x=>[x.location.toUpperCase(),x.location])).values()];
+  const tCapacity=master.filter(x=>/^T/i.test(x.location)).map(x=>x.location);
+  const freeLow=lowUnique.filter(loc=>!occupancy.has(loc.toUpperCase()));let lowIndex=0,tIndex=0;
+  const tasks=[];const releasedSlots=[];
+
+  const stationCurrent={};for(let i=1;i<=9;i++)stationCurrent[i]=0;
+  consolidado.forEach(row=>{const stations=new Set(locList(row).map(stationFromLoc).filter(s=>s>=1&&s<=9));stations.forEach(s=>stationCurrent[s]+=demandLoad(row))});
+
+  // Primero se aprovechan los espacios prime vacíos. Solo se libera una posición
+  // ocupada cuando existe demanda prioritaria real que necesita entrar allí.
+  const emptyPrime=primeMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>({location:x.location,releaseTask:null}));
+  const emptySecondary=secondaryMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>x.location);
+  const incomingPrime=consolidado.filter(r=>!isVial(r)&&(Number(r.Venta||0)>70||isPriorityOffer(r)||isNewOffer(r)||(Number(r.Venta||0)===0&&Number(r.FRC||0)>1000))&&!hasGoodLoc(r));
+  incomingPrime.sort((a,b)=>{
+    const aOutside=currentMainLocation(a)?1:0,bOutside=currentMainLocation(b)?1:0;
+    return aOutside-bOutside||planPriority(a)-planPriority(b)||demandLoad(b)-demandLoad(a);
+  });
+  const releaseNeeded=Math.max(0,incomingPrime.length-emptyPrime.length);
+  const releaseRows=consolidado
+    .filter(r=>hasGoodLoc(r)&&Number(r.Venta||0)<=10&&Number(r.FRC||0)<=300&&!isProtectedOffer(r)&&!isVial(r))
+    .sort((a,b)=>Number(a.Venta||0)-Number(b.Venta||0)||Number(a.FRC||0)-Number(b.FRC||0)||Number(a['Stock PL']||0)-Number(b['Stock PL']||0));
+  for(const row of releaseRows){
+    if(releasedSlots.length>=releaseNeeded)break;
+    const origin=locList(row).find(isPrimeLoc);if(!origin)continue;
+    let destination='';
+    // Si todavía tiene Reserved, nunca se manda a T: se conserva en línea secundaria.
+    if(emptySecondary.length){
+      const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
+      const chosen=candidates[0];destination=chosen.location;emptySecondary.splice(chosen.index,1);
+    }else if(Number(row['Stock PL']||0)<=20&&lowIndex<freeLow.length){
+      destination=freeLow[lowIndex++];
+    }else if(Number(row.Venta||0)===0&&tCapacity.length){
+      destination=tCapacity[(tIndex++)%tCapacity.length];
+    }else{
+      continue;
+    }
+    const motive=Number(row.Venta||0)>0
+      ?'Se libera una posición B/C/K/L necesaria; el producto conserva presencia en una ubicación secundaria A/D/J/M'
+      :'Sin Reserved y baja rotación; se libera una posición B/C/K/L requerida por un producto prioritario';
+    const releaseActivity=isLowZoneLoc(destination)?'enviar_t':'liberar_prime';
+    const task=createPlanTask(releaseActivity,row,origin,destination,motive,'',1);
+    tasks.push(task);releasedSlots.push({location:origin,releaseTask:task,row});stationCurrent[stationFromLoc(origin)]-=demandLoad(row);
+    if(stationFromLoc(destination))stationCurrent[stationFromLoc(destination)]+=demandLoad(row);
+  }
+
+  const primeSlots=[...emptyPrime,...releasedSlots];
+  incomingPrime.forEach(row=>{
+    if(!primeSlots.length)return;
+    primeSlots.sort((a,b)=>(stationCurrent[stationFromLoc(a.location)]||0)-(stationCurrent[stationFromLoc(b.location)]||0));
+    const slot=primeSlots.shift(),origin=firstSourceLocation(row),dependency=slot.releaseTask?slot.releaseTask:'';
+    const activity=isNewOffer(row)?'ingresar_nuevo':rowInLowZone(row)?'sacar_baja':'reubicar_prioridad';
+    const motive=Number(row.Venta||0)>70?'Reserved alto; prioridad por venta actual':isPriorityOffer(row)?`${row.Oferta} con prioridad comercial`:'FRC alto sin ubicación prime';
+    const task=createPlanTask(activity,row,origin,slot.location,motive,'',2);task._dependencyTask=dependency;tasks.push(task);stationCurrent[stationFromLoc(slot.location)]+=demandLoad(row);
+  });
+
+  const mediumSaleRows=consolidado.filter(r=>!isVial(r)&&!currentMainLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)&&!['liberar_prime','enviar_t'].includes(t.activity))&&((Number(r.Venta||0)>=11&&Number(r.Venta||0)<=70)||(Number(r.Venta||0)>0&&Number(r.FRC||0)>300)));
+  mediumSaleRows.sort((a,b)=>Number(b.Venta||0)-Number(a.Venta||0)||Number(b.FRC||0)-Number(a.FRC||0));
+  mediumSaleRows.forEach(row=>{
+    const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);const chosen=candidates[0];if(!chosen)return;
+    emptySecondary.splice(chosen.index,1);const task=createPlanTask('sacar_baja',row,firstSourceLocation(row),chosen.location,'Reserved actual requiere presencia en la línea','',3);tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
+  });
+  const newRows=consolidado.filter(r=>isNewOffer(r)&&!currentMainLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)&&!['liberar_prime','enviar_t'].includes(t.activity)));
+  newRows.sort((a,b)=>Number(b.Venta||0)-Number(a.Venta||0)||Number(b.FRC||0)-Number(a.FRC||0));
+  newRows.forEach(row=>{
+    const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
+    const chosen=candidates[0];if(!chosen)return;
+    emptySecondary.splice(chosen.index,1);const task=createPlanTask('ingresar_nuevo',row,firstSourceLocation(row),chosen.location,'Offer-New: ingreso obligatorio a la línea','',3);tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
+  });
+
+  tasks.forEach((task,i)=>task.id='mov_'+String(i+1).padStart(4,'0'));
+  tasks.forEach(task=>{if(task._dependencyTask){task.dependency=task._dependencyTask.id;task.status='bloqueada';task._dependencyTask.dependents.push(task.id);delete task._dependencyTask}});
+  generatedPlan=tasks;stationLoads=stationCurrent;livePlanRows=[...tasks];renderPlanDashboard();
+  planMeta.textContent=`Plan preliminar · ${tasks.length} movimientos · Reserved primero, Oferta segundo, FRC tercero`;
+  alert(`Plan generado: ${tasks.length} movimientos. Revísalo antes de publicarlo.`);
+}
+async function deletePublishedTasks(){
+  const snap=await PLAN_TASKS_REF.get();let batch=db.batch(),ops=0;
+  for(const d of snap.docs){batch.delete(d.ref);ops++;if(ops>=450){await batch.commit();batch=db.batch();ops=0}}
+  if(ops)await batch.commit();
+}
+async function publishMovementPlan(){
+  if(!generatedPlan.length)return alert('Genera y revisa el plan antes de publicarlo.');
+  if(!confirm(`¿Publicar ${generatedPlan.length} movimientos para los operadores?`))return;
+  try{
+    await deletePublishedTasks();let batch=db.batch(),ops=0;
+    for(const task of generatedPlan){batch.set(PLAN_TASKS_REF.doc(task.id),{...task,createdAt:firebase.firestore.FieldValue.serverTimestamp()});ops++;if(ops>=430){await batch.commit();batch=db.batch();ops=0}}
+    for(const activity of OPERATOR_ACTIVITIES){
+      const hasTasks=generatedPlan.some(task=>task.activity===activity);
+      batch.set(PLAN_ACTIVITIES_REF.doc(activity),{activity,status:activity==='verificar'||hasTasks?'disponible':'completada',operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});ops++;
+    }
+    batch.set(PLAN_META_REF,{active:true,total:generatedPlan.length,stationLoads,createdBy:getUsuario(),createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});ops++;
+    if(ops)await batch.commit();alert('Plan publicado. Los celulares ya pueden tomar actividades.');loadPlanDashboard();
+  }catch(err){console.error(err);alert('No se pudo publicar el plan. Revisa las reglas de Firebase.')}
+}
+function loadPlanDashboard(){
+  subscribeActivityAssignments();
+  if(planUnsubscribe)return;
+  planUnsubscribe=PLAN_TASKS_REF.onSnapshot(snap=>{livePlanRows=snap.docs.map(d=>({id:d.id,...d.data()}));renderPlanDashboard();refreshOperatorProgress()},err=>{console.error(err);planMeta.textContent='No se pudo leer el plan publicado'});
+  PLAN_META_REF.get().then(s=>{if(s.exists){const d=s.data()||{};stationLoads=d.stationLoads||stationLoads;planMeta.textContent=`Plan publicado por ${d.createdBy||'Supervisor'} · ${d.total||0} movimientos`;renderStationBalance()}}).catch(()=>{});
+}
+function renderPlanDashboard(){
+  const rows=livePlanRows||[];const count=s=>rows.filter(x=>x.status===s).length;
+  planTotal.textContent=rows.length;planAvailable.textContent=count('disponible');planProgress.textContent=count('asignada');planDone.textContent=count('completada');planBlocked.textContent=count('bloqueada');planIssues.textContent=count('novedad');
+  planProgressBar.style.width=(rows.length?Math.round(count('completada')/rows.length*100):0)+'%';renderPlanTable();renderStationBalance();
+}
+function renderStationBalance(){
+  const values=Object.values(stationLoads||{}).map(Number).filter(Number.isFinite),avg=values.length?values.reduce((a,b)=>a+b,0)/values.length:0;
+  stationBalance.innerHTML=Object.keys(stationLoads||{}).length?Object.entries(stationLoads).sort((a,b)=>Number(a[0])-Number(b[0])).map(([station,load])=>{const diff=avg?Math.round((Number(load)-avg)/avg*100):0,state=Math.abs(diff)<=10?'Equilibrada':Math.abs(diff)<=20?'Revisar':'Rebalancear';return `<div class="station-card"><b>Estación ${station}</b><span>Carga: ${Math.round(load).toLocaleString('es-EC')}</span><span>${state} · ${diff>0?'+':''}${diff}% vs. promedio</span></div>`}).join(''):'<div class="empty-state">Genera un plan para calcular el balance.</div>';
+}
+function renderPlanTable(){
+  const filter=planStatusFilter.value;const rows=(livePlanRows||[]).filter(x=>filter==='todos'||x.status===filter).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
+  if(!rows.length){planTable.innerHTML='<tr><td style="padding:18px">Sin movimientos para este filtro.</td></tr>';return}
+  planTable.innerHTML='<thead><tr><th>Paso</th><th>Actividad</th><th>Código</th><th>Producto</th><th>Reserved</th><th>Oferta</th><th>Origen</th><th>Destino</th><th>Estado</th><th>Operario</th><th>Acción</th></tr></thead><tbody>'+rows.map(x=>`<tr><td>${x.step||''}</td><td>${planActivityLabel(x.activity)}</td><td><b>${escapeHtml(x.code)}</b></td><td>${escapeHtml(shortDesc(x.description))}</td><td><b>${x.sale||0}</b></td><td>${escapeHtml(x.offer||'—')}</td><td>${escapeHtml(x.origin)}</td><td><b>${escapeHtml(x.destination)}</b></td><td><span class="badge ${taskStatusClass(x.status)}">${taskStatusLabel(x.status)}</span></td><td>${escapeHtml(x.operator||'—')}</td><td>${supervisorTaskAction(x)}</td></tr>`).join('')+'</tbody>';
+}
+function supervisorTaskAction(task){
+  if(task.activity==='ingresar_nuevo'&&task.status==='disponible')return `<button class="primary" onclick="supervisorCompleteAdminTask('${task.id}')">Completar ingreso</button>`;
+  if(['asignada','novedad'].includes(task.status))return `<button class="secondary" onclick="supervisorReleaseTask('${task.id}')">Liberar</button>`;
+  return '—';
+}
+async function supervisorReleaseTask(id){
+  if(!confirm('¿Liberar esta tarea para que otro operario pueda tomarla?'))return;
+  await PLAN_TASKS_REF.doc(id).update({status:'disponible',operator:'',startedAt:null,issue:''});
+}
+function addVerificationTaskToBatch(batch,task){
+  if(task.activity==='verificar')return;
+  const verifyRef=PLAN_TASKS_REF.doc('ver_'+task.id);
+  batch.set(verifyRef,{...task,id:verifyRef.id,activity:'verificar',step:4,status:'disponible',dependency:task.id,dependents:[],operator:'',startedAt:null,completedAt:null,issue:'',motive:'Verificar físicamente el movimiento completado',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+async function reopenVerificationActivity(){
+  const ref=PLAN_ACTIVITIES_REF.doc('verificar');
+  await db.runTransaction(async tx=>{const snap=await tx.get(ref);if(!snap.exists||snap.data().status==='completada')tx.set(ref,{activity:'verificar',status:'disponible',operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})});
+}
+async function supervisorCompleteAdminTask(id){
+  const task=(livePlanRows||[]).find(x=>x.id===id);if(!task||task.activity!=='ingresar_nuevo'||task.status!=='disponible')return;
+  if(!confirm(`¿Confirmar el ingreso del código ${task.code}?`))return;
+  try{const batch=db.batch();batch.update(PLAN_TASKS_REF.doc(id),{status:'completada',operator:getUsuario()||'Supervisor',completedAt:firebase.firestore.FieldValue.serverTimestamp()});(task.dependents||[]).forEach(dep=>batch.update(PLAN_TASKS_REF.doc(dep),{status:'disponible'}));addVerificationTaskToBatch(batch,task);await batch.commit();await reopenVerificationActivity()}catch(err){console.error(err);alert('No se pudo completar el ingreso.')}
+}
+async function supervisorReleaseActivity(activity){
+  const assignment=activityAssignments[activity];if(!assignment||assignment.status!=='asignada')return;
+  if(!confirm(`¿Liberar ${planActivityLabel(activity)} asignada a ${assignment.operator||'este operario'}?`))return;
+  try{
+    const snap=await PLAN_TASKS_REF.where('activity','==',activity).limit(450).get(),batch=db.batch();
+    snap.docs.forEach(doc=>{const data=doc.data();if(data.status==='asignada'&&data.operator===assignment.operator)batch.update(doc.ref,{status:'disponible',operator:'',startedAt:null})});
+    batch.set(PLAN_ACTIVITIES_REF.doc(activity),{activity,status:'disponible',operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});await batch.commit();
+  }catch(err){console.error(err);alert('No se pudo liberar la actividad.')}
+}
+
+// ---------- OPERADOR MULTIDISPOSITIVO ----------
+async function findAssignedOperatorTask(name,activity){
+  const snap=await PLAN_TASKS_REF.where('activity','==',activity).limit(250).get();return snap.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.status==='asignada'&&sameOperatorName(x.operator,name))||null;
+}
+async function acquireOperatorActivity(name,activity){
+  try{
+    const assignments=await PLAN_ACTIVITIES_REF.get();
+    const ownOther=assignments.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.status==='asignada'&&x.id!==activity&&sameOperatorName(x.operator,name));
+    if(ownOther){alert(`Ya tienes asignada la actividad ${planActivityLabel(ownOther.id)}.`);return false}
+    const ref=PLAN_ACTIVITIES_REF.doc(activity);
+    await db.runTransaction(async tx=>{
+      const snap=await tx.get(ref);if(!snap.exists)throw new Error('sin_plan');
+      const data=snap.data();
+      if(data.status==='completada')throw new Error('completada');
+      if(data.status==='asignada'&&!sameOperatorName(data.operator,name))throw new Error('ocupada');
+      tx.set(ref,{activity,status:'asignada',operator:name,startedAt:data.startedAt||firebase.firestore.FieldValue.serverTimestamp(),completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    });
+    return true;
+  }catch(err){
+    if(err.message==='sin_plan')alert('Esta actividad todavía no forma parte de un plan publicado.');
+    else if(err.message==='completada')alert('Esta actividad ya fue completada.');
+    else if(err.message==='ocupada')alert('Otro operario ya tomó esta actividad.');
+    else{console.error(err);alert('No se pudo asignar la actividad. Revisa la conexión.')}
+    return false;
+  }
+}
+async function startOperatorWork(){
+  const name=norm(operatorName.value);if(!name)return alert('Ingresa tu nombre.');if(!selectedActivity)return alert('Elige una actividad.');
+  localStorage.setItem('pl_operator_name',name);
+  if(await acquireOperatorActivity(name,selectedActivity))await takeNextOperatorTask();
+}
+async function takeNextOperatorTask(excludeId=''){
+  const name=norm(operatorName.value);if(!name||!selectedActivity)return false;
+  operatorSetup.classList.add('hidden');operatorTaskPanel.classList.remove('hidden');
+  operatorTaskCard.innerHTML='<div class="empty-state">Buscando el siguiente movimiento de esta etapa…</div>';
+  try{
+    const assignment=await PLAN_ACTIVITIES_REF.doc(selectedActivity).get();
+    if(!assignment.exists||assignment.data().status!=='asignada'||!sameOperatorName(assignment.data().operator,name))throw new Error('actividad_liberada');
+    let assigned=await findAssignedOperatorTask(name,selectedActivity);
+    if(assigned&&assigned.id!==excludeId){currentOperatorTask=assigned;showOperatorTask();return true}
+    const snap=await PLAN_TASKS_REF.where('activity','==',selectedActivity).limit(250).get();
+    const rows=snap.docs.map(d=>({id:d.id,ref:d.ref,...d.data()}));
+    const candidates=rows.filter(x=>x.status==='disponible'&&x.id!==excludeId).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
+    for(const candidate of candidates){
+      try{
+        const claimed=await db.runTransaction(async tx=>{const activityRef=PLAN_ACTIVITIES_REF.doc(selectedActivity),activitySnap=await tx.get(activityRef),fresh=await tx.get(candidate.ref);if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');if(!fresh.exists||fresh.data().status!=='disponible')throw new Error('tomada');tx.update(candidate.ref,{status:'asignada',operator:name,startedAt:firebase.firestore.FieldValue.serverTimestamp()});return {id:fresh.id,...fresh.data(),status:'asignada',operator:name}});
+        currentOperatorTask=claimed;showOperatorTask();return true;
+      }catch(err){if(err.message!=='tomada')throw err}
+    }
+    currentOperatorTask=null;await renderOperatorStageState(rows);return false;
+  }catch(err){
+    if(err.message==='actividad_liberada'){currentOperatorTask=null;selectedActivity='';document.querySelectorAll('.activity-btn').forEach(btn=>btn.classList.remove('active'));operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');alert('La actividad fue liberada o reasignada por el supervisor.');return false}
+    console.error(err);currentOperatorTask=null;
+    operatorTaskCard.innerHTML=`<div class="empty-state"><h3>No se pudo cargar la etapa</h3><p>Revisa la conexión e inténtalo nuevamente.</p><div class="operator-actions"><button class="primary full" onclick="takeNextOperatorTask()">Buscar movimiento</button><button class="secondary full" onclick="exitOperatorActivity()">Cambiar actividad</button></div></div>`;
+    return false;
+  }
+}
+async function renderOperatorStageState(rows){
+  const done=rows.filter(x=>x.status==='completada').length;
+  let finished=rows.length>0&&done===rows.length;
+  if(finished&&selectedActivity==='verificar'){
+    const all=await PLAN_TASKS_REF.get();
+    finished=all.docs.map(d=>d.data()).filter(x=>x.activity!=='verificar').every(x=>x.status==='completada');
+  }
+  if(finished){
+    const name=norm(operatorName.value),activity=selectedActivity,ref=PLAN_ACTIVITIES_REF.doc(activity);
+    await db.runTransaction(async tx=>{const snap=await tx.get(ref);if(snap.exists&&snap.data().status==='asignada'&&sameOperatorName(snap.data().operator,name))tx.set(ref,{status:'completada',completedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})});
+  }
+  const title=finished?'Etapa completada':'Sin movimientos disponibles ahora';
+  const detail=finished?'Todos los movimientos de esta actividad están terminados.':'Puede haber movimientos bloqueados mientras termina una etapa anterior.';
+  const retry=finished?'':`<button class="primary full" onclick="takeNextOperatorTask()">Buscar movimiento disponible</button>`;
+  operatorTaskCard.innerHTML=`<div class="task-step"><span class="badge b-blue">${planActivityLabel(selectedActivity)}</span><span>Etapa</span></div><div class="empty-state"><h3>${title}</h3><p>${detail}</p><p>${done} de ${rows.length} completados</p><div class="operator-actions">${retry}<button class="secondary full" onclick="exitOperatorActivity()">Volver a actividades</button></div></div>`;
+  refreshOperatorProgress();
+}
+function showOperatorTask(){
+  operatorSetup.classList.add('hidden');operatorTaskPanel.classList.remove('hidden');renderOperatorTask();refreshOperatorProgress();
+}
+function renderOperatorTask(){
+  const x=currentOperatorTask;if(!x)return;
+  operatorTaskCard.innerHTML=`<div class="task-step"><span class="badge b-blue">${planActivityLabel(x.activity)}</span><span>Etapa ${x.step||''}</span></div><div class="task-code">${escapeHtml(x.code)}</div><div style="font-weight:800;margin-top:4px">${escapeHtml(x.description||'')}</div><div class="note">${escapeHtml(x.motive||'')}</div><div class="move-route"><div class="move-place"><span>SACAR DE</span><b>${escapeHtml(x.origin)}</b></div><div class="move-arrow">➜</div><div class="move-place"><span>COLOCAR EN</span><b>${escapeHtml(x.destination)}</b></div></div><div class="operator-status" style="margin-bottom:12px">Cantidad PL: <b>${x.units||'Según stock'}</b> · Reserved: <b>${x.sale||0}</b> · FRC: <b>${x.frc||0}</b></div><div class="operator-actions"><button class="primary full" onclick="completeOperatorTask()">Movimiento completado</button><button class="warning" onclick="reportOperatorIssue()">⚠️ Novedad</button><button class="secondary" onclick="exitOperatorActivity()">Cambiar actividad</button></div>`;
+}
+async function completeOperatorTask(){
+  const x=currentOperatorTask;if(!x)return;
+  const button=operatorTaskCard.querySelector('.primary');if(button){button.disabled=true;button.textContent='Guardando movimiento…'}
+  try{
+    const name=norm(operatorName.value),activityRef=PLAN_ACTIVITIES_REF.doc(x.activity),taskRef=PLAN_TASKS_REF.doc(x.id);
+    await db.runTransaction(async tx=>{
+      const activitySnap=await tx.get(activityRef),taskSnap=await tx.get(taskRef);
+      if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');
+      if(!taskSnap.exists||taskSnap.data().status!=='asignada'||!sameOperatorName(taskSnap.data().operator,name))throw new Error('tarea_liberada');
+      tx.update(taskRef,{status:'completada',completedAt:firebase.firestore.FieldValue.serverTimestamp()});(x.dependents||[]).forEach(id=>tx.update(PLAN_TASKS_REF.doc(id),{status:'disponible'}));addVerificationTaskToBatch(tx,x);
+    });
+    if(x.activity!=='verificar')await reopenVerificationActivity();currentOperatorTask=null;await refreshOperatorProgress();await takeNextOperatorTask();
+  }catch(err){
+    if(['actividad_liberada','tarea_liberada'].includes(err.message)){currentOperatorTask=null;operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');selectedActivity='';renderActivityAssignments();return alert('Esta actividad fue liberada por el supervisor.')}
+    console.error(err);alert('No se pudo guardar el movimiento.');renderOperatorTask();
+  }
+}
+async function reportOperatorIssue(){
+  const x=currentOperatorTask;if(!x)return;const issue=prompt('Describe la novedad: producto no encontrado, ubicación ocupada, cantidad diferente, no cabe, etc.');if(!norm(issue))return;
+  try{
+    const name=norm(operatorName.value),activityRef=PLAN_ACTIVITIES_REF.doc(x.activity),taskRef=PLAN_TASKS_REF.doc(x.id);
+    await db.runTransaction(async tx=>{const activitySnap=await tx.get(activityRef),taskSnap=await tx.get(taskRef);if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');if(!taskSnap.exists||taskSnap.data().status!=='asignada')throw new Error('tarea_liberada');tx.update(taskRef,{status:'novedad',issue:norm(issue),issueAt:firebase.firestore.FieldValue.serverTimestamp()})});
+    currentOperatorTask=null;await takeNextOperatorTask();
+  }catch(err){console.error(err);alert('No se pudo enviar la novedad.')}
+}
+async function exitOperatorActivity(){
+  const x=currentOperatorTask,activity=selectedActivity,name=norm(operatorName.value);
+  try{
+    if(activity)await db.runTransaction(async tx=>{const activityRef=PLAN_ACTIVITIES_REF.doc(activity),activitySnap=await tx.get(activityRef),taskRef=x?PLAN_TASKS_REF.doc(x.id):null,taskSnap=taskRef?await tx.get(taskRef):null;if(taskSnap&&taskSnap.exists&&taskSnap.data().status==='asignada'&&sameOperatorName(taskSnap.data().operator,name))tx.update(taskRef,{status:'disponible',operator:'',startedAt:null});if(activitySnap.exists&&activitySnap.data().status==='asignada'&&sameOperatorName(activitySnap.data().operator,name))tx.set(activityRef,{status:'disponible',operator:'',startedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})});
+  }catch(err){console.error(err);return alert('No se pudo liberar la actividad actual.')}
+  currentOperatorTask=null;selectedActivity='';document.querySelectorAll('.activity-btn').forEach(btn=>btn.classList.remove('active'));operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');
+}
+async function refreshOperatorProgress(){
+  if(!selectedActivity)return;try{const snap=await PLAN_TASKS_REF.get(),rows=snap.docs.map(d=>d.data()).filter(x=>x.activity===selectedActivity),done=rows.filter(x=>x.status==='completada').length;operatorProgress.textContent=`${planActivityLabel(selectedActivity)} · ${done} de ${rows.length} completadas`;operatorProgressBar.style.width=(rows.length?Math.round(done/rows.length*100):0)+'%'}catch{}
+}
+
 function updateKpis(){
   kTotal.textContent=consolidado.length;
-  kT.textContent=consolidado.filter(r=>r.Venta===0 && r.FRC>=0 && r.FRC<=4 && !rowHasExcludedEnviarTLoc(r) && !isArmado(r) && !isCatalogo(r)).length;
-  kOutT.textContent=consolidado.filter(r=>rowInT(r) && r.Venta>0).length;
-  kLib.textContent=consolidado.filter(r=>hasGoodLoc(r) && !rowInT(r) && r.Venta<=10 && r.FRC<=300).length;
-  kMax.textContent=consolidado.filter(r=>r.Venta>70 && !rowInT(r) && !hasGoodLoc(r)).length;
+  kT.textContent=getEnviarTRows().length;
+  kOutT.textContent=consolidado.filter(r=>rowInLowZone(r) && (r.Venta>0||isProtectedOffer(r))).length;
+  kLib.textContent=getLiberarARows().length;
+  kMax.textContent=consolidado.filter(r=>(r.Venta>70||isPriorityOffer(r)) && !hasGoodLoc(r) && !isVial(r)).length;
 }
-window.addEventListener('load',()=>{setupRealtime();loadInputs(true);});
+window.addEventListener('load',()=>{if(!txtLocations.value)txtLocations.value=DEFAULT_LOCATIONS;operatorName.value=localStorage.getItem('pl_operator_name')||'';setupRealtime();loadInputs(true);});
 </script>
 </body>
 </html>
