@@ -223,6 +223,7 @@
         <div class="kpi"><div class="num" id="kOutT">0</div><div class="lbl">Sacar de T/M/R</div></div>
         <div class="kpi"><div class="num" id="kLib">0</div><div class="lbl">Liberar prime</div></div>
         <div class="kpi"><div class="num" id="kMax">0</div><div class="lbl">Venta Max</div></div>
+        <div class="kpi"><div class="num" id="kBulk">0</div><div class="lbl">Candidatos a Bulk</div></div>
       </div>
 
       <div class="card">
@@ -234,6 +235,7 @@
           <button class="info" onclick="runSacarT()">📥 Sacar de T/M/R</button>
           <button class="secondary" onclick="runLiberarA()">🧹 Liberar posiciones prime</button>
           <button class="primary" onclick="runVentaMax()">🔥 Venta Max</button>
+          <button class="warning" onclick="runBulkCandidates()">📦 Candidatos a Bulk</button>
           <button class="danger" id="btnFaltantesPL" onclick="runFaltantesPL()">🚨 Faltantes en PL <span id="faltantesCount"></span></button>
         </div>
       </div>
@@ -693,6 +695,7 @@ function isProtectedOffer(row){return isPriorityOffer(row)}
 function hasPageValue(value){const v=norm(value);return v!==''&&v!=='0'&&v!=='-'}
 function hasPage(row){return hasPageValue(row?.Page)}
 function hasReserved(row){return Number(row?.Venta||0)>0}
+function hasAnyOffer(row){const v=normalizeOffer(row?.Oferta);return v!==''&&v!=='0'&&v!=='-'}
 // La prioridad de cobertura es estricta: Reserved > Oferta > Page.
 // Page solo gobierna cuando el código no tiene Reserved ni una oferta prioritaria.
 function isOfferCoverage(row){return !hasReserved(row)&&isProtectedOffer(row)}
@@ -744,6 +747,17 @@ function rawEnviarTRows(){
 function rawLiberarARows(){
   return consolidado.filter(r=>hasGoodLoc(r)&&!rowInLowZone(r)&&r.Venta<=10&&r.FRC<=300&&!isProtectedOffer(r)&&!(isPageCoverage(r)&&pageFrcBand(r)!=='low')&&!isVial(r));
 }
+function rawBulkCandidateRows(){
+  return consolidado.filter(r=>
+    Number(r['Stock PL']||0)>100 &&
+    !hasReserved(r) &&
+    Number(r.FRC||0)>=0 && Number(r.FRC||0)<=4 &&
+    !hasAnyOffer(r) &&
+    !hasPage(r) &&
+    !isArmado(r) &&
+    !isCatalogo(r)
+  ).sort((a,b)=>Number(b['Stock PL']||0)-Number(a['Stock PL']||0)||normCode(a.Código).localeCompare(normCode(b.Código)));
+}
 function getActionBuckets(){
   const assigned=new Set();
   const take=rows=>{const result=[];for(const row of rows){const code=normCode(row.Código);if(!code||assigned.has(code))continue;assigned.add(code);result.push(row)}return result};
@@ -751,15 +765,17 @@ function getActionBuckets(){
   const nuevos=take(rawIngresarNuevosRows());
   const ventaMax=take(rawVentaMaxRows());
   const sacarT=take(rawSacarTRows());
+  const bulk=take(rawBulkCandidateRows());
   const enviarT=take(rawEnviarTRows());
   const liberarA=take(rawLiberarARows());
-  return {faltantes,nuevos,ventaMax,sacarT,enviarT,liberarA};
+  return {faltantes,nuevos,ventaMax,sacarT,bulk,enviarT,liberarA};
 }
 function getEnviarTRows(){return getActionBuckets().enviarT}
 function getLiberarARows(){return getActionBuckets().liberarA}
 function getSacarTRows(){return getActionBuckets().sacarT}
 function getVentaMaxRows(){return getActionBuckets().ventaMax}
 function getIngresarNuevosRows(){return getActionBuckets().nuevos}
+function getBulkCandidateRows(){return getActionBuckets().bulk}
 function showConsolidado(){setResult('📋 Consolidado general',consolidado,'Tabla cruzada: Stock PL + Venta Real + FRC.');}
 function runIngresarNuevos(){
   const rows=getIngresarNuevosRows();
@@ -780,6 +796,10 @@ function runLiberarA(){
 function runVentaMax(){
   const rows=getVentaMaxRows();
   setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación B/C/K/L'),'Reserved tiene prioridad; excluye Faltantes y Offer-New para evitar duplicados.');
+}
+function runBulkCandidates(){
+  const rows=getBulkCandidateRows().map(r=>({...r,Grupo:'Revisión Bulk',Motivo:'Stock PL mayor a 100, sin Reserved, FRC 0 a 4, sin Oferta y sin Page'}));
+  setResult('📦 Candidatos a Bulk',rows,'Listado administrativo ordenado por mayor Stock PL. No genera movimientos automáticos; revisa y decide cuáles enviar a Bulk. Los códigos no se repiten en otras acciones.');
 }
 function runFaltantesPL(){
   const rows=getActionBuckets().faltantes;
@@ -1210,6 +1230,7 @@ function updateKpis(){
   kOutT.textContent=buckets.sacarT.length;
   kLib.textContent=buckets.liberarA.length;
   kMax.textContent=buckets.ventaMax.length;
+  kBulk.textContent=buckets.bulk.length;
 }
 window.addEventListener('load',()=>{if(!txtLocations.value)txtLocations.value=DEFAULT_LOCATIONS;operatorName.value=localStorage.getItem('pl_operator_name')||'';toggleHeroDetails(localStorage.getItem('pl_header_collapsed')!=='0');setupRealtime();loadInputs(true);});
 </script>
