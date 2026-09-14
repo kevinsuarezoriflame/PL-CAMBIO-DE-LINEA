@@ -310,7 +310,7 @@ const T_LOCS = new Set(['T01A','T01B','T01C','T01D','T02A','T02B','T02C','T03D']
 const ARMADOS = new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
 const GOOD_ENDINGS = new Set(['B','C','K','L']);
 const SECONDARY_ENDINGS = new Set(['A','D','J','M']);
-const PRIORITY_OFFERS = new Set(['OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
+const PRIORITY_OFFERS = new Set(['OFFER-NEW','OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
 const OPERATOR_ACTIVITIES = ['enviar_t','sacar_baja','liberar_prime','reubicar_prioridad','verificar'];
 const DEFAULT_LOCATIONS="PuestoCaja\tUbicación\n1\tA 01-01A\n1\tA 01-01B\n1\tA 01-01C\n1\tA 01-01D\n1\tA 01-01J\n1\tA 01-01K\n1\tA 01-01L\n1\tA 01-01M\n1\tA 01-01P\n1\tA 01-02A\n1\tA 01-02B\n1\tA 01-02C\n1\tA 01-02D\n1\tA 01-02J\n1\tA 01-02K\n1\tA 01-02L\n1\tA 01-02M\n1\tA 01-02P\n1\tA 01-03A\n1\tA 01-03B\n1\tA 01-03C\n1\tA 01-03D\n1\tA 01-03J\n1\tA 01-03K\n1\tA 01-03L\n1\tA 01-03M\n1\tA 01-04A\n1\tA 01-04B\n1\tA 01-04C\n1\tA 01-04D\n1\tA 01-04J\n1\tA 01-04K\n1\tA 01-04L\n1\tA 01-04M\n1\tA 01-05A\n1\tA 01-05B\n1\tA 01-05C\n1\tA 01-05D\n1\tA 01-05J\n1\tA 01-05K\n1\tA 01-05L\n1\tA 01-05M\n1\tA 01-06A\n1\tA 01-06B\n1\tA 01-06C\n1\tA 01-06D\n1\tA 01-06J\n1\tA 01-06K\n1\tA 01-06L\n1\tA 01-06M\n1\tA 01-07A\n1\tA 01-07B\n1\tA 01-07C\n1\tA 01-07D\n1\tA 01-07J\n1\tA 01-07K\n1\tA 01-07L\n1\tA 01-07M\n1\tA 01-08J\n1\tA 01-08K\n1\tA 01-08L\n1\tA 01-08M\n2\tB 02-01A\n2\tB 02-01B\n2\tB 02-01C\n2\tB 02-01D\n2\tB 02-01J\n2\tB 02-01K\n2\tB 02-01L\n2\tB 02-01M\n2\tB 02-01N\n2\tB 02-01P\n2\tB 02-02A\n2\tB 02-02B\n2\tB 02-02C\n2\tB 02-02D\n2\tB 02-02J\n2\tB 02-02K\n2\tB 02-02L\n2\tB 02-02M\n2\tB 02-03A\n2\tB 02-03B\n2\tB 02-03C\n2\tB 02-03D\n2\tB 02-03J\n2\tB 02-03K\n2\tB 02-03L\n2\tB 02-03M\n2\tB 02-04A\n2\tB 02-04B\n2\tB 02-04C\n2\tB 02-04D\n2\tB 02-04J\n2\tB 02-04K\n2\tB 02-04L\n2\tB 02-04M\n2\tB 02-05A\n2\tB 02-05B\n2\tB 02-05C\n2\tB 02-05D\n2\tB 02-05J\n2\tB 02-05K\n2\tB 02-05L\n2\tB 02-05M\n2\tB 02-06A\n2\tB 02-06B\n2\tB 02-06C\n2\tB 02-06D\n2\tB 02-06J\n2\tB 02-06K\n2\tB 02-06L\n2\tB 02-06M\n2\tB 02-07A\n2\tB 02-07B\n2\tB 02-07C\n2\tB 02-07D\n2\tB 02-07J\n2\tB 02-07K\n2\tB 02-07L\n2\tB 02-07M\n2\tB 02-07P\n2\tB 02-08J\n2\tB 02-08K\n2\tB 02-08L\n2\tB 02-08M\n2\tB 02-08N\n2\tB 02-09M\n2\tB 02-10M\n2\tB 02-11M\n2\tB 02-12M\n3\tC 03-01A\n3\tC 03-01B\n3\tC 03-01C\n3\tC 03-01D\n3\tC 03-01J\n3\tC 03-01K\n3\tC 03-01L\n3\tC 03-01M\n3\tC 03-01N\n3\tC 03-01P\n3\tC 03-02A\n3\tC 03-02B\n3\tC 03-02C\n3\tC 03-02D\n3\tC 03-02J\n3\tC 03-02K\n3\tC 03-02L\n3\tC 03-02M\n3\tC 03-03A\n3\tC 03-03B\n3\tC 03-03C\n3\tC 03-03D\n3\tC 03-03J\n3\tC 03-03K\n3\tC 03-03L\n3\tC 03-03M\n3\tC 03-04A\n3\tC 03-04B\n3\tC 03-04C\n3\tC 03-04D\n3\tC 03-04J\n3\tC 03-04K\n3\tC 03-04L\n3\tC 03-04M\n3\tC 03-05A\n3\tC 03-05B\n3\tC 03-05C\n3\tC 03-05D\n3\tC 03-05J\n3\tC 03-05K\n3\tC 03-05L\n3\tC 03-05M\n3\tC 03-06A\n3\tC 03-06B\n3\tC 03-06C\n3\tC 03-06D\n3\tC 03-06J\n3\tC 03-06K\n3\tC 03-06L\n3\tC 03-06M\n3\tC 03-07A\n3\tC 03-07B\n3\tC 03-07C\n3\tC 03-07D\n3\tC 03-07J\n3\tC 03-07K\n3\tC 03-07L\n3\tC 03-07M\n3\tC 03-08J\n3\tC 03-08K\n3\tC 03-08L\n3\tC 03-08M\n3\tC 03-08N\n3\tC 03-09M\n3\tC 03-10M\n3\tC 03-11M\n3\tC 03-12M\n4\tD 04-01A\n4\tD 04-01B\n4\tD 04-01C\n4\tD 04-01D\n4\tD 04-01J\n4\tD 04-01K\n4\tD 04-01L\n4\tD 04-01M\n4\tD 04-01P\n4\tD 04-02A\n4\tD 04-02B\n4\tD 04-02C\n4\tD 04-02D\n4\tD 04-02J\n4\tD 04-02K\n4\tD 04-02L\n4\tD 04-02M\n4\tD 04-02N\n4\tD 04-03A\n4\tD 04-03B\n4\tD 04-03C\n4\tD 04-03D\n4\tD 04-03J\n4\tD 04-03K\n4\tD 04-03L\n4\tD 04-03M\n4\tD 04-04A\n4\tD 04-04B\n4\tD 04-04C\n4\tD 04-04D\n4\tD 04-04J\n4\tD 04-04K\n4\tD 04-04L\n4\tD 04-04M\n4\tD 04-05A\n4\tD 04-05B\n4\tD 04-05C\n4\tD 04-05D\n4\tD 04-05J\n4\tD 04-05K\n4\tD 04-05L\n4\tD 04-05M\n4\tD 04-06A\n4\tD 04-06B\n4\tD 04-06C\n4\tD 04-06D\n4\tD 04-06J\n4\tD 04-06K\n4\tD 04-06L\n4\tD 04-06M\n4\tD 04-07A\n4\tD 04-07B\n4\tD 04-07C\n4\tD 04-07D\n4\tD 04-07J\n4\tD 04-07K\n4\tD 04-07L\n4\tD 04-07M\n4\tD 04-07N\n4\tD 04-07P\n4\tD 04-08J\n4\tD 04-08K\n4\tD 04-08L\n4\tD 04-08M\n4\tD 04-09J\n4\tD 04-09K\n4\tD 04-09L\n4\tD 04-09M\n5\tE 05-01A\n5\tE 05-01B\n5\tE 05-01C\n5\tE 05-01D\n5\tE 05-01J\n5\tE 05-01K\n5\tE 05-01L\n5\tE 05-01M\n5\tE 05-01P\n5\tE 05-02A\n5\tE 05-02B\n5\tE 05-02C\n5\tE 05-02D\n5\tE 05-02J\n5\tE 05-02K\n5\tE 05-02L\n5\tE 05-02M\n5\tE 05-03A\n5\tE 05-03B\n5\tE 05-03C\n5\tE 05-03D\n5\tE 05-03J\n5\tE 05-03K\n5\tE 05-03L\n5\tE 05-03M\n5\tE 05-04A\n5\tE 05-04B\n5\tE 05-04C\n5\tE 05-04D\n5\tE 05-04J\n5\tE 05-04K\n5\tE 05-04L\n5\tE 05-04M\n5\tE 05-04N\n5\tE 05-05A\n5\tE 05-05B\n5\tE 05-05D\n5\tE 05-05J\n5\tE 05-05K\n5\tE 05-05L\n5\tE 05-05M\n5\tE 05-06A\n5\tE 05-06B\n5\tE 05-06C\n5\tE 05-06D\n5\tE 05-06J\n5\tE 05-06K\n5\tE 05-06L\n5\tE 05-06M\n5\tE 05-07A\n5\tE 05-07B\n5\tE 05-07C\n5\tE 05-07D\n5\tE 05-07J\n5\tE 05-07K\n5\tE 05-07L\n5\tE 05-07M\n5\tE 05-08J\n5\tE 05-08K\n5\tE 05-08L\n5\tE 05-08M\n5\tE 05-09J\n5\tE 05-09K\n5\tE 05-09L\n5\tE 05-09M\n6\tF 06-01A\n6\tF 06-01B\n6\tF 06-01C\n6\tF 06-01D\n6\tF 06-01J\n6\tF 06-01K\n6\tF 06-01L\n6\tF 06-01M\n6\tF 06-01P\n6\tF 06-02A\n6\tF 06-02B\n6\tF 06-02C\n6\tF 06-02D\n6\tF 06-02J\n6\tF 06-02K\n6\tF 06-02L\n6\tF 06-02M\n6\tF 06-03A\n6\tF 06-03B\n6\tF 06-03C\n6\tF 06-03D\n6\tF 06-03J\n6\tF 06-03K\n6\tF 06-03L\n6\tF 06-03M\n6\tF 06-04A\n6\tF 06-04B\n6\tF 06-04C\n6\tF 06-04D\n6\tF 06-04J\n6\tF 06-04K\n6\tF 06-04L\n6\tF 06-04M\n6\tF 06-05A\n6\tF 06-05B\n6\tF 06-05C\n6\tF 06-05D\n6\tF 06-05J\n6\tF 06-05K\n6\tF 06-05L\n6\tF 06-05M\n6\tF 06-06A\n6\tF 06-06B\n6\tF 06-06C\n6\tF 06-06D\n6\tF 06-06J\n6\tF 06-06K\n6\tF 06-06L\n6\tF 06-06M\n6\tF 06-07A\n6\tF 06-07B\n6\tF 06-07C\n6\tF 06-07D\n6\tF 06-07J\n6\tF 06-07K\n6\tF 06-07L\n6\tF 06-07M\n6\tF 06-07N\n6\tF 06-08J\n6\tF 06-08K\n6\tF 06-08L\n6\tF 06-08M\n7\tG 07-01A\n7\tG 07-01B\n7\tG 07-01C\n7\tG 07-01D\n7\tG 07-01J\n7\tG 07-01K\n7\tG 07-01L\n7\tG 07-01M\n7\tG 07-01P\n7\tG 07-02A\n7\tG 07-02B\n7\tG 07-02C\n7\tG 07-02D\n7\tG 07-02J\n7\tG 07-02K\n7\tG 07-02L\n7\tG 07-02M\n7\tG 07-03A\n7\tG 07-03B\n7\tG 07-03C\n7\tG 07-03D\n7\tG 07-03J\n7\tG 07-03K\n7\tG 07-03L\n7\tG 07-03M\n7\tG 07-04A\n7\tG 07-04B\n7\tG 07-04C\n7\tG 07-04D\n7\tG 07-04J\n7\tG 07-04K\n7\tG 07-04L\n7\tG 07-04M\n7\tG 07-05A\n7\tG 07-05B\n7\tG 07-05C\n7\tG 07-05D\n7\tG 07-05J\n7\tG 07-05K\n7\tG 07-05L\n7\tG 07-05M\n7\tG 07-06A\n7\tG 07-06B\n7\tG 07-06C\n7\tG 07-06D\n7\tG 07-06J\n7\tG 07-06K\n7\tG 07-06L\n7\tG 07-06M\n7\tG 07-07A\n7\tG 07-07B\n7\tG 07-07C\n7\tG 07-07D\n7\tG 07-07J\n7\tG 07-07K\n7\tG 07-07L\n7\tG 07-07M\n7\tG 07-08J\n7\tG 07-08K\n7\tG 07-08L\n7\tG 07-08M\n8\tH 08-01A\n8\tH 08-01B\n8\tH 08-01C\n8\tH 08-01D\n8\tH 08-01J\n8\tH 08-01K\n8\tH 08-01L\n8\tH 08-01M\n8\tH 08-01P\n8\tH 08-02A\n8\tH 08-02B\n8\tH 08-02C\n8\tH 08-02D\n8\tH 08-02J\n8\tH 08-02K\n8\tH 08-02L\n8\tH 08-02M\n8\tH 08-03A\n8\tH 08-03B\n8\tH 08-03C\n8\tH 08-03D\n8\tH 08-03K\n8\tH 08-03L\n8\tH 08-03M\n8\tH 08-04A\n8\tH 08-04B\n8\tH 08-04C\n8\tH 08-04D\n8\tH 08-04J\n8\tH 08-04K\n8\tH 08-04L\n8\tH 08-04M\n8\tH 08-05A\n8\tH 08-05B\n8\tH 08-05C\n8\tH 08-05D\n8\tH 08-05J\n8\tH 08-05K\n8\tH 08-05L\n8\tH 08-05M\n8\tH 08-06B\n8\tH 08-06C\n8\tH 08-06D\n8\tH 08-06J\n8\tH 08-06K\n8\tH 08-06L\n8\tH 08-06M\n8\tH 08-07A\n8\tH 08-07B\n8\tH 08-07C\n8\tH 08-07D\n8\tH 08-07J\n8\tH 08-07K\n8\tH 08-07L\n8\tH 08-07M\n8\tH 08-08J\n8\tH 08-08K\n8\tH 08-08L\n8\tH 08-08M\n8\tH 08-09J\n8\tH 08-09K\n8\tH 08-09L\n8\tH 08-09M\n8\tH 08-10J\n8\tH 08-10K\n8\tH 08-10L\n8\tH 08-10M\n8\tH 08-11J\n8\tH 08-11K\n8\tH 08-11L\n8\tH 08-11M\n8\tH 08-12J\n8\tH 08-12K\n8\tH 08-12L\n8\tH 08-12M\n9\tI 09-01A\n9\tI 09-01B\n9\tI 09-01D\n9\tI 09-01J\n9\tI 09-01K\n9\tI 09-01L\n9\tI 09-01M\n9\tI 09-01P\n9\tI 09-02A\n9\tI 09-02B\n9\tI 09-02C\n9\tI 09-02D\n9\tI 09-02J\n9\tI 09-02K\n9\tI 09-02L\n9\tI 09-02M\n9\tI 09-03A\n9\tI 09-03B\n9\tI 09-03C\n9\tI 09-03D\n9\tI 09-03J\n9\tI 09-03K\n9\tI 09-03L\n9\tI 09-03M\n9\tI 09-04A\n9\tI 09-04B\n9\tI 09-04C\n9\tI 09-04D\n9\tI 09-04J\n9\tI 09-04K\n9\tI 09-04L\n9\tI 09-04M\n9\tI 09-05A\n9\tI 09-05B\n9\tI 09-05C\n9\tI 09-05D\n9\tI 09-05J\n9\tI 09-05K\n9\tI 09-05L\n9\tI 09-05M\n9\tI 09-06A\n9\tI 09-06B\n9\tI 09-06C\n9\tI 09-06D\n9\tI 09-06J\n9\tI 09-06K\n9\tI 09-06L\n9\tI 09-06M\n9\tI 09-07A\n9\tI 09-07B\n9\tI 09-07C\n9\tI 09-07D\n9\tI 09-07J\n9\tI 09-07K\n9\tI 09-07L\n9\tI 09-07M\n9\tI 09-08J\n9\tI 09-08K\n9\tI 09-08L\n9\tI 09-08M\n9\tI 09-09J\n9\tI 09-09K\n9\tI 09-09L\n9\tI 09-09M\n9\tI 09-10J\n9\tI 09-10K\n9\tI 09-10L\n9\tI 09-10M\n10\tJ 10-01H\n10\tJ 10-01J\n10\tJ 10-01K\n10\tJ 10-01L\n10\tJ 10-01M\n10\tJ 10-01P\n10\tJ 10-02H\n10\tJ 10-02J\n10\tJ 10-02K\n10\tJ 10-02L\n10\tJ 10-02M\n10\tJ 10-02P\n10\tJ 10-03H\n10\tJ 10-03K\n10\tJ 10-03L\n10\tJ 10-03M\n10\tJ 10-03P\n10\tJ 10-04H\n10\tJ 10-04J\n10\tJ 10-04K\n10\tJ 10-04L\n10\tJ 10-04M\n10\tJ 10-04P\n10\tJ 10-05H\n10\tJ 10-05J\n10\tJ 10-05K\n10\tJ 10-05L\n10\tJ 10-05M\n10\tJ 10-05P\n10\tJ 10-06H\n10\tJ 10-06J\n10\tJ 10-06K\n10\tJ 10-06L\n10\tJ 10-06M\n10\tJ 10-06P\n10\tJ 10-07H\n10\tJ 10-07J\n10\tJ 10-07K\n10\tJ 10-07L\n10\tJ 10-07M\n10\tJ 10-07P\n0\tMA01\n0\tMA02\n0\tMA03\n0\tMA04\n0\tMA05\n0\tMA06\n0\tMA07\n0\tMA08\n0\tMA09\n0\tMA10\n0\tMB01\n0\tMB02\n0\tMB03\n0\tMB04\n0\tMB05\n0\tMB06\n0\tMB07\n0\tMB08\n0\tMB09\n0\tMB10\n0\tMC01\n0\tMC02\n0\tMC03\n0\tMC04\n0\tMC05\n0\tMC06\n0\tMC07\n0\tMC08\n0\tMC09\n0\tMC10\n0\tMD01\n0\tMD02\n0\tMD03\n0\tMD04\n0\tMD05\n0\tMD06\n0\tMD07\n0\tMD08\n0\tMD09\n0\tMD10\n0\tME01\n0\tME02\n0\tME03\n0\tME04\n0\tME05\n0\tME06\n0\tME07\n0\tME08\n0\tME09\n0\tME10\n0\tPLT-01\n0\tRB01\n0\tRB02\n0\tRB03\n0\tRB04\n0\tRB05\n0\tRB06\n0\tRB07\n0\tRB08\n0\tRC01\n0\tRC02\n0\tRC03\n0\tRC04\n0\tRC05\n0\tRC06\n0\tRC07\n0\tRC08\n0\tRD01\n0\tRD02\n0\tRD03\n0\tRD04\n0\tRD05\n0\tRD06\n0\tRD07\n0\tRD08\n0\tRE01\n0\tRE02\n0\tRE03\n0\tRE04\n0\tRE05\n0\tRE06\n0\tRE07\n0\tRE08\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E";
 let consolidado=[];
@@ -600,9 +600,15 @@ async function generateConsolidado(){
   const okDesc=findKey(order[0],['Description','Description (eng)','Descripción','Descripcion']);
   const okFrc=getFrcKey(order[0]);
   const okOffer=findKey(order[0],['Oferta','Offer']);
+  const okPage=findKey(order[0],['Page','Página','Pagina']);
   order.forEach(r=>{
     const code=normCode(r[okCode]); if(!code) return;
-    orderMap.set(code,{frc:toNum(r[okFrc]),desc:norm(r[okDesc]),offer:normalizeOffer(okOffer?r[okOffer]:'')});
+    orderMap.set(code,{
+      frc:toNum(r[okFrc]),
+      desc:norm(r[okDesc]),
+      offer:normalizeOffer(okOffer?r[okOffer]:''),
+      page:norm(okPage?r[okPage]:'')
+    });
   });
 
   const ventaMap=new Map();
@@ -634,7 +640,7 @@ async function generateConsolidado(){
   });
 
   const selectedCodes=new Set(grouped.keys());
-  orderMap.forEach((o,code)=>{if(PRIORITY_OFFERS.has(o.offer)||o.offer==='OFFER-NEW')selectedCodes.add(code)});
+  orderMap.forEach((o,code)=>{if(PRIORITY_OFFERS.has(o.offer)||hasPageValue(o.page))selectedCodes.add(code)});
   ventaMap.forEach((v,code)=>{if(Number(v.reserved)>0)selectedCodes.add(code)});
   consolidado=[...selectedCodes].map(code=>{
     const g=grouped.get(code)||{codigo:code,stockPL:0,ubicaciones:[],zona:'FUERA DE PL'};
@@ -651,6 +657,7 @@ async function generateConsolidado(){
       Venta:toNum(v.reserved),
       FRC:toNum(o.frc),
       Oferta:o.offer||'',
+      Page:o.page||'',
       Estado: ubicUnicas.includes('0-0000')?'Revisar ubicación':'OK'
     };
   });
@@ -682,30 +689,60 @@ function isArmado(row){return ARMADOS.has(normCode(row.Código));}
 function isVial(row){return /\bvial\b/i.test(row.Descripción||'')}
 function isPriorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.Oferta))}
 function isNewOffer(row){return normalizeOffer(row.Oferta)==='OFFER-NEW'}
-function isProtectedOffer(row){return isPriorityOffer(row)||isNewOffer(row)}
-function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:motivo}));}
+function isProtectedOffer(row){return isPriorityOffer(row)}
+function hasPageValue(value){const v=norm(value);return v!==''&&v!=='0'&&v!=='-'}
+function hasPage(row){return hasPageValue(row?.Page)}
+function hasReserved(row){return Number(row?.Venta||0)>0}
+// La prioridad de cobertura es estricta: Reserved > Oferta > Page.
+// Page solo gobierna cuando el código no tiene Reserved ni una oferta prioritaria.
+function isOfferCoverage(row){return !hasReserved(row)&&isProtectedOffer(row)}
+function isPageCoverage(row){return !hasReserved(row)&&!isProtectedOffer(row)&&hasPage(row)}
+function pageFrcBand(row){
+  const frc=Number(row?.FRC||0);
+  if(frc>1000)return 'prime';
+  if(frc>=5)return 'secondary';
+  return 'low';
+}
+function hasSuitablePageLocation(row){
+  if(!isPageCoverage(row))return false;
+  const band=pageFrcBand(row),locs=locList(row);
+  if(band==='prime')return locs.some(isPrimeLoc);
+  if(band==='secondary')return locs.some(loc=>isPrimeLoc(loc)||isSecondaryLoc(loc));
+  return locs.some(isLowZoneLoc);
+}
+function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:r.Motivo||motivo}));}
 // Clasificación exclusiva de Acciones PL. El primer grupo que toma un código
 // lo reserva dentro del análisis y evita que aparezca en cualquier grupo posterior.
 function rawIngresarNuevosRows(){
-  return consolidado.filter(r=>isNewOffer(r)&&!currentMainLocation(r)&&!isVial(r));
+  return consolidado.filter(r=>!isVial(r)&&(
+    (isOfferCoverage(r)&&isNewOffer(r)&&!currentMainLocation(r)) ||
+    (isPageCoverage(r)&&pageFrcBand(r)==='secondary'&&!currentMainLocation(r)&&!rowInLowZone(r))
+  )).map(r=>isPageCoverage(r)?({...r,Grupo:'Cobertura Page',Motivo:'Page con FRC 5 a 1000: ingresar a A/D/J/M'}):r);
 }
 function rawVentaMaxRows(){
-  return consolidado.filter(r=>(r.Venta>70||isPriorityOffer(r))&&!hasGoodLoc(r)&&!isVial(r));
+  return consolidado.filter(r=>!isVial(r)&&!hasGoodLoc(r)&&(
+    (hasReserved(r)&&Number(r.Venta||0)>70) ||
+    isOfferCoverage(r) ||
+    (isPageCoverage(r)&&pageFrcBand(r)==='prime')
+  ));
 }
 function rawSacarTRows(){
-  const vendidos=consolidado.filter(r=>rowInLowZone(r)&&r.Venta>0)
+  const vendidos=consolidado.filter(r=>rowInLowZone(r)&&hasReserved(r))
     .sort((a,b)=>b.Venta-a.Venta||b.FRC-a.FRC)
-    .map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T/M/R y tiene venta actual'}));
-  const topFrc=consolidado.filter(r=>rowInLowZone(r)&&r.Venta===0&&(r.FRC>1000||isProtectedOffer(r)))
-    .sort((a,b)=>b.FRC-a.FRC).slice(0,10)
-    .map(r=>({...r,Grupo:'Prioridad comercial / FRC',Motivo:'Está en T/M/R y requiere una mejor posición'}));
-  return [...vendidos,...topFrc];
+    .map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T/M/R y tiene Reserved actual'}));
+  const pageMedium=consolidado.filter(r=>rowInLowZone(r)&&isPageCoverage(r)&&pageFrcBand(r)==='secondary')
+    .sort((a,b)=>b.FRC-a.FRC)
+    .map(r=>({...r,Grupo:'Cobertura Page',Motivo:'Page con FRC 5 a 1000: mover de T/M/R a A/D/J/M'}));
+  const legacyHigh=consolidado.filter(r=>rowInLowZone(r)&&!hasReserved(r)&&!isProtectedOffer(r)&&!hasPage(r)&&r.FRC>1000)
+    .sort((a,b)=>b.FRC-a.FRC)
+    .map(r=>({...r,Grupo:'FRC',Motivo:'Está en T/M/R y requiere una mejor posición por FRC alto'}));
+  return [...vendidos,...pageMedium,...legacyHigh];
 }
 function rawEnviarTRows(){
-  return consolidado.filter(r=>r.Venta===0&&r.FRC>=0&&r.FRC<=4&&!rowHasExcludedEnviarTLoc(r)&&!isArmado(r)&&!isCatalogo(r)&&!isProtectedOffer(r)&&!isVial(r));
+  return consolidado.filter(r=>!hasReserved(r)&&!isProtectedOffer(r)&&r.FRC>=0&&r.FRC<=4&&!rowHasExcludedEnviarTLoc(r)&&!isArmado(r)&&!isCatalogo(r)&&!isVial(r));
 }
 function rawLiberarARows(){
-  return consolidado.filter(r=>hasGoodLoc(r)&&!rowInLowZone(r)&&r.Venta<=10&&r.FRC<=300&&!isProtectedOffer(r)&&!isVial(r));
+  return consolidado.filter(r=>hasGoodLoc(r)&&!rowInLowZone(r)&&r.Venta<=10&&r.FRC<=300&&!isProtectedOffer(r)&&!(isPageCoverage(r)&&pageFrcBand(r)!=='low')&&!isVial(r));
 }
 function getActionBuckets(){
   const assigned=new Set();
@@ -726,7 +763,7 @@ function getIngresarNuevosRows(){return getActionBuckets().nuevos}
 function showConsolidado(){setResult('📋 Consolidado general',consolidado,'Tabla cruzada: Stock PL + Venta Real + FRC.');}
 function runIngresarNuevos(){
   const rows=getIngresarNuevosRows();
-  setResult('🆕 Ingresar nuevos',addMotivo(rows,'Offer-New sin ubicación operativa en la línea'),'Revisión administrativa. Estos códigos no aparecen en ninguna otra clasificación.');
+  setResult('🆕 Ingresar nuevos',addMotivo(rows,'Offer-New sin ubicación operativa en la línea'),'Incluye Offer-New y cobertura Page 5-1000 que aún no tienen posición A/D/J/M. Sin duplicados con otras clasificaciones.');
 }
 function runEnviarT(){
   const rows=getEnviarTRows();
@@ -853,14 +890,14 @@ function locationOccupancy(){
   const map=new Map();consolidado.forEach(row=>locList(row).forEach(loc=>{const key=loc.toUpperCase();if(!map.has(key))map.set(key,[]);map.get(key).push(row)}));return map;
 }
 function planPriority(row){
-  if(Number(row.Venta||0)>70)return 1;
-  if(isPriorityOffer(row))return 2;
-  if(isNewOffer(row))return 3;
+  if(hasReserved(row))return 1;
+  if(isOfferCoverage(row))return 2;
+  if(isPageCoverage(row))return 3;
   if(Number(row.FRC||0)>1000)return 4;
   return 5;
 }
 function createPlanTask(activity,row,origin,destination,motive,dependency='',step=1){
-  return {id:'',activity,step,status:dependency?'bloqueada':'disponible',dependency,dependents:[],code:normCode(row.Código),description:row.Descripción||'',units:Number(row['Stock PL']||0),sale:Number(row.Venta||0),frc:Number(row.FRC||0),offer:row.Oferta||'',origin:origin||'POR DEFINIR',destination:destination||'POR DEFINIR',station:stationFromLoc(destination),motive,operator:'',startedAt:null,completedAt:null,issue:''};
+  return {id:'',activity,step,status:dependency?'bloqueada':'disponible',dependency,dependents:[],code:normCode(row.Código),description:row.Descripción||'',units:Number(row['Stock PL']||0),sale:Number(row.Venta||0),frc:Number(row.FRC||0),offer:row.Oferta||'',page:row.Page||'',origin:origin||'POR DEFINIR',destination:destination||'POR DEFINIR',station:stationFromLoc(destination),motive,operator:'',startedAt:null,completedAt:null,issue:''};
 }
 function generateMovementPlan(){
   if(!consolidado.length)return alert('Primero genera el consolidado.');
@@ -881,21 +918,31 @@ function generateMovementPlan(){
   // ocupada cuando existe demanda prioritaria real que necesita entrar allí.
   const emptyPrime=primeMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>({location:x.location,releaseTask:null}));
   const emptySecondary=secondaryMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>x.location);
-  const incomingPrime=consolidado.filter(r=>!isVial(r)&&(Number(r.Venta||0)>70||isPriorityOffer(r)||isNewOffer(r)||(Number(r.Venta||0)===0&&Number(r.FRC||0)>1000))&&!hasGoodLoc(r));
+  const incomingPrime=consolidado.filter(r=>!isVial(r)&&!hasGoodLoc(r)&&(
+    (hasReserved(r)&&Number(r.Venta||0)>70) ||
+    isOfferCoverage(r) ||
+    (isPageCoverage(r)&&pageFrcBand(r)==='prime') ||
+    (!hasReserved(r)&&!isProtectedOffer(r)&&!hasPage(r)&&Number(r.FRC||0)>1000)
+  ));
   incomingPrime.sort((a,b)=>{
     const aOutside=currentMainLocation(a)?1:0,bOutside=currentMainLocation(b)?1:0;
     return aOutside-bOutside||planPriority(a)-planPriority(b)||demandLoad(b)-demandLoad(a);
   });
   const releaseNeeded=Math.max(0,incomingPrime.length-emptyPrime.length);
   const releaseRows=consolidado
-    .filter(r=>hasGoodLoc(r)&&Number(r.Venta||0)<=10&&Number(r.FRC||0)<=300&&!isProtectedOffer(r)&&!isVial(r))
+    .filter(r=>hasGoodLoc(r)&&Number(r.Venta||0)<=10&&Number(r.FRC||0)<=300&&!isProtectedOffer(r)&&!(isPageCoverage(r)&&pageFrcBand(r)!=='low')&&!isVial(r))
     .sort((a,b)=>Number(a.Venta||0)-Number(b.Venta||0)||Number(a.FRC||0)-Number(b.FRC||0)||Number(a['Stock PL']||0)-Number(b['Stock PL']||0));
   for(const row of releaseRows){
     if(releasedSlots.length>=releaseNeeded)break;
     const origin=locList(row).find(isPrimeLoc);if(!origin)continue;
     let destination='';
-    // Si todavía tiene Reserved, nunca se manda a T: se conserva en línea secundaria.
-    if(emptySecondary.length){
+    // Si Page es la prioridad final y cae en FRC 0-4, su destino correcto es T/M/R.
+    // Para los demás casos, si todavía tiene Reserved nunca se manda a T: se conserva en línea secundaria.
+    if(isPageCoverage(row)&&pageFrcBand(row)==='low'){
+      if(Number(row['Stock PL']||0)<=20&&lowIndex<freeLow.length)destination=freeLow[lowIndex++];
+      else if(tCapacity.length)destination=tCapacity[(tIndex++)%tCapacity.length];
+      else continue;
+    }else if(emptySecondary.length){
       const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
       const chosen=candidates[0];destination=chosen.location;emptySecondary.splice(chosen.index,1);
     }else if(Number(row['Stock PL']||0)<=20&&lowIndex<freeLow.length){
@@ -919,8 +966,8 @@ function generateMovementPlan(){
     if(!primeSlots.length)return;
     primeSlots.sort((a,b)=>(stationCurrent[stationFromLoc(a.location)]||0)-(stationCurrent[stationFromLoc(b.location)]||0));
     const slot=primeSlots.shift(),origin=firstSourceLocation(row),dependency=slot.releaseTask?slot.releaseTask:'';
-    const activity=isNewOffer(row)?'ingresar_nuevo':rowInLowZone(row)?'sacar_baja':'reubicar_prioridad';
-    const motive=Number(row.Venta||0)>70?'Reserved alto; prioridad por venta actual':isPriorityOffer(row)?`${row.Oferta} con prioridad comercial`:'FRC alto sin ubicación prime';
+    const activity=hasReserved(row)?(rowInLowZone(row)?'sacar_baja':'reubicar_prioridad'):isNewOffer(row)?'ingresar_nuevo':rowInLowZone(row)?'sacar_baja':'reubicar_prioridad';
+    const motive=hasReserved(row)?'Reserved alto; prioridad por venta actual':isOfferCoverage(row)?`${row.Oferta} con prioridad comercial`:isPageCoverage(row)?'Cobertura Page con FRC > 1000: requiere B/C/K/L':'FRC alto sin ubicación prime';
     const task=createPlanTask(activity,row,origin,slot.location,motive,'',2);task._dependencyTask=dependency;tasks.push(task);stationCurrent[stationFromLoc(slot.location)]+=demandLoad(row);
   });
 
@@ -930,18 +977,41 @@ function generateMovementPlan(){
     const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);const chosen=candidates[0];if(!chosen)return;
     emptySecondary.splice(chosen.index,1);const task=createPlanTask('sacar_baja',row,firstSourceLocation(row),chosen.location,'Reserved actual requiere presencia en la línea','',3);tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
   });
-  const newRows=consolidado.filter(r=>isNewOffer(r)&&!currentMainLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)&&!['liberar_prime','enviar_t'].includes(t.activity)));
-  newRows.sort((a,b)=>Number(b.Venta||0)-Number(a.Venta||0)||Number(b.FRC||0)-Number(a.FRC||0));
+  const newRows=consolidado.filter(r=>isOfferCoverage(r)&&isNewOffer(r)&&!currentMainLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)&&!['liberar_prime','enviar_t'].includes(t.activity)));
+  newRows.sort((a,b)=>Number(b.FRC||0)-Number(a.FRC||0));
   newRows.forEach(row=>{
     const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
     const chosen=candidates[0];if(!chosen)return;
     emptySecondary.splice(chosen.index,1);const task=createPlanTask('ingresar_nuevo',row,firstSourceLocation(row),chosen.location,'Offer-New: ingreso obligatorio a la línea','',3);tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
   });
 
+  // Page es la cobertura final: solo entra aquí si el código no tuvo Reserved ni Oferta.
+  const pageMediumRows=consolidado.filter(r=>isPageCoverage(r)&&pageFrcBand(r)==='secondary'&&!hasSuitablePageLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)));
+  pageMediumRows.sort((a,b)=>Number(b.FRC||0)-Number(a.FRC||0));
+  pageMediumRows.forEach(row=>{
+    const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
+    const chosen=candidates[0];if(!chosen)return;
+    emptySecondary.splice(chosen.index,1);
+    const activity=rowInLowZone(row)?'sacar_baja':currentMainLocation(row)?'reubicar_prioridad':'ingresar_nuevo';
+    const task=createPlanTask(activity,row,firstSourceLocation(row),chosen.location,'Cobertura Page con FRC 5 a 1000: asignar A/D/J/M','',3);
+    tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
+  });
+
+  const pageLowRows=consolidado.filter(r=>isPageCoverage(r)&&pageFrcBand(r)==='low'&&!hasSuitablePageLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)));
+  pageLowRows.sort((a,b)=>Number(a.FRC||0)-Number(b.FRC||0)||Number(a['Stock PL']||0)-Number(b['Stock PL']||0));
+  pageLowRows.forEach(row=>{
+    let destination='';
+    if(Number(row['Stock PL']||0)<=20&&lowIndex<freeLow.length)destination=freeLow[lowIndex++];
+    else if(tCapacity.length)destination=tCapacity[(tIndex++)%tCapacity.length];
+    if(!destination)return;
+    const task=createPlanTask('enviar_t',row,firstSourceLocation(row),destination,'Cobertura Page con FRC 0 a 4: asignar T/M/R','',3);
+    tasks.push(task);
+  });
+
   tasks.forEach((task,i)=>task.id='mov_'+String(i+1).padStart(4,'0'));
   tasks.forEach(task=>{if(task._dependencyTask){task.dependency=task._dependencyTask.id;task.status='bloqueada';task._dependencyTask.dependents.push(task.id);delete task._dependencyTask}});
   generatedPlan=tasks;stationLoads=stationCurrent;livePlanRows=[...tasks];renderPlanDashboard();
-  planMeta.textContent=`Plan preliminar · ${tasks.length} movimientos · Reserved primero, Oferta segundo, FRC tercero`;
+  planMeta.textContent=`Plan preliminar · ${tasks.length} movimientos · Reserved primero, Oferta segundo, Page tercero`;
   alert(`Plan generado: ${tasks.length} movimientos. Revísalo antes de publicarlo.`);
 }
 async function deletePublishedTasks(){
@@ -981,7 +1051,7 @@ function renderStationBalance(){
 function renderPlanTable(){
   const filter=planStatusFilter.value;const rows=(livePlanRows||[]).filter(x=>filter==='todos'||x.status===filter).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
   if(!rows.length){planTable.innerHTML='<tr><td style="padding:18px">Sin movimientos para este filtro.</td></tr>';return}
-  planTable.innerHTML='<thead><tr><th>Paso</th><th>Actividad</th><th>Código</th><th>Producto</th><th>Reserved</th><th>Oferta</th><th>Origen</th><th>Destino</th><th>Estado</th><th>Operario</th><th>Acción</th></tr></thead><tbody>'+rows.map(x=>`<tr><td>${x.step||''}</td><td>${planActivityLabel(x.activity)}</td><td><b>${escapeHtml(x.code)}</b></td><td>${escapeHtml(shortDesc(x.description))}</td><td><b>${x.sale||0}</b></td><td>${escapeHtml(x.offer||'—')}</td><td>${escapeHtml(x.origin)}</td><td><b>${escapeHtml(x.destination)}</b></td><td><span class="badge ${taskStatusClass(x.status)}">${taskStatusLabel(x.status)}</span></td><td>${escapeHtml(x.operator||'—')}</td><td>${supervisorTaskAction(x)}</td></tr>`).join('')+'</tbody>';
+  planTable.innerHTML='<thead><tr><th>Paso</th><th>Actividad</th><th>Código</th><th>Producto</th><th>Reserved</th><th>Oferta</th><th>Page</th><th>Origen</th><th>Destino</th><th>Estado</th><th>Operario</th><th>Acción</th></tr></thead><tbody>'+rows.map(x=>`<tr><td>${x.step||''}</td><td>${planActivityLabel(x.activity)}</td><td><b>${escapeHtml(x.code)}</b></td><td>${escapeHtml(shortDesc(x.description))}</td><td><b>${x.sale||0}</b></td><td>${escapeHtml(x.offer||'—')}</td><td>${escapeHtml(x.page||'—')}</td><td>${escapeHtml(x.origin)}</td><td><b>${escapeHtml(x.destination)}</b></td><td><span class="badge ${taskStatusClass(x.status)}">${taskStatusLabel(x.status)}</span></td><td>${escapeHtml(x.operator||'—')}</td><td>${supervisorTaskAction(x)}</td></tr>`).join('')+'</tbody>';
 }
 function supervisorTaskAction(task){
   if(task.activity==='ingresar_nuevo'&&task.status==='disponible')return `<button class="primary" onclick="supervisorCompleteAdminTask('${task.id}')">Completar ingreso</button>`;
