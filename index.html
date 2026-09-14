@@ -31,17 +31,18 @@
       color:var(--ori-text);
     }
     .hero{
-      padding:24px 28px 18px;
+      padding:12px 22px 10px;
       background:rgba(234,248,245,.75);
       border-bottom:1px solid rgba(0,168,142,.12);
       position:sticky;top:0;z-index:50;
       backdrop-filter:blur(10px);
     }
     .topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .hero-title-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hero-toggle{padding:8px 12px;border-radius:12px}.hero-details{max-height:90px;opacity:1;overflow:hidden;transition:max-height .22s ease,opacity .18s ease,margin .22s ease}.hero-details.collapsed{max-height:0;opacity:0;margin:0}.hero-details h1{margin-top:14px}
     .pill{border:1px solid var(--ori-soft);background:rgba(255,255,255,.45);padding:10px 18px;border-radius:999px;color:var(--ori-dark);font-weight:800;font-size:13px;letter-spacing:.5px}
     h1{margin:18px 0 6px;font-size:42px;color:var(--ori-green);line-height:1}
     .subtitle{color:var(--ori-muted);margin:0;font-weight:600}
-    .tabs{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+    .tabs{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
     .tab-btn{border:0;border-radius:16px;padding:13px 18px;background:#fff;color:var(--ori-dark);font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
     .tab-btn.active{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}
     main{padding:24px 28px 50px;max-width:1500px;margin:auto}
@@ -158,10 +159,9 @@
   <section class="hero">
     <div class="topline">
       <div class="pill">ORIFLAME - OPERACIONES</div>
-      <div class="pill">Picking Line ABC Control</div>
+      <div class="hero-title-actions"><div class="pill">Picking Line ABC Control</div><button id="heroToggle" class="secondary hero-toggle" onclick="toggleHeroDetails()">Mostrar título</button></div>
     </div>
-    <h1>Picking Line ABC Control</h1>
-    <p class="subtitle">Cambio de línea PL por catálogo · ABC · Zona T · Ubicaciones prime · Faltantes en PL</p>
+    <div id="heroDetails" class="hero-details collapsed"><h1>Picking Line ABC Control</h1><p class="subtitle">Cambio de línea PL por catálogo · ABC · Zona T · Ubicaciones prime · Faltantes en PL</p></div>
     <div class="tabs">
       <button class="tab-btn active" onclick="openTab('carga', this)">📥 Pegar reportes</button>
       <button class="tab-btn" onclick="openTab('acciones', this)">⚙️ Acciones PL</button>
@@ -229,6 +229,7 @@
         <h2>⚙️ Botones de análisis</h2>
         <div class="actions">
           <button class="secondary" onclick="showConsolidado()">📋 Ver consolidado</button>
+          <button class="info" onclick="runIngresarNuevos()">🆕 Ingresar nuevos</button>
           <button class="warning" onclick="runEnviarT()">📤 Enviar a T/M/R</button>
           <button class="info" onclick="runSacarT()">📥 Sacar de T/M/R</button>
           <button class="secondary" onclick="runLiberarA()">🧹 Liberar posiciones prime</button>
@@ -377,6 +378,12 @@ function openTab(id, btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
+}
+function toggleHeroDetails(forceCollapsed){
+  const details=document.getElementById('heroDetails'),button=document.getElementById('heroToggle');if(!details||!button)return;
+  const collapse=typeof forceCollapsed==='boolean'?forceCollapsed:!details.classList.contains('collapsed');
+  details.classList.toggle('collapsed',collapse);button.textContent=collapse?'Mostrar título':'Ocultar título';
+  localStorage.setItem('pl_header_collapsed',collapse?'1':'0');
 }
 function norm(s){return String(s??'').trim();}
 function normCode(s){return norm(s).replace(/\.0$/,'').toUpperCase();}
@@ -677,38 +684,68 @@ function isPriorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.Ofer
 function isNewOffer(row){return normalizeOffer(row.Oferta)==='OFFER-NEW'}
 function isProtectedOffer(row){return isPriorityOffer(row)||isNewOffer(row)}
 function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:motivo}));}
-// Mapa de prioridad entre acciones: un código asignado a Enviar a T
-// ya no puede aparecer también en Liberar ubicaciones A.
-function getEnviarTRows(){
-  return consolidado.filter(r=>r.Venta===0 && r.FRC>=0 && r.FRC<=4 && !rowHasExcludedEnviarTLoc(r) && !isArmado(r) && !isCatalogo(r) && !isProtectedOffer(r) && !isVial(r));
+// Clasificación exclusiva de Acciones PL. El primer grupo que toma un código
+// lo reserva dentro del análisis y evita que aparezca en cualquier grupo posterior.
+function rawIngresarNuevosRows(){
+  return consolidado.filter(r=>isNewOffer(r)&&!currentMainLocation(r)&&!isVial(r));
 }
-function getLiberarARows(){
-  const assignedCodes=new Set(getEnviarTRows().map(r=>normCode(r.Código)));
-  return consolidado.filter(r=>hasGoodLoc(r) && !rowInLowZone(r) && r.Venta<=10 && r.FRC<=300 && !assignedCodes.has(normCode(r.Código)) && !isProtectedOffer(r) && !isVial(r));
+function rawVentaMaxRows(){
+  return consolidado.filter(r=>(r.Venta>70||isPriorityOffer(r))&&!hasGoodLoc(r)&&!isVial(r));
 }
+function rawSacarTRows(){
+  const vendidos=consolidado.filter(r=>rowInLowZone(r)&&r.Venta>0)
+    .sort((a,b)=>b.Venta-a.Venta||b.FRC-a.FRC)
+    .map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T/M/R y tiene venta actual'}));
+  const topFrc=consolidado.filter(r=>rowInLowZone(r)&&r.Venta===0&&(r.FRC>1000||isProtectedOffer(r)))
+    .sort((a,b)=>b.FRC-a.FRC).slice(0,10)
+    .map(r=>({...r,Grupo:'Prioridad comercial / FRC',Motivo:'Está en T/M/R y requiere una mejor posición'}));
+  return [...vendidos,...topFrc];
+}
+function rawEnviarTRows(){
+  return consolidado.filter(r=>r.Venta===0&&r.FRC>=0&&r.FRC<=4&&!rowHasExcludedEnviarTLoc(r)&&!isArmado(r)&&!isCatalogo(r)&&!isProtectedOffer(r)&&!isVial(r));
+}
+function rawLiberarARows(){
+  return consolidado.filter(r=>hasGoodLoc(r)&&!rowInLowZone(r)&&r.Venta<=10&&r.FRC<=300&&!isProtectedOffer(r)&&!isVial(r));
+}
+function getActionBuckets(){
+  const assigned=new Set();
+  const take=rows=>{const result=[];for(const row of rows){const code=normCode(row.Código);if(!code||assigned.has(code))continue;assigned.add(code);result.push(row)}return result};
+  const faltantes=take(getFaltantesRows());
+  const nuevos=take(rawIngresarNuevosRows());
+  const ventaMax=take(rawVentaMaxRows());
+  const sacarT=take(rawSacarTRows());
+  const enviarT=take(rawEnviarTRows());
+  const liberarA=take(rawLiberarARows());
+  return {faltantes,nuevos,ventaMax,sacarT,enviarT,liberarA};
+}
+function getEnviarTRows(){return getActionBuckets().enviarT}
+function getLiberarARows(){return getActionBuckets().liberarA}
+function getSacarTRows(){return getActionBuckets().sacarT}
+function getVentaMaxRows(){return getActionBuckets().ventaMax}
+function getIngresarNuevosRows(){return getActionBuckets().nuevos}
 function showConsolidado(){setResult('📋 Consolidado general',consolidado,'Tabla cruzada: Stock PL + Venta Real + FRC.');}
+function runIngresarNuevos(){
+  const rows=getIngresarNuevosRows();
+  setResult('🆕 Ingresar nuevos',addMotivo(rows,'Offer-New sin ubicación operativa en la línea'),'Revisión administrativa. Estos códigos no aparecen en ninguna otra clasificación.');
+}
 function runEnviarT(){
   const rows=getEnviarTRows();
-  setResult('📤 Enviar a T/M/R',addMotivo(rows,'Venta 0 y FRC 0 a 4; baja rotación'),'Códigos candidatos para salir de la línea. El plan decide T o una posición M/R libre según cantidad.');
+  setResult('📤 Enviar a T/M/R',addMotivo(rows,'Venta 0 y FRC 0 a 4; baja rotación'),'Clasificación exclusiva: estos códigos no aparecen en ninguna otra acción.');
 }
 function runSacarT(){
-  const vendidos=consolidado.filter(r=>rowInLowZone(r) && r.Venta>0).map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T/M/R y tiene venta actual'}));
-  const topFrc=consolidado.filter(r=>rowInLowZone(r) && r.Venta===0 && (r.FRC>1000||isProtectedOffer(r)))
-    .sort((a,b)=>b.FRC-a.FRC)
-    .slice(0,10)
-    .map(r=>({...r,Grupo:'Top 10 FRC sin venta',Motivo:'FRC mayor a 1000 sin venta; revisar salida de T por pronóstico alto'}));
-  setResult('📥 Sacar de T/M/R', [...topFrc, ...vendidos], 'Prioriza venta actual; después ofertas especiales y FRC alto ubicados fuera de la línea principal.');
+  const rows=getSacarTRows();
+  setResult('📥 Sacar de T/M/R',rows,'Prioriza venta actual; excluye códigos ya clasificados como Faltantes, Offer-New o Venta Max.');
 }
 function runLiberarA(){
   const rows=getLiberarARows();
-  setResult('🧹 Liberar posiciones prime',addMotivo(rows,'Candidato de baja rotación; mover solo si su posición se necesita para un producto prioritario'),'El plan conserva los productos en su ubicación actual y libera únicamente las posiciones necesarias. Reserved 0 tiene prioridad de salida.');
+  setResult('🧹 Liberar posiciones prime',addMotivo(rows,'Candidato de baja rotación; mover solo si su posición se necesita'),'Última prioridad: excluye todos los códigos que ya pertenecen a otra acción.');
 }
 function runVentaMax(){
-  const rows=consolidado.filter(r=>(r.Venta>70||isPriorityOffer(r)) && !hasGoodLoc(r) && !isVial(r));
-  setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación B/C/K/L'),'Reserved tiene prioridad; después se consideran Offer-Top, Offer-BO y Offer-Aldeas.');
+  const rows=getVentaMaxRows();
+  setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación B/C/K/L'),'Reserved tiene prioridad; excluye Faltantes y Offer-New para evitar duplicados.');
 }
 function runFaltantesPL(){
-  const rows=getFaltantesRows();
+  const rows=getActionBuckets().faltantes;
   setResult('🚨 Faltantes en PL',rows,'Códigos vendidos/reservados que no existen en la línea PL.');
   updateFaltantesAlert();
 }
@@ -763,7 +800,7 @@ function getFaltantesRows(){
   }));
 }
 function updateFaltantesAlert(){
-  const n=getFaltantesRows().length;
+  const n=getActionBuckets().faltantes.length;
   const btn=document.getElementById('btnFaltantesPL');
   const count=document.getElementById('faltantesCount');
   if(count) count.textContent=n?`(${n})`:'';
@@ -776,24 +813,21 @@ function printResult(){
   if(!currentRows.length){alert('No hay resultado para imprimir.');return;}
   const data=getDisplayedRows(currentRows);
   if(!data.length){alert('No hay resultado visible para imprimir.');return;}
-  const keys=Object.keys(data[0]).filter(k=>k!=='Motivo');
-  const rows=data.map(r=>'<tr>'+keys.map(k=>{
-    const value = k==='Descripción' ? shortDesc(r[k]) : r[k];
-    return `<td>${escapeHtml(value)}</td>`;
-  }).join('')+'</tr>').join('');
+  const keys=['Código','Descripción','Ubicación PL','Stock PL','Venta'];
+  const printValue=(row,key)=>key==='Venta'?(row.Venta??row.Reserved??0):(row[key]??'');
+  const rows=data.map(r=>'<tr>'+keys.map(k=>`<td>${escapeHtml(printValue(r,k))}</td>`).join('')+'</tr>').join('');
   const html=`<html><head><title>${escapeHtml(currentTitle)}</title><style>
-    @page{size:landscape;margin:6mm}
+    @page{size:portrait;margin:8mm}
     *{box-sizing:border-box}
-    body{font-family:Segoe UI,Arial,sans-serif;color:#123c3a;margin:0;font-size:9px}
+    body{font-family:Segoe UI,Arial,sans-serif;color:#123c3a;margin:0;font-size:10px}
     h1{color:#007c70;font-size:18px;margin:0 0 4px}
-    p{color:#496966;margin:0 0 8px;font-size:9px}
-    .meta{font-size:8px;color:#496966;margin-bottom:6px}
-    table{width:100%;border-collapse:collapse;table-layout:auto;font-size:8px}
+    .meta{font-size:9px;color:#496966;margin-bottom:7px}
+    table{width:100%;border-collapse:collapse;table-layout:auto;font-size:9px}
     th{background:#dff5ef;color:#006d62;text-align:left;font-weight:800}
-    th,td{border:1px solid #d7ece7;padding:3px 4px;vertical-align:top;line-height:1.15}
-    td:nth-child(2),th:nth-child(2){max-width:110px}
+    th,td{border:1px solid #d7ece7;padding:4px 5px;vertical-align:top;line-height:1.2}
+    td:nth-child(2),th:nth-child(2){width:42%}
     td{word-break:break-word}
-  </style></head><body><h1>${escapeHtml(currentTitle)}</h1><p>${escapeHtml(resultNote.textContent||'')}</p><div class="meta">Impreso según el orden y filtro visible en pantalla · Registros: ${data.length}</div><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  </style></head><body><h1>${escapeHtml(currentTitle)}</h1><div class="meta">Registros: ${data.length}</div><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
   const w=window.open('', '_blank');
   w.document.write(html);w.document.close();w.focus();w.print();
 }
@@ -1100,13 +1134,14 @@ async function refreshOperatorProgress(){
 }
 
 function updateKpis(){
+  const buckets=getActionBuckets();
   kTotal.textContent=consolidado.length;
-  kT.textContent=getEnviarTRows().length;
-  kOutT.textContent=consolidado.filter(r=>rowInLowZone(r) && (r.Venta>0||isProtectedOffer(r))).length;
-  kLib.textContent=getLiberarARows().length;
-  kMax.textContent=consolidado.filter(r=>(r.Venta>70||isPriorityOffer(r)) && !hasGoodLoc(r) && !isVial(r)).length;
+  kT.textContent=buckets.enviarT.length;
+  kOutT.textContent=buckets.sacarT.length;
+  kLib.textContent=buckets.liberarA.length;
+  kMax.textContent=buckets.ventaMax.length;
 }
-window.addEventListener('load',()=>{if(!txtLocations.value)txtLocations.value=DEFAULT_LOCATIONS;operatorName.value=localStorage.getItem('pl_operator_name')||'';setupRealtime();loadInputs(true);});
+window.addEventListener('load',()=>{if(!txtLocations.value)txtLocations.value=DEFAULT_LOCATIONS;operatorName.value=localStorage.getItem('pl_operator_name')||'';toggleHeroDetails(localStorage.getItem('pl_header_collapsed')!=='0');setupRealtime();loadInputs(true);});
 </script>
 </body>
 </html>
