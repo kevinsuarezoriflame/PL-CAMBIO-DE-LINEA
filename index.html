@@ -111,6 +111,29 @@
     @media print{.hero,.actions,.tabs,input[type="search"],button{display:none!important}.card{box-shadow:none;border:0}.table-wrap{max-height:none;overflow:visible}main{padding:0}body{background:#fff}}
     @media(max-width:1000px){.grid,.kpis,.plan-kpis{grid-template-columns:repeat(2,1fr)}h1{font-size:34px}.hero{position:static}main{padding:16px}.card{padding:14px}.station-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:620px){.profile-grid,.activity-grid,.operator-actions,.plan-kpis,.station-grid{grid-template-columns:1fr}.move-route{grid-template-columns:1fr}.move-arrow{text-align:center;transform:rotate(90deg)}.profile-card{padding:20px}.operator-page{padding:10px}}
+
+    /* Mobile-first operational list */
+    .operator-wrap{max-width:900px}.operator-page{padding-bottom:40px}
+    .operator-page button{touch-action:manipulation}
+    .operator-list-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+    .operator-list-toolbar input{flex:1;min-width:150px;width:100%;font-size:16px}
+    .operator-list{display:grid;gap:12px;max-height:65dvh;overflow:auto;overscroll-behavior:contain;padding:2px 4px 12px}
+    .operator-item{background:#fff;border:1px solid #cfeae3;border-radius:17px;padding:14px;display:grid;gap:10px}
+    .operator-item.is-done{background:#f2faf7;opacity:.75}
+    .operator-item.is-blocked{background:#f8faf9}
+    .operator-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    .operator-item-code{font-size:23px;color:#006f65;font-weight:950;letter-spacing:.2px}
+    .operator-item-desc{font-size:15px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+    .operator-item-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+    .operator-item-place{background:#f4faf8;border-radius:11px;padding:9px;min-width:0;overflow-wrap:anywhere}
+    .operator-item-place small{display:block;font-size:10px;font-weight:800;color:#547c76;margin-bottom:3px}
+    .operator-item-place strong{font-size:16px}
+    .operator-item-actions{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+    .operator-item-actions button{min-height:50px;padding:10px;font-size:14px;white-space:normal}
+    .operator-item-actions button:disabled{opacity:.62;cursor:default;transform:none}
+    .operator-compact-meta{color:#64847e;font-size:12px;font-weight:650}
+    .operator-topline{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    @media(max-width:620px){.operator-head{padding-right:0;margin-top:45px}.operator-card{padding:13px;border-radius:17px}.operator-list{max-height:none;overflow:visible}.operator-item{padding:12px}.operator-item-actions{grid-template-columns:1fr 1fr}.operator-item-actions button{min-height:54px}.operator-page input{min-height:46px}}
   </style>
 </head>
 <body>
@@ -118,7 +141,7 @@
     <div class="profile-box">
       <div class="pill" style="display:inline-block;margin-bottom:16px">ORIFLAME · OPERACIONES</div>
       <h1>Picking Line ABC Control</h1>
-      <p>Selecciona el perfil para planificar o ejecutar el cambio de línea.</p>
+      
       <div class="profile-grid">
         <button class="profile-card" onclick="enterProfile('operator')">
           <span class="profile-icon">👷</span><h2>Operador</h2><p>Selecciona una actividad y ejecuta movimientos asignados desde el celular.</p>
@@ -139,11 +162,11 @@
         <div class="operator-field"><label>Nombre del operario</label><input id="operatorName" type="text" placeholder="Ej: Yuri Correa" oninput="renderActivityAssignments()"></div>
         <h2 style="margin-top:20px">2. Elige una actividad</h2>
         <div class="activity-grid">
-          <button class="activity-btn" data-activity="enviar_t" onclick="selectActivity(this)">📤 <b>Enviar a T/M/R</b><br><small>Mover productos sin Reserved</small><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="sacar_baja" onclick="selectActivity(this)">📥 <b>Sacar de T/M/R</b><br><small>Llevar prioritarios a la línea</small><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="liberar_prime" onclick="selectActivity(this)">🧹 <b>Liberar prime</b><br><small>Mover a posiciones A/D/J/M</small><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="reubicar_prioridad" onclick="selectActivity(this)">🔥 <b>Venta Max</b><br><small>Reubicar venta alta y ofertas</small><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="verificar" onclick="selectActivity(this)">✅ <b>Verificar</b><br><small>Comprobar movimientos terminados</small><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="enviar_t" onclick="selectActivity(this)">📤 <b>Enviar a T/M/R</b><br><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="sacar_baja" onclick="selectActivity(this)">📥 <b>Sacar de T/M/R</b><br><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="liberar_prime" onclick="selectActivity(this)">🧹 <b>Liberar prime</b><br><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="reubicar_prioridad" onclick="selectActivity(this)">🔥 <b>Venta Max</b><br><span class="activity-state">Consultando…</span></button>
+          <button class="activity-btn" data-activity="verificar" onclick="selectActivity(this)">✅ <b>Verificar</b><br><span class="activity-state">Consultando…</span></button>
         </div>
         <button id="startOperatorWork" class="primary" style="width:100%;margin-top:14px" onclick="startOperatorWork()">Tomar actividad</button>
       </div>
@@ -192,7 +215,7 @@
       <div class="card" style="margin-top:18px">
         <h2>🗺️ Maestro de ubicaciones</h2>
         <textarea id="txtLocations" style="height:150px" placeholder="Pega PuestoCaja y ubicación. Las terminaciones P/N se excluyen; estación 10 se reserva para viales."></textarea>
-        <div class="note">Prime: B/C/K/L · Secundarias: A/D/J/M · T admite varios códigos · Cada MA/MB/… y RB/RC/… admite un solo código.</div>
+        <div class="note">Prime: B/C/L estaciones 1–3 · Preferentes con venta: B/C estaciones 4–7 · Secundarias: A/D/J/M estaciones 1–9 · T admite varios códigos · Cada MA/MB/… y RB/RC/… admite un solo código.</div>
       </div>
 
       <div class="card" style="margin-top:18px">
@@ -310,7 +333,8 @@ let activityAssignmentUnsubscribe=null;
 
 const T_LOCS = new Set(['T01A','T01B','T01C','T01D','T02A','T02B','T02C','T03D']);
 const ARMADOS = new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
-const GOOD_ENDINGS = new Set(['B','C','K','L']);
+const GOOD_ENDINGS = new Set(['B','C','L']);
+const PREFERRED_ENDINGS = new Set(['B','C']);
 const SECONDARY_ENDINGS = new Set(['A','D','J','M']);
 const PRIORITY_OFFERS = new Set(['OFFER-NEW','OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
 const OPERATOR_ACTIVITIES = ['enviar_t','sacar_baja','liberar_prime','reubicar_prioridad','verificar'];
@@ -332,12 +356,12 @@ function enterProfile(profile){
   profileLanding.classList.add('hidden');
   operatorShell.classList.toggle('hidden',profile!=='operator');
   supervisorShell.classList.toggle('hidden',profile!=='supervisor');
-  if(profile==='operator'){operatorCloudStatus.textContent='Firebase conectado';subscribeActivityAssignments();refreshOperatorProgress();}
+  if(profile==='operator'){operatorCloudStatus.textContent='';subscribeActivityAssignments();refreshOperatorProgress();}
   if(profile==='supervisor'){subscribeActivityAssignments();loadPlanDashboard();}
 }
 function changeProfile(){
   operatorShell.classList.add('hidden');supervisorShell.classList.add('hidden');profileLanding.classList.remove('hidden');
-  if(operatorTaskUnsubscribe){operatorTaskUnsubscribe();operatorTaskUnsubscribe=null}
+  if(operatorTaskUnsubscribe){operatorTaskUnsubscribe();operatorTaskUnsubscribe=null}stopOperatorList()
 }
 function selectActivity(btn){
   document.querySelectorAll('.activity-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');selectedActivity=btn.dataset.activity;
@@ -675,7 +699,9 @@ function isLowZoneLoc(loc){const l=String(loc||'').trim().toUpperCase();return l
 function isReservedLoc(loc){return ['P','N'].includes(lastLetter(loc))}
 function stationFromLoc(loc){const m=String(loc||'').toUpperCase().match(/\s(0?[1-9]|10)-/);return m?Number(m[1]):0}
 function isStation10(loc){return stationFromLoc(loc)===10}
-function isPrimeLoc(loc){return stationFromLoc(loc)>=1&&stationFromLoc(loc)<=9&&GOOD_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
+function isPrimeLoc(loc){const n=stationFromLoc(loc);return n>=1&&n<=3&&GOOD_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
+function isPreferredSaleLoc(loc){const n=stationFromLoc(loc);return n>=4&&n<=7&&PREFERRED_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
+function hasPreferredSaleLoc(row){return locList(row).some(isPreferredSaleLoc)}
 function isSecondaryLoc(loc){return stationFromLoc(loc)>=1&&stationFromLoc(loc)<=9&&SECONDARY_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
 function excludedEnviarTLoc(loc){
   const l=String(loc||'').trim().toUpperCase().replace(/\s+/g,' ');
@@ -710,7 +736,7 @@ function hasSuitablePageLocation(row){
   if(!isPageCoverage(row))return false;
   const band=pageFrcBand(row),locs=locList(row);
   if(band==='prime')return locs.some(isPrimeLoc);
-  if(band==='secondary')return locs.some(loc=>isPrimeLoc(loc)||isSecondaryLoc(loc));
+  if(band==='secondary')return locs.some(loc=>isPrimeLoc(loc)||isPreferredSaleLoc(loc)||isSecondaryLoc(loc));
   return locs.some(isLowZoneLoc);
 }
 function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:r.Motivo||motivo}));}
@@ -795,7 +821,7 @@ function runLiberarA(){
 }
 function runVentaMax(){
   const rows=getVentaMaxRows();
-  setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación B/C/K/L'),'Reserved tiene prioridad; excluye Faltantes y Offer-New para evitar duplicados.');
+  setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación prime B/C/L de estaciones 1–3'),'Reserved tiene prioridad; excluye Faltantes y Offer-New para evitar duplicados.');
 }
 function runBulkCandidates(){
   const rows=getBulkCandidateRows().map(r=>({...r,Grupo:'Revisión Bulk',Motivo:'Stock PL mayor a 100, sin Reserved, FRC 0 a 4, sin Oferta y sin Page'}));
@@ -884,6 +910,29 @@ function printResult(){
     th,td{border:1px solid #d7ece7;padding:4px 5px;vertical-align:top;line-height:1.2}
     td:nth-child(2),th:nth-child(2){width:42%}
     td{word-break:break-word}
+
+    /* Mobile-first operational list */
+    .operator-wrap{max-width:900px}.operator-page{padding-bottom:40px}
+    .operator-page button{touch-action:manipulation}
+    .operator-list-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+    .operator-list-toolbar input{flex:1;min-width:150px;width:100%;font-size:16px}
+    .operator-list{display:grid;gap:12px;max-height:65dvh;overflow:auto;overscroll-behavior:contain;padding:2px 4px 12px}
+    .operator-item{background:#fff;border:1px solid #cfeae3;border-radius:17px;padding:14px;display:grid;gap:10px}
+    .operator-item.is-done{background:#f2faf7;opacity:.75}
+    .operator-item.is-blocked{background:#f8faf9}
+    .operator-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    .operator-item-code{font-size:23px;color:#006f65;font-weight:950;letter-spacing:.2px}
+    .operator-item-desc{font-size:15px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+    .operator-item-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+    .operator-item-place{background:#f4faf8;border-radius:11px;padding:9px;min-width:0;overflow-wrap:anywhere}
+    .operator-item-place small{display:block;font-size:10px;font-weight:800;color:#547c76;margin-bottom:3px}
+    .operator-item-place strong{font-size:16px}
+    .operator-item-actions{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+    .operator-item-actions button{min-height:50px;padding:10px;font-size:14px;white-space:normal}
+    .operator-item-actions button:disabled{opacity:.62;cursor:default;transform:none}
+    .operator-compact-meta{color:#64847e;font-size:12px;font-weight:650}
+    .operator-topline{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    @media(max-width:620px){.operator-head{padding-right:0;margin-top:45px}.operator-card{padding:13px;border-radius:17px}.operator-list{max-height:none;overflow:visible}.operator-item{padding:12px}.operator-item-actions{grid-template-columns:1fr 1fr}.operator-item-actions button{min-height:54px}.operator-page input{min-height:46px}}
   </style></head><body><h1>${escapeHtml(currentTitle)}</h1><div class="meta">Registros: ${data.length}</div><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
   const w=window.open('', '_blank');
   w.document.write(html);w.document.close();w.focus();w.print();
@@ -926,6 +975,7 @@ function generateMovementPlan(){
   const uniqueMain=[...new Map(master.filter(x=>x.station>=1&&x.station<=9&&!isReservedLoc(x.location)&&!isStation10(x.location)).map(x=>[x.location.toUpperCase(),x])).values()];
   const primeMaster=uniqueMain.filter(x=>isPrimeLoc(x.location));
   const secondaryMaster=uniqueMain.filter(x=>isSecondaryLoc(x.location));
+  const preferredSaleMaster=uniqueMain.filter(x=>isPreferredSaleLoc(x.location));
   const lowUnique=[...new Map(master.filter(x=>/^[MR]/i.test(x.location)).map(x=>[x.location.toUpperCase(),x.location])).values()];
   const tCapacity=master.filter(x=>/^T/i.test(x.location)).map(x=>x.location);
   const freeLow=lowUnique.filter(loc=>!occupancy.has(loc.toUpperCase()));let lowIndex=0,tIndex=0;
@@ -938,6 +988,7 @@ function generateMovementPlan(){
   // ocupada cuando existe demanda prioritaria real que necesita entrar allí.
   const emptyPrime=primeMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>({location:x.location,releaseTask:null}));
   const emptySecondary=secondaryMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>x.location);
+  const emptyPreferredSale=preferredSaleMaster.filter(x=>!occupancy.has(x.location.toUpperCase())).map(x=>x.location);
   const incomingPrime=consolidado.filter(r=>!isVial(r)&&!hasGoodLoc(r)&&(
     (hasReserved(r)&&Number(r.Venta||0)>70) ||
     isOfferCoverage(r) ||
@@ -973,8 +1024,8 @@ function generateMovementPlan(){
       continue;
     }
     const motive=Number(row.Venta||0)>0
-      ?'Se libera una posición B/C/K/L necesaria; el producto conserva presencia en una ubicación secundaria A/D/J/M'
-      :'Sin Reserved y baja rotación; se libera una posición B/C/K/L requerida por un producto prioritario';
+      ?'Se libera prime B/C/L en estaciones 1–3; el producto conserva presencia en ubicación secundaria'
+      :'Sin Reserved y baja rotación; se libera prime B/C/L en estaciones 1–3';
     const releaseActivity=isLowZoneLoc(destination)?'enviar_t':'liberar_prime';
     const task=createPlanTask(releaseActivity,row,origin,destination,motive,'',1);
     tasks.push(task);releasedSlots.push({location:origin,releaseTask:task,row});stationCurrent[stationFromLoc(origin)]-=demandLoad(row);
@@ -987,15 +1038,38 @@ function generateMovementPlan(){
     primeSlots.sort((a,b)=>(stationCurrent[stationFromLoc(a.location)]||0)-(stationCurrent[stationFromLoc(b.location)]||0));
     const slot=primeSlots.shift(),origin=firstSourceLocation(row),dependency=slot.releaseTask?slot.releaseTask:'';
     const activity=hasReserved(row)?(rowInLowZone(row)?'sacar_baja':'reubicar_prioridad'):isNewOffer(row)?'ingresar_nuevo':rowInLowZone(row)?'sacar_baja':'reubicar_prioridad';
-    const motive=hasReserved(row)?'Reserved alto; prioridad por venta actual':isOfferCoverage(row)?`${row.Oferta} con prioridad comercial`:isPageCoverage(row)?'Cobertura Page con FRC > 1000: requiere B/C/K/L':'FRC alto sin ubicación prime';
+    const motive=hasReserved(row)?'Reserved alto; prioridad por venta actual':isOfferCoverage(row)?`${row.Oferta} con prioridad comercial`:isPageCoverage(row)?'Cobertura Page con FRC > 1000: requiere prime B/C/L (estaciones 1–3)':'FRC alto sin ubicación prime';
     const task=createPlanTask(activity,row,origin,slot.location,motive,'',2);task._dependencyTask=dependency;tasks.push(task);stationCurrent[stationFromLoc(slot.location)]+=demandLoad(row);
   });
 
-  const mediumSaleRows=consolidado.filter(r=>!isVial(r)&&!currentMainLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)&&!['liberar_prime','enviar_t'].includes(t.activity))&&((Number(r.Venta||0)>=11&&Number(r.Venta||0)<=70)||(Number(r.Venta||0)>0&&Number(r.FRC||0)>300)));
+  // Segunda prioridad: los códigos con venta positiva que no se movieron a prime
+  // tienen preferencia por B/C en las estaciones 4–7, aunque ya estén en A/D/J/M.
+  // Nunca se crea un segundo movimiento para un código que ya recibió una tarea.
+  const alreadyPlanned=code=>tasks.some(t=>t.code===normCode(code));
+  const mediumSaleRows=consolidado.filter(r=>!isVial(r)&&hasReserved(r)&&!hasGoodLoc(r)&&!hasPreferredSaleLoc(r)&&!alreadyPlanned(r.Código));
   mediumSaleRows.sort((a,b)=>Number(b.Venta||0)-Number(a.Venta||0)||Number(b.FRC||0)-Number(a.FRC||0));
   mediumSaleRows.forEach(row=>{
-    const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);const chosen=candidates[0];if(!chosen)return;
-    emptySecondary.splice(chosen.index,1);const task=createPlanTask('sacar_baja',row,firstSourceLocation(row),chosen.location,'Reserved actual requiere presencia en la línea','',3);tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
+    const candidates=emptyPreferredSale.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
+    const chosen=candidates[0];
+    if(!chosen)return;
+    emptyPreferredSale.splice(chosen.index,1);
+    const origin=currentMainLocation(row)||firstSourceLocation(row);
+    const activity=rowInLowZone(row)&&!currentMainLocation(row)?'sacar_baja':'reubicar_prioridad';
+    const task=createPlanTask(activity,row,origin,chosen.location,'Reserved positivo: ubicar en B/C de estaciones 4–7 para facilitar picking','',3);
+    tasks.push(task);
+    if(stationFromLoc(origin)>=1&&stationFromLoc(origin)<=9)stationCurrent[stationFromLoc(origin)]-=demandLoad(row);
+    stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
+  });
+
+  // Si no existe espacio B/C de estaciones 4–7, los vendidos que están fuera
+  // de la línea pueden ingresar a posiciones secundarias A/D/J/M.
+  const remainingSold=mediumSaleRows.filter(r=>!alreadyPlanned(r.Código)&&!currentMainLocation(r));
+  remainingSold.forEach(row=>{
+    const candidates=emptySecondary.map((location,index)=>({location,index,load:stationCurrent[stationFromLoc(location)]||0})).sort((a,b)=>a.load-b.load);
+    const chosen=candidates[0];if(!chosen)return;
+    emptySecondary.splice(chosen.index,1);
+    const task=createPlanTask('sacar_baja',row,firstSourceLocation(row),chosen.location,'Reserved positivo: alternativa A/D/J/M por falta de espacio en B/C estaciones 4–7','',3);
+    tasks.push(task);stationCurrent[stationFromLoc(chosen.location)]+=demandLoad(row);
   });
   const newRows=consolidado.filter(r=>isOfferCoverage(r)&&isNewOffer(r)&&!currentMainLocation(r)&&!tasks.some(t=>t.code===normCode(r.Código)&&!['liberar_prime','enviar_t'].includes(t.activity)));
   newRows.sort((a,b)=>Number(b.FRC||0)-Number(a.FRC||0));
@@ -1100,7 +1174,7 @@ async function supervisorReleaseActivity(activity){
   const assignment=activityAssignments[activity];if(!assignment||assignment.status!=='asignada')return;
   if(!confirm(`¿Liberar ${planActivityLabel(activity)} asignada a ${assignment.operator||'este operario'}?`))return;
   try{
-    const snap=await PLAN_TASKS_REF.where('activity','==',activity).limit(450).get(),batch=db.batch();
+    const snap=await PLAN_TASKS_REF.where('activity','==',activity).get(),batch=db.batch();
     snap.docs.forEach(doc=>{const data=doc.data();if(data.status==='asignada'&&data.operator===assignment.operator)batch.update(doc.ref,{status:'disponible',operator:'',startedAt:null})});
     batch.set(PLAN_ACTIVITIES_REF.doc(activity),{activity,status:'disponible',operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});await batch.commit();
   }catch(err){console.error(err);alert('No se pudo liberar la actividad.')}
@@ -1108,7 +1182,116 @@ async function supervisorReleaseActivity(activity){
 
 // ---------- OPERADOR MULTIDISPOSITIVO ----------
 async function findAssignedOperatorTask(name,activity){
-  const snap=await PLAN_TASKS_REF.where('activity','==',activity).limit(250).get();return snap.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.status==='asignada'&&sameOperatorName(x.operator,name))||null;
+  const snap=await PLAN_TASKS_REF.where('activity','==',activity).get();
+  return snap.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.status==='asignada'&&sameOperatorName(x.operator,name))||null;
+}
+let operatorActivityRows=[];
+let operatorListFilter='';
+let operatorBusyId='';
+let operatorListUnsubscribe=null;
+let operatorAudioContext=null;
+function playOperatorSuccess(){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    const ctx=operatorAudioContext||(operatorAudioContext=new AC());
+    if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+    const now=ctx.currentTime;
+    for(const [i,hz] of [740,988].entries()){
+      const oscillator=ctx.createOscillator(),gain=ctx.createGain();
+      oscillator.type='sine';oscillator.frequency.value=hz;
+      gain.gain.setValueAtTime(.0001,now+i*.105);
+      gain.gain.exponentialRampToValueAtTime(.13,now+i*.105+.012);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+i*.105+.095);
+      oscillator.connect(gain);gain.connect(ctx.destination);
+      oscillator.start(now+i*.105);oscillator.stop(now+i*.105+.1);
+    }
+  }catch(e){console.warn('Audio no disponible',e)}
+}
+function stopOperatorList(){
+  if(operatorListUnsubscribe){operatorListUnsubscribe();operatorListUnsubscribe=null}
+  operatorActivityRows=[];operatorListFilter='';operatorBusyId='';
+}
+function showOperatorList(){
+  operatorSetup.classList.add('hidden');operatorTaskPanel.classList.remove('hidden');
+  operatorTaskCard.innerHTML=`<div class="operator-topline"><h2 style="margin:0">${escapeHtml(planActivityLabel(selectedActivity))}</h2><button class="secondary" onclick="exitOperatorActivity()">Salir</button></div>
+    <div class="operator-list-toolbar" style="margin-top:12px"><input id="operatorCodeSearch" type="search" placeholder="Buscar código o producto" oninput="operatorListFilter=this.value;renderOperatorItems()"></div>
+    <div id="operatorItems" class="operator-list"></div>`;
+  renderOperatorItems();
+}
+function startOperatorListSubscription(){
+  stopOperatorList();
+  showOperatorList();
+  operatorListUnsubscribe=PLAN_TASKS_REF.where('activity','==',selectedActivity).onSnapshot(snap=>{
+    operatorActivityRows=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
+    renderOperatorItems();refreshOperatorProgressLocal();
+  },err=>{console.error(err);const el=document.getElementById('operatorItems');if(el)el.innerHTML='<div class="empty-state">No se pudo actualizar la lista.</div>'});
+}
+function renderOperatorItems(){
+  const host=document.getElementById('operatorItems');if(!host)return;
+  const q=norm(operatorListFilter).toLocaleLowerCase('es');
+  const rows=operatorActivityRows.filter(x=>!q||String(x.code||'').toLowerCase().includes(q)||String(x.description||'').toLocaleLowerCase('es').includes(q));
+  if(!rows.length){host.innerHTML='<div class="empty-state">Sin códigos para mostrar.</div>';return}
+  host.innerHTML=rows.map(x=>{
+    const done=x.status==='completada',blocked=x.status==='bloqueada',issue=x.status==='novedad';
+    const canAct=!done&&!blocked&&!issue&&!operatorBusyId;
+    const status=done?'Completado':blocked?'Bloqueado':issue?'Novedad':x.status==='asignada'?'En proceso':'Pendiente';
+    const statusColor=done?'b-green':issue?'b-red':blocked?'b-yellow':'b-blue';
+    const actionLabel=done?'Completado':blocked?'Bloqueado':issue?'Con novedad':'Confirmar';
+    return `<article class="operator-item ${done?'is-done':''} ${blocked?'is-blocked':''}">
+      <div class="operator-item-top"><span class="operator-item-code">${escapeHtml(x.code)}</span><span class="badge ${statusColor}">${status}</span></div>
+      <div class="operator-item-desc">${escapeHtml(x.description||'')}</div>
+      <div class="operator-item-route"><div class="operator-item-place"><small>ORIGEN</small><strong>${escapeHtml(x.origin||'—')}</strong></div><span>→</span><div class="operator-item-place"><small>DESTINO</small><strong>${escapeHtml(x.destination||'—')}</strong></div></div>
+      <div class="operator-compact-meta">Cant. ${escapeHtml(x.units??'—')} · Reserved ${escapeHtml(x.sale??0)} · FRC ${escapeHtml(x.frc??0)}</div>
+      <div class="operator-item-actions"><button class="primary" ${canAct?'':'disabled'} onclick="completeOperatorItem('${escapeHtml(x.id)}')">${operatorBusyId===x.id?'Guardando…':actionLabel}</button><button class="warning" ${canAct?'':'disabled'} onclick="reportOperatorItemIssue('${escapeHtml(x.id)}')">Novedad</button></div>
+    </article>`;
+  }).join('');
+}
+function refreshOperatorProgressLocal(){
+  const rows=operatorActivityRows,done=rows.filter(x=>x.status==='completada').length;
+  operatorProgress.textContent=`${done} / ${rows.length} completados`;
+  operatorProgressBar.style.width=(rows.length?Math.round(done/rows.length*100):0)+'%';
+  // Mark an activity complete only when every item has been confirmed.
+  if(rows.length&&done===rows.length&&selectedActivity&&selectedActivity!=='verificar'){
+    const activity=selectedActivity,name=norm(operatorName.value);
+    db.runTransaction(async tx=>{const ref=PLAN_ACTIVITIES_REF.doc(activity),snap=await tx.get(ref);
+      if(snap.exists&&snap.data().status==='asignada'&&sameOperatorName(snap.data().operator,name))tx.update(ref,{status:'completada',completedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    }).catch(console.error);
+  }
+}
+async function completeOperatorItem(id){
+  const task=operatorActivityRows.find(x=>x.id===id);if(!task||operatorBusyId||['completada','bloqueada','novedad'].includes(task.status))return;
+  operatorBusyId=id;renderOperatorItems();
+  try{
+    const name=norm(operatorName.value),activityRef=PLAN_ACTIVITIES_REF.doc(selectedActivity),taskRef=PLAN_TASKS_REF.doc(id);
+    await db.runTransaction(async tx=>{
+      const act=await tx.get(activityRef),fresh=await tx.get(taskRef);
+      if(!act.exists||act.data().status!=='asignada'||!sameOperatorName(act.data().operator,name))throw new Error('actividad_liberada');
+      if(!fresh.exists||!['disponible','asignada'].includes(fresh.data().status))throw new Error('no_disponible');
+      if(fresh.data().status==='asignada'&&!sameOperatorName(fresh.data().operator,name))throw new Error('no_disponible');
+      tx.update(taskRef,{status:'completada',operator:name,startedAt:fresh.data().startedAt||firebase.firestore.FieldValue.serverTimestamp(),completedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      (fresh.data().dependents||[]).forEach(dep=>tx.update(PLAN_TASKS_REF.doc(dep),{status:'disponible'}));
+      addVerificationTaskToBatch(tx,{id,...fresh.data()});
+    });
+    playOperatorSuccess();
+    if(selectedActivity!=='verificar')await reopenVerificationActivity();
+  }catch(err){console.error(err);alert(err.message==='actividad_liberada'?'La actividad fue reasignada.':'No se pudo confirmar el movimiento.');}
+  finally{operatorBusyId='';renderOperatorItems()}
+}
+async function reportOperatorItemIssue(id){
+  const task=operatorActivityRows.find(x=>x.id===id);if(!task||operatorBusyId||['completada','bloqueada','novedad'].includes(task.status))return;
+  const issue=prompt('Describe la novedad');if(!norm(issue))return;
+  operatorBusyId=id;renderOperatorItems();
+  try{
+    const name=norm(operatorName.value);
+    await db.runTransaction(async tx=>{
+      const ref=PLAN_ACTIVITIES_REF.doc(selectedActivity),taskRef=PLAN_TASKS_REF.doc(id);
+      const act=await tx.get(ref),fresh=await tx.get(taskRef);
+      if(!act.exists||act.data().status!=='asignada'||!sameOperatorName(act.data().operator,name))throw new Error('actividad_liberada');
+      if(!fresh.exists||!['disponible','asignada'].includes(fresh.data().status))throw new Error('no_disponible');
+      tx.update(taskRef,{status:'novedad',operator:name,issue:norm(issue),issueAt:firebase.firestore.FieldValue.serverTimestamp()});
+    });
+  }catch(err){console.error(err);alert('No se pudo registrar la novedad.')}
+  finally{operatorBusyId='';renderOperatorItems()}
 }
 async function acquireOperatorActivity(name,activity){
   try{
@@ -1133,95 +1316,21 @@ async function acquireOperatorActivity(name,activity){
   }
 }
 async function startOperatorWork(){
-  const name=norm(operatorName.value);if(!name)return alert('Ingresa tu nombre.');if(!selectedActivity)return alert('Elige una actividad.');
+  const name=norm(operatorName.value);if(!name)return alert('Ingresa tu nombre.');
+  if(!selectedActivity)return alert('Elige una actividad.');
   localStorage.setItem('pl_operator_name',name);
-  if(await acquireOperatorActivity(name,selectedActivity))await takeNextOperatorTask();
-}
-async function takeNextOperatorTask(excludeId=''){
-  const name=norm(operatorName.value);if(!name||!selectedActivity)return false;
-  operatorSetup.classList.add('hidden');operatorTaskPanel.classList.remove('hidden');
-  operatorTaskCard.innerHTML='<div class="empty-state">Buscando el siguiente movimiento de esta etapa…</div>';
-  try{
-    const assignment=await PLAN_ACTIVITIES_REF.doc(selectedActivity).get();
-    if(!assignment.exists||assignment.data().status!=='asignada'||!sameOperatorName(assignment.data().operator,name))throw new Error('actividad_liberada');
-    let assigned=await findAssignedOperatorTask(name,selectedActivity);
-    if(assigned&&assigned.id!==excludeId){currentOperatorTask=assigned;showOperatorTask();return true}
-    const snap=await PLAN_TASKS_REF.where('activity','==',selectedActivity).limit(250).get();
-    const rows=snap.docs.map(d=>({id:d.id,ref:d.ref,...d.data()}));
-    const candidates=rows.filter(x=>x.status==='disponible'&&x.id!==excludeId).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
-    for(const candidate of candidates){
-      try{
-        const claimed=await db.runTransaction(async tx=>{const activityRef=PLAN_ACTIVITIES_REF.doc(selectedActivity),activitySnap=await tx.get(activityRef),fresh=await tx.get(candidate.ref);if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');if(!fresh.exists||fresh.data().status!=='disponible')throw new Error('tomada');tx.update(candidate.ref,{status:'asignada',operator:name,startedAt:firebase.firestore.FieldValue.serverTimestamp()});return {id:fresh.id,...fresh.data(),status:'asignada',operator:name}});
-        currentOperatorTask=claimed;showOperatorTask();return true;
-      }catch(err){if(err.message!=='tomada')throw err}
-    }
-    currentOperatorTask=null;await renderOperatorStageState(rows);return false;
-  }catch(err){
-    if(err.message==='actividad_liberada'){currentOperatorTask=null;selectedActivity='';document.querySelectorAll('.activity-btn').forEach(btn=>btn.classList.remove('active'));operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');alert('La actividad fue liberada o reasignada por el supervisor.');return false}
-    console.error(err);currentOperatorTask=null;
-    operatorTaskCard.innerHTML=`<div class="empty-state"><h3>No se pudo cargar la etapa</h3><p>Revisa la conexión e inténtalo nuevamente.</p><div class="operator-actions"><button class="primary full" onclick="takeNextOperatorTask()">Buscar movimiento</button><button class="secondary full" onclick="exitOperatorActivity()">Cambiar actividad</button></div></div>`;
-    return false;
-  }
-}
-async function renderOperatorStageState(rows){
-  const done=rows.filter(x=>x.status==='completada').length;
-  let finished=rows.length>0&&done===rows.length;
-  if(finished&&selectedActivity==='verificar'){
-    const all=await PLAN_TASKS_REF.get();
-    finished=all.docs.map(d=>d.data()).filter(x=>x.activity!=='verificar').every(x=>x.status==='completada');
-  }
-  if(finished){
-    const name=norm(operatorName.value),activity=selectedActivity,ref=PLAN_ACTIVITIES_REF.doc(activity);
-    await db.runTransaction(async tx=>{const snap=await tx.get(ref);if(snap.exists&&snap.data().status==='asignada'&&sameOperatorName(snap.data().operator,name))tx.set(ref,{status:'completada',completedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})});
-  }
-  const title=finished?'Etapa completada':'Sin movimientos disponibles ahora';
-  const detail=finished?'Todos los movimientos de esta actividad están terminados.':'Puede haber movimientos bloqueados mientras termina una etapa anterior.';
-  const retry=finished?'':`<button class="primary full" onclick="takeNextOperatorTask()">Buscar movimiento disponible</button>`;
-  operatorTaskCard.innerHTML=`<div class="task-step"><span class="badge b-blue">${planActivityLabel(selectedActivity)}</span><span>Etapa</span></div><div class="empty-state"><h3>${title}</h3><p>${detail}</p><p>${done} de ${rows.length} completados</p><div class="operator-actions">${retry}<button class="secondary full" onclick="exitOperatorActivity()">Volver a actividades</button></div></div>`;
-  refreshOperatorProgress();
-}
-function showOperatorTask(){
-  operatorSetup.classList.add('hidden');operatorTaskPanel.classList.remove('hidden');renderOperatorTask();refreshOperatorProgress();
-}
-function renderOperatorTask(){
-  const x=currentOperatorTask;if(!x)return;
-  operatorTaskCard.innerHTML=`<div class="task-step"><span class="badge b-blue">${planActivityLabel(x.activity)}</span><span>Etapa ${x.step||''}</span></div><div class="task-code">${escapeHtml(x.code)}</div><div style="font-weight:800;margin-top:4px">${escapeHtml(x.description||'')}</div><div class="note">${escapeHtml(x.motive||'')}</div><div class="move-route"><div class="move-place"><span>SACAR DE</span><b>${escapeHtml(x.origin)}</b></div><div class="move-arrow">➜</div><div class="move-place"><span>COLOCAR EN</span><b>${escapeHtml(x.destination)}</b></div></div><div class="operator-status" style="margin-bottom:12px">Cantidad PL: <b>${x.units||'Según stock'}</b> · Reserved: <b>${x.sale||0}</b> · FRC: <b>${x.frc||0}</b></div><div class="operator-actions"><button class="primary full" onclick="completeOperatorTask()">Movimiento completado</button><button class="warning" onclick="reportOperatorIssue()">⚠️ Novedad</button><button class="secondary" onclick="exitOperatorActivity()">Cambiar actividad</button></div>`;
-}
-async function completeOperatorTask(){
-  const x=currentOperatorTask;if(!x)return;
-  const button=operatorTaskCard.querySelector('.primary');if(button){button.disabled=true;button.textContent='Guardando movimiento…'}
-  try{
-    const name=norm(operatorName.value),activityRef=PLAN_ACTIVITIES_REF.doc(x.activity),taskRef=PLAN_TASKS_REF.doc(x.id);
-    await db.runTransaction(async tx=>{
-      const activitySnap=await tx.get(activityRef),taskSnap=await tx.get(taskRef);
-      if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');
-      if(!taskSnap.exists||taskSnap.data().status!=='asignada'||!sameOperatorName(taskSnap.data().operator,name))throw new Error('tarea_liberada');
-      tx.update(taskRef,{status:'completada',completedAt:firebase.firestore.FieldValue.serverTimestamp()});(x.dependents||[]).forEach(id=>tx.update(PLAN_TASKS_REF.doc(id),{status:'disponible'}));addVerificationTaskToBatch(tx,x);
-    });
-    if(x.activity!=='verificar')await reopenVerificationActivity();currentOperatorTask=null;await refreshOperatorProgress();await takeNextOperatorTask();
-  }catch(err){
-    if(['actividad_liberada','tarea_liberada'].includes(err.message)){currentOperatorTask=null;operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');selectedActivity='';renderActivityAssignments();return alert('Esta actividad fue liberada por el supervisor.')}
-    console.error(err);alert('No se pudo guardar el movimiento.');renderOperatorTask();
-  }
-}
-async function reportOperatorIssue(){
-  const x=currentOperatorTask;if(!x)return;const issue=prompt('Describe la novedad: producto no encontrado, ubicación ocupada, cantidad diferente, no cabe, etc.');if(!norm(issue))return;
-  try{
-    const name=norm(operatorName.value),activityRef=PLAN_ACTIVITIES_REF.doc(x.activity),taskRef=PLAN_TASKS_REF.doc(x.id);
-    await db.runTransaction(async tx=>{const activitySnap=await tx.get(activityRef),taskSnap=await tx.get(taskRef);if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');if(!taskSnap.exists||taskSnap.data().status!=='asignada')throw new Error('tarea_liberada');tx.update(taskRef,{status:'novedad',issue:norm(issue),issueAt:firebase.firestore.FieldValue.serverTimestamp()})});
-    currentOperatorTask=null;await takeNextOperatorTask();
-  }catch(err){console.error(err);alert('No se pudo enviar la novedad.')}
+  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){operatorAudioContext=operatorAudioContext||new AC();if(operatorAudioContext.state==='suspended')operatorAudioContext.resume().catch(()=>{})}}catch{}
+  if(await acquireOperatorActivity(name,selectedActivity))startOperatorListSubscription();
 }
 async function exitOperatorActivity(){
-  const x=currentOperatorTask,activity=selectedActivity,name=norm(operatorName.value);
-  try{
-    if(activity)await db.runTransaction(async tx=>{const activityRef=PLAN_ACTIVITIES_REF.doc(activity),activitySnap=await tx.get(activityRef),taskRef=x?PLAN_TASKS_REF.doc(x.id):null,taskSnap=taskRef?await tx.get(taskRef):null;if(taskSnap&&taskSnap.exists&&taskSnap.data().status==='asignada'&&sameOperatorName(taskSnap.data().operator,name))tx.update(taskRef,{status:'disponible',operator:'',startedAt:null});if(activitySnap.exists&&activitySnap.data().status==='asignada'&&sameOperatorName(activitySnap.data().operator,name))tx.set(activityRef,{status:'disponible',operator:'',startedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})});
-  }catch(err){console.error(err);return alert('No se pudo liberar la actividad actual.')}
-  currentOperatorTask=null;selectedActivity='';document.querySelectorAll('.activity-btn').forEach(btn=>btn.classList.remove('active'));operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');
+  const activity=selectedActivity,name=norm(operatorName.value);
+  // Exit the screen only: keep exclusive ownership until completed or supervisor releases it.
+  stopOperatorList();selectedActivity='';currentOperatorTask=null;
+  document.querySelectorAll('.activity-btn').forEach(btn=>btn.classList.remove('active'));
+  operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');
+  renderActivityAssignments();
 }
-async function refreshOperatorProgress(){
-  if(!selectedActivity)return;try{const snap=await PLAN_TASKS_REF.get(),rows=snap.docs.map(d=>d.data()).filter(x=>x.activity===selectedActivity),done=rows.filter(x=>x.status==='completada').length;operatorProgress.textContent=`${planActivityLabel(selectedActivity)} · ${done} de ${rows.length} completadas`;operatorProgressBar.style.width=(rows.length?Math.round(done/rows.length*100):0)+'%'}catch{}
-}
+async function refreshOperatorProgress(){refreshOperatorProgressLocal()}
 
 function updateKpis(){
   const buckets=getActionBuckets();
