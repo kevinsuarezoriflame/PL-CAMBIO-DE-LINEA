@@ -1,1715 +1,252 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Picking Line ABC Control</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Picking Line · Listas operativas</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
   <style>
-    :root{
-      --ori-bg:#eaf8f5;
-      --ori-bg2:#dff5ef;
-      --ori-green:#00a88e;
-      --ori-dark:#007c70;
-      --ori-soft:#bdece2;
-      --ori-card:#ffffff;
-      --ori-text:#123c3a;
-      --ori-muted:#6a8581;
-      --danger:#e86666;
-      --warn:#f3b84b;
-      --blue:#4da3ff;
-      --shadow:0 16px 40px rgba(0,92,80,.12);
-      --radius:20px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(135deg,var(--ori-bg),#f8fffd 55%,var(--ori-bg2));
-      color:var(--ori-text);
-    }
-    .hero{
-      padding:12px 22px 10px;
-      background:rgba(234,248,245,.75);
-      border-bottom:1px solid rgba(0,168,142,.12);
-      position:sticky;top:0;z-index:50;
-      backdrop-filter:blur(10px);
-    }
-    .topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-    .hero-title-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hero-toggle{padding:8px 12px;border-radius:12px}.hero-details{max-height:90px;opacity:1;overflow:hidden;transition:max-height .22s ease,opacity .18s ease,margin .22s ease}.hero-details.collapsed{max-height:0;opacity:0;margin:0}.hero-details h1{margin-top:14px}
-    .pill{border:1px solid var(--ori-soft);background:rgba(255,255,255,.45);padding:10px 18px;border-radius:999px;color:var(--ori-dark);font-weight:800;font-size:13px;letter-spacing:.5px}
-    h1{margin:18px 0 6px;font-size:42px;color:var(--ori-green);line-height:1}
-    .subtitle{color:var(--ori-muted);margin:0;font-weight:600}
-    .tabs{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap}
-    .tab-btn{border:0;border-radius:16px;padding:13px 18px;background:#fff;color:var(--ori-dark);font-weight:800;cursor:pointer;box-shadow:var(--shadow)}
-    .tab-btn.active{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}
-    main{padding:24px 28px 50px;max-width:1500px;margin:auto}
-    .tab{display:none}.tab.active{display:block}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-    .card{background:rgba(255,255,255,.88);border:1px solid rgba(0,168,142,.13);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-    .card h2,.card h3{margin:0 0 12px;color:var(--ori-dark)}
-    textarea{width:100%;height:280px;border:1px solid var(--ori-soft);border-radius:16px;padding:14px;resize:vertical;font-family:Consolas,monospace;font-size:13px;outline:none;background:#fbfffe;color:#173d39}
-    textarea:focus{border-color:var(--ori-green);box-shadow:0 0 0 4px rgba(0,168,142,.08)}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    button{border:0;border-radius:14px;padding:12px 15px;font-weight:800;cursor:pointer;transition:.15s;white-space:nowrap}
-    button:hover{transform:translateY(-1px)}
-    .primary{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}
-    .secondary{background:#e7f8f4;color:var(--ori-dark);border:1px solid var(--ori-soft)}
-    .danger{background:#fff1f1;color:#b73535;border:1px solid #ffd0d0}
-    .warning{background:#fff8e7;color:#9b6600;border:1px solid #ffe2a5}
-    .info{background:#eef7ff;color:#1766aa;border:1px solid #cde8ff}
-    .print-btn{width:46px;height:46px;padding:0;border-radius:14px;background:#fff;color:var(--ori-dark);border:1px solid var(--ori-soft);font-size:19px;display:inline-flex;align-items:center;justify-content:center}
-    .print-btn:hover{background:#e7f8f4}
-    .alert-pulse{animation:pulseAlert 1.15s infinite;box-shadow:0 0 0 0 rgba(232,102,102,.55)!important}
-    @keyframes pulseAlert{0%{box-shadow:0 0 0 0 rgba(232,102,102,.65);transform:translateY(0)}70%{box-shadow:0 0 0 10px rgba(232,102,102,0);transform:translateY(-1px)}100%{box-shadow:0 0 0 0 rgba(232,102,102,0);transform:translateY(0)}}
-    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-    .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
-    .kpi{background:#fff;border:1px solid rgba(0,168,142,.13);border-radius:18px;padding:15px;box-shadow:var(--shadow)}
-    .kpi .num{font-size:28px;font-weight:900;color:var(--ori-green)}
-    .kpi .lbl{font-size:12px;color:var(--ori-muted);font-weight:800;text-transform:uppercase}
-    .table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(0,168,142,.14);background:#fff;max-height:560px}
-    table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
-    th{position:sticky;top:0;background:#dff5ef;color:#006d62;text-align:left;padding:10px;border-bottom:1px solid var(--ori-soft);z-index:5;cursor:pointer}
-    td{padding:8px 10px;border-bottom:1px solid #edf5f3;vertical-align:top}
-    tr:hover td{background:#f3fffb}
-    .badge{padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900;display:inline-block}
-    .b-green{background:#e1f7f0;color:#007c70}.b-red{background:#ffeaea;color:#b73535}.b-yellow{background:#fff4d6;color:#9b6600}.b-blue{background:#e8f3ff;color:#1766aa}
-    .note{background:#f6fffc;border:1px dashed var(--ori-soft);padding:13px 15px;border-radius:16px;color:#496966;font-size:14px;margin-top:12px}
-    input[type="search"],input[type="text"],select{border:1px solid var(--ori-soft);border-radius:14px;padding:12px 14px;outline:none;background:#fff;color:var(--ori-text);font:inherit}
-    .hidden{display:none!important}
-
-    .profile-landing{min-height:100dvh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 15% 10%,#c9f4e9,transparent 34%),linear-gradient(135deg,#e8faf5,#fafffe)}
-    .profile-box{width:min(900px,100%);text-align:center}.profile-box h1{margin:0 0 10px}.profile-box>p{color:var(--ori-muted);font-weight:700;margin:0 0 28px}
-    .profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-    .profile-card{padding:28px;border-radius:24px;background:#fff;border:1px solid var(--ori-soft);box-shadow:var(--shadow);cursor:pointer;text-align:left;transition:.18s}
-    .profile-card:hover{transform:translateY(-3px);border-color:var(--ori-green)}.profile-icon{font-size:38px}.profile-card h2{margin:12px 0 6px;color:var(--ori-dark)}.profile-card p{margin:0;color:var(--ori-muted);line-height:1.5}
-    .profile-back{position:fixed;right:18px;top:16px;z-index:80}
-
-    .operator-page{min-height:100dvh;padding:16px;background:linear-gradient(180deg,#e8faf5,#f9fffd)}
-    .operator-wrap{max-width:760px;margin:auto}.operator-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.operator-head h1{font-size:25px;margin:0}.operator-status{font-size:13px;color:var(--ori-muted);font-weight:800}
-    .operator-card{background:#fff;border:1px solid var(--ori-soft);border-radius:22px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
-    .operator-card h2{font-size:20px;margin:0 0 14px;color:var(--ori-dark)}.operator-field{display:grid;gap:6px;margin-bottom:12px}.operator-field label{font-weight:900;font-size:13px;color:var(--ori-muted)}.operator-field input,.operator-field select{width:100%;font-size:16px}
-    .activity-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.activity-btn{white-space:normal;text-align:left;min-height:94px;background:#f6fffc;border:1px solid var(--ori-soft);color:var(--ori-dark)}.activity-btn.active{background:linear-gradient(135deg,var(--ori-green),var(--ori-dark));color:#fff}.activity-btn:disabled{cursor:not-allowed;opacity:.62;background:#eef4f2;color:#667b77;transform:none}.activity-state{display:block;margin-top:7px;font-size:12px;font-weight:900;color:#007c70}.activity-btn.active .activity-state{color:#fff}.activity-btn:disabled .activity-state{color:#667b77}
-    .task-card{border:2px solid var(--ori-green);background:linear-gradient(180deg,#fff,#f6fffc)}.task-step{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}.task-code{font-size:28px;font-weight:950;color:var(--ori-dark)}
-    .move-route{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:14px 0}.move-place{padding:14px;border-radius:16px;border:1px solid var(--ori-soft);background:#fff}.move-place span{display:block;font-size:12px;color:var(--ori-muted);font-weight:900}.move-place b{display:block;font-size:19px;margin-top:4px}.move-arrow{font-size:24px}
-    .operator-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.operator-actions button{font-size:15px;min-height:48px}.operator-actions .full{grid-column:1/-1}.empty-state{text-align:center;padding:24px;color:var(--ori-muted);font-weight:800}
-
-    .plan-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.plan-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:14px 0}.plan-kpi{background:#fff;border:1px solid var(--ori-soft);border-radius:16px;padding:13px}.plan-kpi span{display:block;color:var(--ori-muted);font-size:11px;font-weight:900;text-transform:uppercase}.plan-kpi b{display:block;font-size:24px;color:var(--ori-dark);margin-top:4px}
-    .progress-track{height:12px;background:#dfeeea;border-radius:999px;overflow:hidden}.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--ori-green),#42d5b4);transition:.25s}.station-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.station-card{border:1px solid var(--ori-soft);border-radius:15px;padding:12px;background:#fff}.station-card b{font-size:18px;color:var(--ori-dark)}.station-card span{display:block;color:var(--ori-muted);font-size:12px;margin-top:4px}
-    .status-pending{background:#fff4d6;color:#9b6600}.status-progress{background:#e8f3ff;color:#1766aa}.status-done{background:#e1f7f0;color:#007c70}.status-blocked{background:#eee;color:#666}.status-issue{background:#ffeaea;color:#b73535}
-
-    .syncbar{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;margin-top:14px}
-    .syncbox{background:#fff;border:1px solid rgba(0,168,142,.16);border-radius:18px;padding:13px 15px;box-shadow:var(--shadow)}
-    .syncbox label{display:block;font-size:12px;color:var(--ori-muted);font-weight:900;text-transform:uppercase;margin-bottom:6px}
-    .syncbox input{width:100%;border:1px solid var(--ori-soft);border-radius:12px;padding:10px 12px;outline:none;color:var(--ori-text);font-weight:700}
-    .sync-meta{font-size:13px;color:var(--ori-muted);line-height:1.55;font-weight:700}
-    .online-dot{width:10px;height:10px;border-radius:999px;background:#bbb;display:inline-block;margin-right:6px;vertical-align:middle}
-    .online-dot.ok{background:var(--ori-green);box-shadow:0 0 0 4px rgba(0,168,142,.10)}
-    .online-dot.bad{background:var(--danger);box-shadow:0 0 0 4px rgba(232,102,102,.10)}
-    @media print{.hero,.actions,.tabs,input[type="search"],button{display:none!important}.card{box-shadow:none;border:0}.table-wrap{max-height:none;overflow:visible}main{padding:0}body{background:#fff}}
-    @media(max-width:1000px){.grid,.kpis,.plan-kpis{grid-template-columns:repeat(2,1fr)}h1{font-size:34px}.hero{position:static}main{padding:16px}.card{padding:14px}.station-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:620px){.profile-grid,.activity-grid,.operator-actions,.plan-kpis,.station-grid{grid-template-columns:1fr}.move-route{grid-template-columns:1fr}.move-arrow{text-align:center;transform:rotate(90deg)}.profile-card{padding:20px}.operator-page{padding:10px}}
-
-    /* Mobile-first operational list */
-    .operator-wrap{max-width:900px}.operator-page{padding-bottom:40px}
-    .operator-page button{touch-action:manipulation}
-    .operator-list-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
-    .operator-list-toolbar input{flex:1;min-width:150px;width:100%;font-size:16px}
-    .operator-list{display:grid;gap:12px;max-height:65dvh;overflow:auto;overscroll-behavior:contain;padding:2px 4px 12px}
-    .operator-item{background:#fff;border:1px solid #cfeae3;border-radius:17px;padding:14px;display:grid;gap:10px}
-    .operator-item.is-done{background:#f2faf7;opacity:.75}
-    .operator-item.is-blocked{background:#f8faf9}
-    .operator-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-    .operator-item-code{font-size:23px;color:#006f65;font-weight:950;letter-spacing:.2px}
-    .operator-item-desc{font-size:15px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
-    .operator-item-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
-    .operator-item-place{background:#f4faf8;border-radius:11px;padding:9px;min-width:0;overflow-wrap:anywhere}
-    .operator-item-place small{display:block;font-size:10px;font-weight:800;color:#547c76;margin-bottom:3px}
-    .operator-item-place strong{font-size:16px}
-    .operator-item-actions{display:grid;grid-template-columns:2fr 1fr;gap:8px}
-    .operator-item-actions button{min-height:50px;padding:10px;font-size:14px;white-space:normal}
-    .operator-item-actions button:disabled{opacity:.62;cursor:default;transform:none}
-    .operator-compact-meta{color:#64847e;font-size:12px;font-weight:650}
-    .operator-topline{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    .manual-missing-grid{display:grid;grid-template-columns:1fr 2fr 120px auto;gap:10px}
-    .manual-missing-grid input{min-width:0;width:100%}
-    @media(max-width:720px){.manual-missing-grid{grid-template-columns:1fr 1fr}.manual-missing-grid button{grid-column:1/-1}}
-    @media(max-width:620px){.operator-head{padding-right:0;margin-top:45px}.operator-card{padding:13px;border-radius:17px}.operator-list{max-height:none;overflow:visible}.operator-item{padding:12px}.operator-item-actions{grid-template-columns:1fr 1fr}.operator-item-actions button{min-height:54px}.operator-page input{min-height:46px}}
+    :root{--green:#00a88e;--dark:#007c70;--mint:#e8f8f4;--soft:#c8eee6;--ink:#143d39;--muted:#64817d;--white:#fff;--warn:#f2b84b;--red:#e46767;--blue:#4d9ee8;--shadow:0 12px 34px rgba(0,94,80,.12);--radius:20px}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#eaf8f5,#fafffd 55%,#dff4ef);color:var(--ink);font-family:Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}button,input,select,textarea{font:inherit}button{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}.primary{background:linear-gradient(135deg,var(--green),#008d7d);color:#fff}.secondary{background:#edf9f6;color:var(--dark);border:1px solid var(--soft)}.warning{background:#fff4dd;color:#9a6200;border:1px solid #f5cf83}.danger{background:#fff0f0;color:#b53c3c;border:1px solid #f3c1c1}.info{background:#eaf4ff;color:#236ba7;border:1px solid #bedcf8}.hidden{display:none!important}.pill{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--soft);border-radius:999px;padding:7px 12px;color:var(--dark);font-size:12px;font-weight:900;letter-spacing:.4px}.landing{min-height:100vh;display:grid;place-items:center;padding:22px}.landing-box{width:min(820px,100%);background:rgba(255,255,255,.92);border:1px solid var(--soft);border-radius:28px;padding:30px;box-shadow:var(--shadow)}h1,h2,h3{margin:0;color:var(--dark)}.landing h1{font-size:clamp(27px,5vw,44px);margin:10px 0 22px}.profiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}.profile{background:#f8fffd;border:1px solid var(--soft);border-radius:20px;padding:25px;text-align:left;color:var(--ink)}.profile span{font-size:38px;display:block;margin-bottom:10px}.profile p{color:var(--muted);line-height:1.45}.shell{min-height:100vh}.topbar{position:sticky;top:0;z-index:20;background:rgba(234,248,245,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--soft);padding:12px 18px}.topbar-inner{max-width:1320px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{display:flex;align-items:center;gap:10px}.brand b{font-size:20px;color:var(--dark)}.status{font-size:12px;font-weight:800;color:var(--muted)}main{max-width:1320px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:4px;margin-bottom:16px}.tab-btn{white-space:nowrap;background:#fff;color:var(--dark);border:1px solid var(--soft)}.tab-btn.active{background:var(--green);color:#fff}.tab{display:none}.tab.active{display:block}.card{background:rgba(255,255,255,.96);border:1px solid var(--soft);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.input-card textarea{width:100%;height:270px;margin-top:12px;border:1px solid var(--soft);border-radius:14px;padding:12px;resize:vertical;color:var(--ink);background:#fbfffe}.input-card small,.note{color:var(--muted);line-height:1.4}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.actions{display:flex;gap:9px;flex-wrap:wrap}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}.metric{background:#f5fcfa;border:1px solid var(--soft);border-radius:16px;padding:14px}.metric b{display:block;font-size:26px;color:var(--dark)}.metric span{font-size:12px;color:var(--muted);font-weight:800}.activity-admin{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px}.activity-card{background:#fff;border:1px solid var(--soft);border-radius:18px;padding:15px;display:grid;gap:10px}.activity-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.activity-card h3{font-size:16px}.activity-count{font-size:26px;font-weight:950;color:var(--dark)}.badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900}.b-off{background:#edf1f0;color:#62716f}.b-on{background:#dff8ee;color:#087459}.b-assigned{background:#e5f1ff;color:#286aa0}.b-done{background:#e6f8e4;color:#347130}.list-controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.list-controls select,.list-controls input,.operator-field input{border:1px solid var(--soft);border-radius:14px;padding:12px;background:#fff;color:var(--ink)}.list-controls input{flex:1;min-width:200px}.table-wrap{overflow:auto;max-height:62vh;border:1px solid var(--soft);border-radius:15px}table{border-collapse:collapse;width:100%;font-size:13px;background:#fff}th,td{padding:10px;border-bottom:1px solid #e4f1ee;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#e5f7f2;color:var(--dark);z-index:1}td:nth-child(2){white-space:normal;min-width:240px}.operator-page{max-width:760px;margin:auto;padding:12px 12px 36px}.operator-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:8px 0 14px}.operator-card{background:#fff;border:1px solid var(--soft);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.operator-field{display:grid;gap:7px;margin:14px 0}.operator-field label{font-size:12px;font-weight:900;color:var(--muted)}.operator-field input{width:100%;font-size:17px;min-height:50px}.operator-activities{display:grid;grid-template-columns:1fr 1fr;gap:10px}.operator-activity{min-height:92px;background:#f7fdfb;border:1px solid var(--soft);text-align:left;color:var(--dark)}.operator-activity.selected{background:var(--green);color:#fff}.operator-activity small{display:block;margin-top:5px;opacity:.82}.operator-list-head{position:sticky;top:8px;z-index:15;background:rgba(234,248,245,.96);backdrop-filter:blur(10px);padding:8px 0 10px}.operator-search{width:100%;border:1px solid var(--soft);border-radius:14px;padding:13px;font-size:16px;margin-top:9px}.operator-list{display:grid;gap:10px}.product-card{background:#fff;border:1px solid var(--soft);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(0,94,80,.08);display:grid;gap:10px}.product-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.code{font-size:24px;font-weight:950;color:var(--dark)}.description{font-weight:800;line-height:1.35;overflow-wrap:anywhere}.location{background:#eff9f6;border-radius:12px;padding:10px;color:var(--dark);font-size:15px;font-weight:850}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.fact{background:#f7fbfa;border:1px solid #e0efec;border-radius:10px;padding:8px;min-width:0}.fact span{display:block;font-size:9px;color:var(--muted);font-weight:900;text-transform:uppercase}.fact b{display:block;margin-top:3px;font-size:14px;overflow-wrap:anywhere}.complete{width:100%;min-height:50px;font-size:16px}.empty{text-align:center;padding:26px;color:var(--muted);font-weight:800}.progress{height:9px;background:#dcebe8;border-radius:999px;overflow:hidden}.progress>div{height:100%;background:var(--green);width:0;transition:.2s}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:#103f3a;color:#fff;padding:12px 18px;border-radius:14px;z-index:100;font-weight:800;transition:.25s;box-shadow:var(--shadow)}.toast.show{transform:translateX(-50%) translateY(0)}
+    @media(max-width:850px){.grid3{grid-template-columns:1fr}.input-card textarea{height:190px}.profiles{grid-template-columns:1fr}}
+    @media(max-width:560px){main{padding:12px}.topbar{padding:9px 10px}.brand b{font-size:16px}.status{max-width:120px;text-align:right}.card{padding:14px;border-radius:17px}.operator-activities{grid-template-columns:1fr 1fr}.operator-activity{padding:11px;min-height:86px}.facts{grid-template-columns:1fr 1fr}.product-card{padding:13px}.code{font-size:22px}.location{font-size:14px}.toolbar>.actions{width:100%}.toolbar>.actions button{flex:1}}
   </style>
 </head>
 <body>
-  <section id="profileLanding" class="profile-landing">
-    <div class="profile-box">
-      <div class="pill" style="display:inline-block;margin-bottom:16px">ORIFLAME · OPERACIONES</div>
-      <h1>Picking Line ABC Control</h1>
-      
-      <div class="profile-grid">
-        <button class="profile-card" onclick="enterProfile('operator')">
-          <span class="profile-icon">👷</span><h2>Operador</h2><p>Selecciona una actividad y ejecuta movimientos asignados desde el celular.</p>
-        </button>
-        <button class="profile-card" onclick="enterProfile('supervisor')">
-          <span class="profile-icon">🔒</span><h2>Supervisor</h2><p>Carga reportes, genera el plan, distribuye tareas y controla el avance.</p>
-        </button>
+  <section id="landing" class="landing">
+    <div class="landing-box">
+      <span class="pill">ORIFLAME · OPERACIONES</span>
+      <h1>Picking Line · Listas operativas</h1>
+      <div class="profiles">
+        <button class="profile" onclick="enterMode('operator')"><span>👷</span><h2>Operario</h2><p>Elige una actividad habilitada, revisa la lista y completa los códigos.</p></button>
+        <button class="profile" onclick="enterMode('supervisor')"><span>⚙️</span><h2>Supervisor</h2><p>Carga reportes, publica las listas y habilita cada actividad.</p></button>
       </div>
     </div>
   </section>
 
-  <section id="operatorShell" class="operator-page hidden">
-    <button class="secondary profile-back" onclick="changeProfile()">↩ Cambiar perfil</button>
-    <div class="operator-wrap">
-      <div class="operator-head"><div><div class="pill" style="display:inline-block;margin-bottom:8px">MODO OPERADOR</div><h1>📦 Cambio de línea</h1></div><div id="operatorCloudStatus" class="operator-status">Conectando…</div></div>
-      <div id="operatorSetup" class="operator-card">
-        <h2>1. Identifícate</h2>
-        <div class="operator-field"><label>Nombre del operario</label><input id="operatorName" type="text" placeholder="Ej: Yuri Correa" oninput="renderActivityAssignments()"></div>
-        <h2 style="margin-top:20px">2. Elige una actividad</h2>
-        <div class="activity-grid">
-          <button class="activity-btn" data-activity="enviar_t" onclick="selectActivity(this)">📤 <b>Mandar a estaciones T</b><br><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="bajar_venta" onclick="selectActivity(this)">📦 <b>Bajar venta normal</b><br><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="faltantes_pl" onclick="selectActivity(this)">🚨 <b>Faltantes en PL</b><br><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="sacar_baja" onclick="selectActivity(this)">📥 <b>Sacar de T/M/R</b><br><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="liberar_prime" onclick="selectActivity(this)">🧹 <b>Liberar prime</b><br><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="reubicar_prioridad" onclick="selectActivity(this)">🔥 <b>Venta Max</b><br><span class="activity-state">Consultando…</span></button>
-          <button class="activity-btn" data-activity="verificar" onclick="selectActivity(this)">✅ <b>Verificar</b><br><span class="activity-state">Consultando…</span></button>
+  <section id="supervisorShell" class="shell hidden">
+    <header class="topbar"><div class="topbar-inner"><div class="brand"><button class="secondary" onclick="backHome()">←</button><b>📦 Picking Line</b></div><span id="supervisorCloud" class="status">Conectando…</span></div></header>
+    <main>
+      <nav class="tabs">
+        <button class="tab-btn active" onclick="openTab('loadTab',this)">Cargar reportes</button>
+        <button class="tab-btn" onclick="openTab('controlTab',this)">Control de actividades</button>
+        <button class="tab-btn" onclick="openTab('listsTab',this)">Revisar listas</button>
+      </nav>
+
+      <section id="loadTab" class="tab active">
+        <div class="grid3">
+          <article class="card input-card"><h2>Order Lite / FRC</h2><textarea id="orderInput" placeholder="Code, Description, FRC, Oferta y Page"></textarea><small>Prioridad: Reserved → Oferta → Page.</small></article>
+          <article class="card input-card"><h2>Venta / Reserved</h2><textarea id="saleInput" placeholder="Código Producto, Descripción y Reserved"></textarea><small>Reserved se utiliza como venta actual.</small></article>
+          <article class="card input-card"><h2>Stock PL</h2><textarea id="stockInput" placeholder="Variante, Caja y Physical Quantity"></textarea><small>Caja corresponde a la ubicación actual en PL.</small></article>
         </div>
-        <button id="startOperatorWork" class="primary" style="width:100%;margin-top:14px" onclick="startOperatorWork()">Tomar actividad</button>
-      </div>
-      <div id="operatorTaskPanel" class="hidden">
-        <div id="operatorTaskCard" class="operator-card task-card"></div>
-        <div class="operator-card"><div class="operator-status" id="operatorProgress">Sin actividad</div><div class="progress-track" style="margin-top:8px"><div id="operatorProgressBar" class="progress-bar"></div></div></div>
-      </div>
-    </div>
+        <article class="card" style="margin-top:14px">
+          <div class="toolbar"><div><h2>Generar listas</h2><p class="note">No se recomendarán destinos ni códigos. Solo se crearán listas por actividad.</p></div><div class="actions"><button class="primary" onclick="generateLists()">Generar listas</button><button id="publishBtn" class="warning" onclick="publishLists()" disabled>Publicar carga</button></div></div>
+          <div id="localSummary" class="summary"></div>
+        </article>
+      </section>
+
+      <section id="controlTab" class="tab">
+        <article class="card">
+          <div class="toolbar"><div><h2>Control de actividades</h2><p class="note">Cada actividad se habilita de forma independiente y puede ser trabajada simultáneamente por varios operarios.</p></div><button class="secondary" onclick="refreshAdmin()">Actualizar</button></div>
+          <div id="activityAdmin" class="activity-admin" style="margin-top:14px"><div class="empty">Sin carga publicada.</div></div>
+        </article>
+      </section>
+
+      <section id="listsTab" class="tab">
+        <article class="card">
+          <div class="toolbar"><div><h2>Listados</h2><p class="note">Todas las listas, incluyendo Candidatos a Bulk, pueden habilitarse para los operarios.</p></div><div class="actions"><button class="secondary" onclick="copyVisibleList()">Copiar</button><button class="primary" onclick="downloadVisibleList()">Descargar Excel</button></div></div>
+          <div class="list-controls"><select id="listSelect" onchange="renderSupervisorList()"></select><input id="supervisorSearch" type="search" placeholder="Buscar código, descripción o ubicación" oninput="renderSupervisorList()"></div>
+          <div class="table-wrap"><table id="supervisorTable"></table></div>
+        </article>
+      </section>
+    </main>
   </section>
 
-  <div id="supervisorShell" class="hidden">
-  <button class="secondary profile-back" onclick="changeProfile()">↩ Cambiar perfil</button>
-  <section class="hero">
-    <div class="topline">
-      <div class="pill">ORIFLAME - OPERACIONES</div>
-      <div class="hero-title-actions"><div class="pill">Picking Line ABC Control</div><button id="heroToggle" class="secondary hero-toggle" onclick="toggleHeroDetails()">Mostrar título</button></div>
-    </div>
-    <div id="heroDetails" class="hero-details collapsed"><h1>Picking Line ABC Control</h1><p class="subtitle">Cambio de línea PL por catálogo · ABC · Zona T · Ubicaciones prime · Faltantes en PL</p></div>
-    <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('carga', this)">📥 Pegar reportes</button>
-      <button class="tab-btn" onclick="openTab('acciones', this)">⚙️ Acciones PL</button>
-      <button class="tab-btn" onclick="openTab('plan', this);loadPlanDashboard()">🗺️ Plan de cambio</button>
-      <button class="tab-btn" onclick="openTab('maestroFinal', this);renderFinalMaster()">📋 Maestro final PL</button>
+  <section id="operatorShell" class="hidden">
+    <div class="operator-page">
+      <div class="operator-head"><button class="secondary" onclick="backHome()">← Inicio</button><span id="operatorCloud" class="status">Conectando…</span></div>
+      <article id="operatorSetup" class="operator-card">
+        <span class="pill">MODO OPERARIO</span>
+        <h2 style="margin-top:12px">Elige una actividad</h2>
+        <div class="operator-field"><label>Nombre del operario</label><input id="operatorName" autocomplete="name" placeholder="Ej: Yuri Correa"></div>
+        <div id="operatorActivities" class="operator-activities"><div class="empty">Consultando actividades…</div></div>
+        <button id="takeActivityBtn" class="primary" style="width:100%;margin-top:14px" onclick="takeActivity()" disabled>Tomar actividad</button>
+      </article>
+
+      <section id="operatorWork" class="hidden">
+        <div class="operator-list-head">
+          <article class="operator-card" style="padding:13px">
+            <div class="toolbar"><div><h2 id="operatorActivityTitle">Actividad</h2><div id="operatorProgressText" class="status"></div></div><button class="secondary" onclick="leaveActivityView()">Volver</button></div>
+            <div class="progress" style="margin-top:9px"><div id="operatorProgressBar"></div></div>
+            <input id="operatorSearch" class="operator-search" type="search" placeholder="Buscar código o producto" oninput="renderOperatorList()">
+          </article>
+        </div>
+        <div id="operatorList" class="operator-list"></div>
+      </section>
     </div>
   </section>
-
-  <main>
-    <section id="carga" class="tab active">
-      <div class="grid">
-        <div class="card">
-          <h2>📄 Order Lite / FRC</h2>
-          <textarea id="txtOrder" placeholder="Pega aquí Code, Description, FRC y Oferta..."></textarea>
-          <div class="note">Oferta reconoce Offer-New, Offer-Top, Offer-BO y Offer-Aldeas. La prioridad principal continúa siendo Reserved.</div>
-        </div>
-        <div class="card">
-          <h2>📊 Venta Real / Reserved</h2>
-          <textarea id="txtVenta" placeholder="Pega aquí el reporte de venta real. Debe contener Código Producto, Descripción y Reserved..."></textarea>
-          <div class="note">Reserved será usado como venta real. Más de 70 = venta alta.</div>
-        </div>
-        <div class="card">
-          <h2>📦 Stock PL</h2>
-          <textarea id="txtStock" placeholder="Pega aquí el stock PL. Debe contener Variante, Caja y Physical Quantity..."></textarea>
-          <div class="note">Variante = código, Caja = ubicación PL, Physical Quantity = stock.</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:18px">
-        <h2>🗺️ Maestro de ubicaciones</h2>
-        <textarea id="txtLocations" style="height:150px" placeholder="Pega PuestoCaja y ubicación. Las terminaciones P/N se excluyen; estación 10 se reserva para viales."></textarea>
-        <div class="note">Prime: B/C/L estaciones 1–3 · Venta normal: B/C estaciones 4–7 · Venta baja: A/D/J/K/M estaciones 1–9 · La liberación evalúa las tres clases de ubicaciones según la necesidad de espacio · T admite varios códigos · Cada MA/MB/… y RB/RC/… admite un solo código.</div>
-      </div>
-
-      <div class="card" style="margin-top:18px">
-        <div class="syncbar">
-          <div class="syncbox">
-            <label>Responsable de actualización</label>
-            <input id="txtUsuario" type="text" placeholder="Ej: Kevin, María, Luisa..." />
-          </div>
-          <div class="syncbox sync-meta">
-            <div><span id="cloudDot" class="online-dot"></span><span id="cloudStatus">Conectando con Firebase...</span></div>
-            <div>Última actualización: <span id="lastUpdate">Sin registro</span></div>
-            <div>Responsable: <span id="lastUser">Sin registro</span></div>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="primary" onclick="generateConsolidado()">✅ Generar consolidado</button>
-          <button class="secondary" onclick="saveInputs(true)">☁️ Guardar en nube</button>
-          <button class="warning" onclick="loadInputs(false)">🔄 Sincronizar nube</button>
-          <button class="danger" onclick="clearAll()">🗑️ Limpiar nube</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="acciones" class="tab">
-      <div class="kpis">
-        <div class="kpi"><div class="num" id="kTotal">0</div><div class="lbl">Consolidado</div></div>
-        <div class="kpi"><div class="num" id="kT">0</div><div class="lbl">Mover baja venta</div></div>
-        <div class="kpi"><div class="num" id="kOutT">0</div><div class="lbl">Sacar de T/M/R</div></div>
-        <div class="kpi"><div class="num" id="kLib">0</div><div class="lbl">Liberar prime</div></div>
-        <div class="kpi"><div class="num" id="kMax">0</div><div class="lbl">Venta Max</div></div>
-        <div class="kpi"><div class="num" id="kBulk">0</div><div class="lbl">Candidatos a Bulk</div></div>
-      </div>
-
-      <div class="card">
-        <h2>⚙️ Botones de análisis</h2>
-        <div class="actions">
-          <button class="secondary" onclick="showConsolidado()">📋 Ver consolidado</button>
-          <button class="info" onclick="runIngresarNuevos()">🆕 Ingresar nuevos</button>
-          <button class="warning" onclick="runEnviarT()">📤 Mandar a estaciones T</button>
-          <button class="info" onclick="runSacarT()">📥 Sacar de T/M/R</button>
-          <button class="secondary" onclick="runLiberarA()">🧹 Liberar posiciones prime</button>
-          <button class="primary" onclick="runVentaMax()">🔥 Venta Max</button>
-          <button class="warning" onclick="runBulkCandidates()">📦 Candidatos a Bulk</button>
-          <button class="danger" id="btnFaltantesPL" onclick="runFaltantesPL()">🚨 Faltantes en PL <span id="faltantesCount"></span></button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:18px">
-        <div class="toolbar"><h3>🚨 Faltantes en PL · Alta manual</h3><button class="secondary" onclick="runFaltantesPL()">Ver faltantes</button></div>
-        <div class="manual-missing-grid">
-          <input id="missingCode" type="text" placeholder="Código" aria-label="Código nuevo" />
-          <input id="missingDesc" type="text" placeholder="Descripción" aria-label="Descripción del producto" />
-          <input id="missingReserved" type="number" min="1" step="1" placeholder="Reserved" aria-label="Reserved" />
-          <button class="primary" onclick="addManualMissing()">+ Agregar</button>
-        </div>
-        <div id="manualMissingRows" class="sync-meta" style="margin-top:10px">Sin registros manuales.</div>
-        <div class="sync-meta" style="margin-top:5px">Las altas se incluirán en el próximo plan generado. No modifican un plan publicado en ejecución.</div>
-      </div>
-      <div class="card" style="margin-top:18px">
-        <div class="toolbar">
-          <div>
-            <h3 id="resultTitle">Resultado</h3>
-            <div class="note" id="resultNote">Genera el consolidado y luego selecciona una acción.</div>
-          </div>
-          <div class="actions">
-            <input type="search" id="searchBox" placeholder="Buscar en resultado..." oninput="renderTable(currentRows)" />
-            <button class="print-btn" title="Imprimir resultado" onclick="printResult()">🖨️</button>
-            <button class="secondary" onclick="copyResult()">📋 Copiar tabla</button>
-            <button class="primary" onclick="downloadExcel()">📥 Descargar Excel</button>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table id="resultTable"></table>
-        </div>
-      </div>
-    </section>
-
-    <section id="plan" class="tab">
-      <div class="card">
-        <div class="toolbar">
-          <div><h2>🗺️ Plan operativo de cambio</h2><div class="note">Calcula primero el destino final y publica tareas dependientes para los celulares.</div></div>
-          <div class="plan-toolbar"><button class="primary" onclick="generateMovementPlan()">⚙️ Generar plan</button><button class="secondary" onclick="publishMovementPlan()">📲 Publicar para operadores</button><button class="warning" onclick="loadPlanDashboard()">🔄 Actualizar</button></div>
-        </div>
-        <div class="plan-kpis">
-          <div class="plan-kpi"><span>Total movimientos</span><b id="planTotal">0</b></div>
-          <div class="plan-kpi"><span>Disponibles</span><b id="planAvailable">0</b></div>
-          <div class="plan-kpi"><span>En proceso</span><b id="planProgress">0</b></div>
-          <div class="plan-kpi"><span>Completados</span><b id="planDone">0</b></div>
-          <div class="plan-kpi"><span>Bloqueados</span><b id="planBlocked">0</b></div>
-          <div class="plan-kpi"><span>Novedades</span><b id="planIssues">0</b></div>
-        </div>
-        <div class="progress-track"><div id="planProgressBar" class="progress-bar"></div></div>
-      </div>
-      <div class="card" style="margin-top:18px"><h3>👥 Responsables por actividad</h3><div id="activityAssignmentsPanel" class="station-grid"><div class="empty-state">Publica un plan para asignar las actividades.</div></div></div>
-      <div class="card" style="margin-top:18px"><h3>⚖️ Carga proyectada por estación</h3><div id="stationBalance" class="station-grid"><div class="empty-state">Genera un plan para calcular el balance.</div></div></div>
-      <div class="card" style="margin-top:18px">
-        <div class="toolbar">
-          <div><h3>🔎 Conciliación Acciones PL ↔ Plan</h3><div class="note" id="reconcileMeta">Genera el plan para conciliar los códigos candidatos y los movimientos asignados.</div></div>
-          <div class="actions"><button class="secondary" onclick="copyPlanReconciliation()">📋 Copiar reporte</button><button class="primary" onclick="downloadPlanReconciliation()">📥 Descargar Excel</button></div>
-        </div>
-        <div class="table-wrap"><table id="reconcileSummaryTable"></table></div>
-        <h3 style="margin-top:16px">Códigos pendientes o sin cambio requerido</h3>
-        <div class="table-wrap" style="max-height:340px;overflow:auto"><table id="reconcilePendingTable"></table></div>
-        <div class="note">Bulk se revisa aparte y no se cuenta como movimiento. Los productos sin cambio permanecen en el maestro final.</div>
-      </div>
-      <div class="card" style="margin-top:18px">
-        <div class="toolbar"><div><h3>📋 Movimientos</h3><div id="planMeta" class="operator-status">Sin plan publicado</div></div><select id="planStatusFilter" onchange="renderPlanTable()"><option value="todos">Todos los estados</option><option value="disponible">Disponibles</option><option value="asignada">En proceso</option><option value="completada">Completados</option><option value="bloqueada">Bloqueados</option><option value="novedad">Novedades</option></select></div>
-        <div class="table-wrap"><table id="planTable"></table></div>
-      </div>
-    </section>
-    <section id="maestroFinal" class="tab">
-      <div class="card">
-        <div class="toolbar"><div><h2>📋 Maestro final de ubicaciones PL</h2><div id="finalMeta" class="operator-status">Basado en ubicaciones iniciales y movimientos confirmados.</div></div>
-          <div class="actions"><button class="secondary" onclick="renderFinalMaster()">Actualizar</button><button class="secondary" onclick="copyFinalMaster()">📋 Copiar</button><button class="primary" onclick="downloadFinalMaster()">📥 Descargar Excel</button></div>
-        </div>
-        <div id="finalMetrics" class="plan-kpis"></div>
-        <input id="finalSearch" type="search" placeholder="Buscar código, ubicación o estado" oninput="renderFinalMasterTable()" style="width:100%;margin-bottom:12px" />
-        <div class="table-wrap"><table id="finalTable"></table></div>
-      </div>
-    </section>
-  </main>
-  </div>
+  <div id="toast" class="toast">Movimiento completado</div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyA55v2QMxVuK2lQnJf1fJFYMNbExCgFEsg",
-  authDomain: "pl-cambio-de-linea.firebaseapp.com",
-  projectId: "pl-cambio-de-linea",
-  storageBucket: "pl-cambio-de-linea.firebasestorage.app",
-  messagingSenderId: "151215234702",
-  appId: "1:151215234702:web:d7d23360a4244d5ddef3df"
-};
+const firebaseConfig={apiKey:"AIzaSyA55v2QMxVuK2lQnJf1fJFYMNbExCgFEsg",authDomain:"pl-cambio-de-linea.firebaseapp.com",projectId:"pl-cambio-de-linea",storageBucket:"pl-cambio-de-linea.firebasestorage.app",messagingSenderId:"151215234702",appId:"1:151215234702:web:d7d23360a4244d5ddef3df"};
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const DATA_REF = db.collection('principal').doc('principal');
-const CHUNKS_REF = DATA_REF.collection('payload_chunks');
-const PLAN_META_REF = db.collection('planes_cambio_linea').doc('activo');
-const PLAN_TASKS_REF = PLAN_META_REF.collection('tareas');
-const PLAN_ACTIVITIES_REF = PLAN_META_REF.collection('actividades');
-const MANUAL_MISSING_REF = db.collection('faltantes_pl_manuales');
-const ALT_LOCATIONS_REF = PLAN_META_REF.collection('reservas_alternativas');
-const CHUNK_SIZE = 350000; // evita superar el límite de 1 MiB por documento de Firestore
-let unsubscribeRealtime=null;
-let loadingFromCloud=false;
-let planUnsubscribe=null;
-let planReconciliation=[];
-let planReconciliationReady=false;
-let preliminaryPlanVisible=false;
-let operatorTaskUnsubscribe=null;
-let activityAssignmentUnsubscribe=null;
+const db=firebase.firestore();
+const PLAN_REF=db.collection('planes_cambio_linea').doc('activo');
+const TASKS_REF=PLAN_REF.collection('tareas');
+const ACTIVITIES_REF=PLAN_REF.collection('actividades');
 
-const T_LOCS = new Set(['T01A','T01B','T01C','T01D','T02A','T02B','T02C','T03D']);
-const ARMADOS = new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
-const GOOD_ENDINGS = new Set(['B','C','L']);
-const PREFERRED_ENDINGS = new Set(['B','C']);
-const SECONDARY_ENDINGS = new Set(['A','D','J','K','M']);
-const PRIORITY_OFFERS = new Set(['OFFER-NEW','OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
-const OPERATOR_ACTIVITIES = ['enviar_t','liberar_prime','bajar_venta','reubicar_prioridad','sacar_baja','faltantes_pl','verificar'];
-const DEFAULT_LOCATIONS="PuestoCaja\tUbicación\n1\tA 01-01A\n1\tA 01-01B\n1\tA 01-01C\n1\tA 01-01D\n1\tA 01-01J\n1\tA 01-01K\n1\tA 01-01L\n1\tA 01-01M\n1\tA 01-01P\n1\tA 01-02A\n1\tA 01-02B\n1\tA 01-02C\n1\tA 01-02D\n1\tA 01-02J\n1\tA 01-02K\n1\tA 01-02L\n1\tA 01-02M\n1\tA 01-02P\n1\tA 01-03A\n1\tA 01-03B\n1\tA 01-03C\n1\tA 01-03D\n1\tA 01-03J\n1\tA 01-03K\n1\tA 01-03L\n1\tA 01-03M\n1\tA 01-04A\n1\tA 01-04B\n1\tA 01-04C\n1\tA 01-04D\n1\tA 01-04J\n1\tA 01-04K\n1\tA 01-04L\n1\tA 01-04M\n1\tA 01-05A\n1\tA 01-05B\n1\tA 01-05C\n1\tA 01-05D\n1\tA 01-05J\n1\tA 01-05K\n1\tA 01-05L\n1\tA 01-05M\n1\tA 01-06A\n1\tA 01-06B\n1\tA 01-06C\n1\tA 01-06D\n1\tA 01-06J\n1\tA 01-06K\n1\tA 01-06L\n1\tA 01-06M\n1\tA 01-07A\n1\tA 01-07B\n1\tA 01-07C\n1\tA 01-07D\n1\tA 01-07J\n1\tA 01-07K\n1\tA 01-07L\n1\tA 01-07M\n1\tA 01-08J\n1\tA 01-08K\n1\tA 01-08L\n1\tA 01-08M\n2\tB 02-01A\n2\tB 02-01B\n2\tB 02-01C\n2\tB 02-01D\n2\tB 02-01J\n2\tB 02-01K\n2\tB 02-01L\n2\tB 02-01M\n2\tB 02-01N\n2\tB 02-01P\n2\tB 02-02A\n2\tB 02-02B\n2\tB 02-02C\n2\tB 02-02D\n2\tB 02-02J\n2\tB 02-02K\n2\tB 02-02L\n2\tB 02-02M\n2\tB 02-03A\n2\tB 02-03B\n2\tB 02-03C\n2\tB 02-03D\n2\tB 02-03J\n2\tB 02-03K\n2\tB 02-03L\n2\tB 02-03M\n2\tB 02-04A\n2\tB 02-04B\n2\tB 02-04C\n2\tB 02-04D\n2\tB 02-04J\n2\tB 02-04K\n2\tB 02-04L\n2\tB 02-04M\n2\tB 02-05A\n2\tB 02-05B\n2\tB 02-05C\n2\tB 02-05D\n2\tB 02-05J\n2\tB 02-05K\n2\tB 02-05L\n2\tB 02-05M\n2\tB 02-06A\n2\tB 02-06B\n2\tB 02-06C\n2\tB 02-06D\n2\tB 02-06J\n2\tB 02-06K\n2\tB 02-06L\n2\tB 02-06M\n2\tB 02-07A\n2\tB 02-07B\n2\tB 02-07C\n2\tB 02-07D\n2\tB 02-07J\n2\tB 02-07K\n2\tB 02-07L\n2\tB 02-07M\n2\tB 02-07P\n2\tB 02-08J\n2\tB 02-08K\n2\tB 02-08L\n2\tB 02-08M\n2\tB 02-08N\n2\tB 02-09M\n2\tB 02-10M\n2\tB 02-11M\n2\tB 02-12M\n3\tC 03-01A\n3\tC 03-01B\n3\tC 03-01C\n3\tC 03-01D\n3\tC 03-01J\n3\tC 03-01K\n3\tC 03-01L\n3\tC 03-01M\n3\tC 03-01N\n3\tC 03-01P\n3\tC 03-02A\n3\tC 03-02B\n3\tC 03-02C\n3\tC 03-02D\n3\tC 03-02J\n3\tC 03-02K\n3\tC 03-02L\n3\tC 03-02M\n3\tC 03-03A\n3\tC 03-03B\n3\tC 03-03C\n3\tC 03-03D\n3\tC 03-03J\n3\tC 03-03K\n3\tC 03-03L\n3\tC 03-03M\n3\tC 03-04A\n3\tC 03-04B\n3\tC 03-04C\n3\tC 03-04D\n3\tC 03-04J\n3\tC 03-04K\n3\tC 03-04L\n3\tC 03-04M\n3\tC 03-05A\n3\tC 03-05B\n3\tC 03-05C\n3\tC 03-05D\n3\tC 03-05J\n3\tC 03-05K\n3\tC 03-05L\n3\tC 03-05M\n3\tC 03-06A\n3\tC 03-06B\n3\tC 03-06C\n3\tC 03-06D\n3\tC 03-06J\n3\tC 03-06K\n3\tC 03-06L\n3\tC 03-06M\n3\tC 03-07A\n3\tC 03-07B\n3\tC 03-07C\n3\tC 03-07D\n3\tC 03-07J\n3\tC 03-07K\n3\tC 03-07L\n3\tC 03-07M\n3\tC 03-08J\n3\tC 03-08K\n3\tC 03-08L\n3\tC 03-08M\n3\tC 03-08N\n3\tC 03-09M\n3\tC 03-10M\n3\tC 03-11M\n3\tC 03-12M\n4\tD 04-01A\n4\tD 04-01B\n4\tD 04-01C\n4\tD 04-01D\n4\tD 04-01J\n4\tD 04-01K\n4\tD 04-01L\n4\tD 04-01M\n4\tD 04-01P\n4\tD 04-02A\n4\tD 04-02B\n4\tD 04-02C\n4\tD 04-02D\n4\tD 04-02J\n4\tD 04-02K\n4\tD 04-02L\n4\tD 04-02M\n4\tD 04-02N\n4\tD 04-03A\n4\tD 04-03B\n4\tD 04-03C\n4\tD 04-03D\n4\tD 04-03J\n4\tD 04-03K\n4\tD 04-03L\n4\tD 04-03M\n4\tD 04-04A\n4\tD 04-04B\n4\tD 04-04C\n4\tD 04-04D\n4\tD 04-04J\n4\tD 04-04K\n4\tD 04-04L\n4\tD 04-04M\n4\tD 04-05A\n4\tD 04-05B\n4\tD 04-05C\n4\tD 04-05D\n4\tD 04-05J\n4\tD 04-05K\n4\tD 04-05L\n4\tD 04-05M\n4\tD 04-06A\n4\tD 04-06B\n4\tD 04-06C\n4\tD 04-06D\n4\tD 04-06J\n4\tD 04-06K\n4\tD 04-06L\n4\tD 04-06M\n4\tD 04-07A\n4\tD 04-07B\n4\tD 04-07C\n4\tD 04-07D\n4\tD 04-07J\n4\tD 04-07K\n4\tD 04-07L\n4\tD 04-07M\n4\tD 04-07N\n4\tD 04-07P\n4\tD 04-08J\n4\tD 04-08K\n4\tD 04-08L\n4\tD 04-08M\n4\tD 04-09J\n4\tD 04-09K\n4\tD 04-09L\n4\tD 04-09M\n5\tE 05-01A\n5\tE 05-01B\n5\tE 05-01C\n5\tE 05-01D\n5\tE 05-01J\n5\tE 05-01K\n5\tE 05-01L\n5\tE 05-01M\n5\tE 05-01P\n5\tE 05-02A\n5\tE 05-02B\n5\tE 05-02C\n5\tE 05-02D\n5\tE 05-02J\n5\tE 05-02K\n5\tE 05-02L\n5\tE 05-02M\n5\tE 05-03A\n5\tE 05-03B\n5\tE 05-03C\n5\tE 05-03D\n5\tE 05-03J\n5\tE 05-03K\n5\tE 05-03L\n5\tE 05-03M\n5\tE 05-04A\n5\tE 05-04B\n5\tE 05-04C\n5\tE 05-04D\n5\tE 05-04J\n5\tE 05-04K\n5\tE 05-04L\n5\tE 05-04M\n5\tE 05-04N\n5\tE 05-05A\n5\tE 05-05B\n5\tE 05-05D\n5\tE 05-05J\n5\tE 05-05K\n5\tE 05-05L\n5\tE 05-05M\n5\tE 05-06A\n5\tE 05-06B\n5\tE 05-06C\n5\tE 05-06D\n5\tE 05-06J\n5\tE 05-06K\n5\tE 05-06L\n5\tE 05-06M\n5\tE 05-07A\n5\tE 05-07B\n5\tE 05-07C\n5\tE 05-07D\n5\tE 05-07J\n5\tE 05-07K\n5\tE 05-07L\n5\tE 05-07M\n5\tE 05-08J\n5\tE 05-08K\n5\tE 05-08L\n5\tE 05-08M\n5\tE 05-09J\n5\tE 05-09K\n5\tE 05-09L\n5\tE 05-09M\n6\tF 06-01A\n6\tF 06-01B\n6\tF 06-01C\n6\tF 06-01D\n6\tF 06-01J\n6\tF 06-01K\n6\tF 06-01L\n6\tF 06-01M\n6\tF 06-01P\n6\tF 06-02A\n6\tF 06-02B\n6\tF 06-02C\n6\tF 06-02D\n6\tF 06-02J\n6\tF 06-02K\n6\tF 06-02L\n6\tF 06-02M\n6\tF 06-03A\n6\tF 06-03B\n6\tF 06-03C\n6\tF 06-03D\n6\tF 06-03J\n6\tF 06-03K\n6\tF 06-03L\n6\tF 06-03M\n6\tF 06-04A\n6\tF 06-04B\n6\tF 06-04C\n6\tF 06-04D\n6\tF 06-04J\n6\tF 06-04K\n6\tF 06-04L\n6\tF 06-04M\n6\tF 06-05A\n6\tF 06-05B\n6\tF 06-05C\n6\tF 06-05D\n6\tF 06-05J\n6\tF 06-05K\n6\tF 06-05L\n6\tF 06-05M\n6\tF 06-06A\n6\tF 06-06B\n6\tF 06-06C\n6\tF 06-06D\n6\tF 06-06J\n6\tF 06-06K\n6\tF 06-06L\n6\tF 06-06M\n6\tF 06-07A\n6\tF 06-07B\n6\tF 06-07C\n6\tF 06-07D\n6\tF 06-07J\n6\tF 06-07K\n6\tF 06-07L\n6\tF 06-07M\n6\tF 06-07N\n6\tF 06-08J\n6\tF 06-08K\n6\tF 06-08L\n6\tF 06-08M\n7\tG 07-01A\n7\tG 07-01B\n7\tG 07-01C\n7\tG 07-01D\n7\tG 07-01J\n7\tG 07-01K\n7\tG 07-01L\n7\tG 07-01M\n7\tG 07-01P\n7\tG 07-02A\n7\tG 07-02B\n7\tG 07-02C\n7\tG 07-02D\n7\tG 07-02J\n7\tG 07-02K\n7\tG 07-02L\n7\tG 07-02M\n7\tG 07-03A\n7\tG 07-03B\n7\tG 07-03C\n7\tG 07-03D\n7\tG 07-03J\n7\tG 07-03K\n7\tG 07-03L\n7\tG 07-03M\n7\tG 07-04A\n7\tG 07-04B\n7\tG 07-04C\n7\tG 07-04D\n7\tG 07-04J\n7\tG 07-04K\n7\tG 07-04L\n7\tG 07-04M\n7\tG 07-05A\n7\tG 07-05B\n7\tG 07-05C\n7\tG 07-05D\n7\tG 07-05J\n7\tG 07-05K\n7\tG 07-05L\n7\tG 07-05M\n7\tG 07-06A\n7\tG 07-06B\n7\tG 07-06C\n7\tG 07-06D\n7\tG 07-06J\n7\tG 07-06K\n7\tG 07-06L\n7\tG 07-06M\n7\tG 07-07A\n7\tG 07-07B\n7\tG 07-07C\n7\tG 07-07D\n7\tG 07-07J\n7\tG 07-07K\n7\tG 07-07L\n7\tG 07-07M\n7\tG 07-08J\n7\tG 07-08K\n7\tG 07-08L\n7\tG 07-08M\n8\tH 08-01A\n8\tH 08-01B\n8\tH 08-01C\n8\tH 08-01D\n8\tH 08-01J\n8\tH 08-01K\n8\tH 08-01L\n8\tH 08-01M\n8\tH 08-01P\n8\tH 08-02A\n8\tH 08-02B\n8\tH 08-02C\n8\tH 08-02D\n8\tH 08-02J\n8\tH 08-02K\n8\tH 08-02L\n8\tH 08-02M\n8\tH 08-03A\n8\tH 08-03B\n8\tH 08-03C\n8\tH 08-03D\n8\tH 08-03K\n8\tH 08-03L\n8\tH 08-03M\n8\tH 08-04A\n8\tH 08-04B\n8\tH 08-04C\n8\tH 08-04D\n8\tH 08-04J\n8\tH 08-04K\n8\tH 08-04L\n8\tH 08-04M\n8\tH 08-05A\n8\tH 08-05B\n8\tH 08-05C\n8\tH 08-05D\n8\tH 08-05J\n8\tH 08-05K\n8\tH 08-05L\n8\tH 08-05M\n8\tH 08-06B\n8\tH 08-06C\n8\tH 08-06D\n8\tH 08-06J\n8\tH 08-06K\n8\tH 08-06L\n8\tH 08-06M\n8\tH 08-07A\n8\tH 08-07B\n8\tH 08-07C\n8\tH 08-07D\n8\tH 08-07J\n8\tH 08-07K\n8\tH 08-07L\n8\tH 08-07M\n8\tH 08-08J\n8\tH 08-08K\n8\tH 08-08L\n8\tH 08-08M\n8\tH 08-09J\n8\tH 08-09K\n8\tH 08-09L\n8\tH 08-09M\n8\tH 08-10J\n8\tH 08-10K\n8\tH 08-10L\n8\tH 08-10M\n8\tH 08-11J\n8\tH 08-11K\n8\tH 08-11L\n8\tH 08-11M\n8\tH 08-12J\n8\tH 08-12K\n8\tH 08-12L\n8\tH 08-12M\n9\tI 09-01A\n9\tI 09-01B\n9\tI 09-01D\n9\tI 09-01J\n9\tI 09-01K\n9\tI 09-01L\n9\tI 09-01M\n9\tI 09-01P\n9\tI 09-02A\n9\tI 09-02B\n9\tI 09-02C\n9\tI 09-02D\n9\tI 09-02J\n9\tI 09-02K\n9\tI 09-02L\n9\tI 09-02M\n9\tI 09-03A\n9\tI 09-03B\n9\tI 09-03C\n9\tI 09-03D\n9\tI 09-03J\n9\tI 09-03K\n9\tI 09-03L\n9\tI 09-03M\n9\tI 09-04A\n9\tI 09-04B\n9\tI 09-04C\n9\tI 09-04D\n9\tI 09-04J\n9\tI 09-04K\n9\tI 09-04L\n9\tI 09-04M\n9\tI 09-05A\n9\tI 09-05B\n9\tI 09-05C\n9\tI 09-05D\n9\tI 09-05J\n9\tI 09-05K\n9\tI 09-05L\n9\tI 09-05M\n9\tI 09-06A\n9\tI 09-06B\n9\tI 09-06C\n9\tI 09-06D\n9\tI 09-06J\n9\tI 09-06K\n9\tI 09-06L\n9\tI 09-06M\n9\tI 09-07A\n9\tI 09-07B\n9\tI 09-07C\n9\tI 09-07D\n9\tI 09-07J\n9\tI 09-07K\n9\tI 09-07L\n9\tI 09-07M\n9\tI 09-08J\n9\tI 09-08K\n9\tI 09-08L\n9\tI 09-08M\n9\tI 09-09J\n9\tI 09-09K\n9\tI 09-09L\n9\tI 09-09M\n9\tI 09-10J\n9\tI 09-10K\n9\tI 09-10L\n9\tI 09-10M\n10\tJ 10-01H\n10\tJ 10-01J\n10\tJ 10-01K\n10\tJ 10-01L\n10\tJ 10-01M\n10\tJ 10-01P\n10\tJ 10-02H\n10\tJ 10-02J\n10\tJ 10-02K\n10\tJ 10-02L\n10\tJ 10-02M\n10\tJ 10-02P\n10\tJ 10-03H\n10\tJ 10-03K\n10\tJ 10-03L\n10\tJ 10-03M\n10\tJ 10-03P\n10\tJ 10-04H\n10\tJ 10-04J\n10\tJ 10-04K\n10\tJ 10-04L\n10\tJ 10-04M\n10\tJ 10-04P\n10\tJ 10-05H\n10\tJ 10-05J\n10\tJ 10-05K\n10\tJ 10-05L\n10\tJ 10-05M\n10\tJ 10-05P\n10\tJ 10-06H\n10\tJ 10-06J\n10\tJ 10-06K\n10\tJ 10-06L\n10\tJ 10-06M\n10\tJ 10-06P\n10\tJ 10-07H\n10\tJ 10-07J\n10\tJ 10-07K\n10\tJ 10-07L\n10\tJ 10-07M\n10\tJ 10-07P\n0\tMA01\n0\tMA02\n0\tMA03\n0\tMA04\n0\tMA05\n0\tMA06\n0\tMA07\n0\tMA08\n0\tMA09\n0\tMA10\n0\tMB01\n0\tMB02\n0\tMB03\n0\tMB04\n0\tMB05\n0\tMB06\n0\tMB07\n0\tMB08\n0\tMB09\n0\tMB10\n0\tMC01\n0\tMC02\n0\tMC03\n0\tMC04\n0\tMC05\n0\tMC06\n0\tMC07\n0\tMC08\n0\tMC09\n0\tMC10\n0\tMD01\n0\tMD02\n0\tMD03\n0\tMD04\n0\tMD05\n0\tMD06\n0\tMD07\n0\tMD08\n0\tMD09\n0\tMD10\n0\tME01\n0\tME02\n0\tME03\n0\tME04\n0\tME05\n0\tME06\n0\tME07\n0\tME08\n0\tME09\n0\tME10\n0\tPLT-01\n0\tRB01\n0\tRB02\n0\tRB03\n0\tRB04\n0\tRB05\n0\tRB06\n0\tRB07\n0\tRB08\n0\tRC01\n0\tRC02\n0\tRC03\n0\tRC04\n0\tRC05\n0\tRC06\n0\tRC07\n0\tRC08\n0\tRD01\n0\tRD02\n0\tRD03\n0\tRD04\n0\tRD05\n0\tRD06\n0\tRD07\n0\tRD08\n0\tRE01\n0\tRE02\n0\tRE03\n0\tRE04\n0\tRE05\n0\tRE06\n0\tRE07\n0\tRE08\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01A\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01B\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01C\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01D\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT01E\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02A\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02B\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02C\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02D\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E\n0\tT02E";
-let consolidado=[];
-let ventaRows=[];
-let currentRows=[];
-let currentTitle='Resultado';
-let sortState={key:null,dir:1};
-let generatedPlan=[];
-let livePlanRows=[];
-let stationLoads={};
-let selectedActivity='';
-let currentOperatorTask=null;
-let activityAssignments={};
-let activityAssignmentsLoaded=false;
-let manualMissingRecords=[];
-let manualMissingUnsubscribe=null;
-let finalMasterRows=[];
+const PRIORITY_OFFERS=new Set(['OFFER-NEW','OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
+const ARMADOS=new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
+const ACTIVITY_CONFIG=[
+  {id:'faltantes_pl',icon:'🚨',name:'Faltantes en PL'},
+  {id:'ingresar_nuevo',icon:'🆕',name:'Ingresar nuevos'},
+  {id:'reubicar_prioridad',icon:'🔥',name:'Venta Max'},
+  {id:'sacar_baja',icon:'📥',name:'Sacar de T/M/R'},
+  {id:'bulk',icon:'📦',name:'Candidatos a Bulk'},
+  {id:'enviar_t',icon:'📤',name:'Mandar a T/M/R'},
+  {id:'liberar_prime',icon:'🧹',name:'Liberar ubicaciones'}
+];
+const ACTIVITY_MAP=new Map(ACTIVITY_CONFIG.map(x=>[x.id,x]));
+let consolidated=[],localBuckets={},activityState={},selectedActivity='',operatorRows=[];
+let unsubActivities=null,unsubOperatorTasks=null;
 
-function enterProfile(profile){
-  profileLanding.classList.add('hidden');
-  operatorShell.classList.toggle('hidden',profile!=='operator');
-  supervisorShell.classList.toggle('hidden',profile!=='supervisor');
-  if(profile==='operator'){operatorCloudStatus.textContent='';subscribeActivityAssignments();refreshOperatorProgress();}
-  if(profile==='supervisor'){subscribeActivityAssignments();subscribeManualMissing();loadPlanDashboard();}
-}
-function changeProfile(){
-  operatorShell.classList.add('hidden');supervisorShell.classList.add('hidden');profileLanding.classList.remove('hidden');
-  if(operatorTaskUnsubscribe){operatorTaskUnsubscribe();operatorTaskUnsubscribe=null}stopOperatorList()
-}
-function selectActivity(btn){
-  document.querySelectorAll('.activity-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');selectedActivity=btn.dataset.activity;
-}
-function subscribeActivityAssignments(){
-  if(activityAssignmentUnsubscribe)return;
-  activityAssignmentUnsubscribe=PLAN_ACTIVITIES_REF.onSnapshot(snap=>{
-    activityAssignments={};snap.docs.forEach(d=>activityAssignments[d.id]={id:d.id,...d.data()});activityAssignmentsLoaded=true;renderActivityAssignments();
-  },err=>{console.error(err);activityAssignmentsLoaded=false;renderActivityAssignments()});
-}
-function renderActivityAssignments(){
-  const currentName=norm(typeof operatorName==='undefined'?'':operatorName.value);
-  const ownActivity=OPERATOR_ACTIVITIES.find(activity=>activityAssignments[activity]?.status==='asignada'&&sameOperatorName(activityAssignments[activity]?.operator,currentName));
-  document.querySelectorAll('.activity-btn').forEach(btn=>{
-    const activity=btn.dataset.activity,data=activityAssignments[activity],state=btn.querySelector('.activity-state');
-    btn.disabled=false;
-    if(!activityAssignmentsLoaded){btn.disabled=true;if(state)state.textContent='Consultando…';return}
-    if(!data){btn.disabled=true;if(state)state.textContent='Sin plan publicado';return}
-    if(data.status==='completada'){btn.disabled=true;if(state)state.textContent='Actividad completada';return}
-    if(data.status==='no_aplica'){btn.disabled=true;if(state)state.textContent='Sin movimientos';return}
-    if(data.status==='bloqueada'){btn.disabled=true;if(state)state.textContent='Esperando fase anterior';return}
-    if(data.status==='asignada'){
-      const own=currentName&&sameOperatorName(data.operator,currentName);btn.disabled=!own;
-      if(state)state.textContent=own?'Asignada a ti':`Asignada a ${data.operator||'otro operario'}`;
-      return;
-    }
-    if(ownActivity&&ownActivity!==activity){btn.disabled=true;if(state)state.textContent=`Ya tienes ${planActivityLabel(ownActivity)}`;return}
-    if(state)state.textContent='Disponible';
-  });
-  const panel=document.getElementById('activityAssignmentsPanel');if(!panel)return;
-  const rows=OPERATOR_ACTIVITIES.map(activity=>activityAssignments[activity]).filter(Boolean);
-  if(!rows.length){panel.innerHTML='<div class="empty-state">Publica un plan para habilitar las actividades.</div>';return}
-  panel.innerHTML=rows.map(data=>{
-    const status=data.status==='asignada'?`Asignada a ${escapeHtml(data.operator||'Sin nombre')}`:data.status==='completada'?'Completada':data.status==='no_aplica'?'Sin movimientos':data.status==='bloqueada'?'Esperando fase anterior':'Disponible';
-    const action=data.status==='asignada'?`<button class="secondary" style="margin-top:10px" onclick="supervisorReleaseActivity('${data.id}')">Liberar actividad</button>`:'';
-    return `<div class="station-card"><b>${escapeHtml(planActivityLabel(data.id))}</b><span>${status}</span>${action}</div>`;
-  }).join('');
-}
+const $=id=>document.getElementById(id);
+const norm=v=>String(v??'').trim();
+const normCode=v=>norm(v).replace(/\.0$/,'').toUpperCase();
+const escapeHtml=v=>String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+const toNum=v=>{const n=Number(String(v??'').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:0};
+const normalizeOffer=v=>norm(v).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+(NEW|TOP|BO|ALDEAS)$/,'OFFER-$1');
 
-function openTab(id, btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-}
-function toggleHeroDetails(forceCollapsed){
-  const details=document.getElementById('heroDetails'),button=document.getElementById('heroToggle');if(!details||!button)return;
-  const collapse=typeof forceCollapsed==='boolean'?forceCollapsed:!details.classList.contains('collapsed');
-  details.classList.toggle('collapsed',collapse);button.textContent=collapse?'Mostrar título':'Ocultar título';
-  localStorage.setItem('pl_header_collapsed',collapse?'1':'0');
-}
-function norm(s){return String(s??'').trim();}
-function normCode(s){return norm(s).replace(/\.0$/,'').toUpperCase();}
-function sameOperatorName(a,b){return norm(a).toLocaleLowerCase('es')===norm(b).toLocaleLowerCase('es')}
-function normalizeOffer(s){return norm(s).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+(NEW|TOP|BO|ALDEAS)$/,'OFFER-$1')}
-function toNum(v){
-  if(v===null||v===undefined||v==='') return 0;
-  let s=String(v).replace(/,/g,'').trim();
-  let n=Number(s);
-  return isNaN(n)?0:n;
-}
 function parseTSV(text){
-  text=(text||'').trim();
-  if(!text) return [];
-  const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
-  const markdown=lines[0].trim().startsWith('|');
-  const split=line=>markdown?line.trim().replace(/^\||\|$/g,'').split('|').map(norm):line.split('\t').map(norm);
-  const header=split(lines[0]);
-  return lines.slice(1).filter(line=>!markdown||!split(line).every(v=>/^:?-{2,}:?$/.test(v)||v==='')).map(line=>{
-    const cells=split(line);
-    const obj={};
-    header.forEach((h,i)=>obj[h]=cells[i]??'');
-    return obj;
-  });
+  const lines=String(text||'').split(/\r?\n/).filter(x=>x.trim());if(lines.length<2)return [];
+  const delimiter=lines[0].includes('\t')?'\t':lines[0].includes(';')?';':',';
+  const headers=lines[0].split(delimiter).map(norm);
+  return lines.slice(1).map(line=>{const cells=line.split(delimiter),row={};headers.forEach((h,i)=>row[h]=cells[i]??'');return row});
 }
-function findKey(obj, candidates){
-  const keys=Object.keys(obj||{});
-  const low=keys.map(k=>[k,k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')]);
-  for(const c of candidates){
-    const cc=c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    const hit=low.find(([orig,l])=>l===cc || l.includes(cc));
-    if(hit) return hit[0];
-  }
-  return null;
+function findKey(row,candidates){const keys=Object.keys(row||{});for(const candidate of candidates){const exact=keys.find(k=>norm(k).toLowerCase()===candidate.toLowerCase());if(exact)return exact}return ''}
+function getFrcKey(row){const keys=Object.keys(row||{});return keys.find(k=>/^frc/i.test(norm(k)))||findKey(row,['FRC'])}
+function locList(row){return String(row.location||row['Ubicación PL']||'').split('|').map(norm).filter(Boolean)}
+function isInvalidLoc(loc){const x=norm(loc).toUpperCase();return !x||x==='0-0000'||x==='FUERA DE PL'}
+function validLocs(row){return locList(row).filter(x=>!isInvalidLoc(x))}
+function isLowLoc(loc){return /^[TMR]/i.test(norm(loc))}
+function lastLetter(loc){const m=norm(loc).match(/([A-Z])$/i);return m?m[1].toUpperCase():''}
+function isGoodLoc(loc){return ['B','C','K','L'].includes(lastLetter(loc))&&!/^[TMR]/i.test(norm(loc))}
+function hasGoodLoc(row){return validLocs(row).some(isGoodLoc)}
+function hasMainLoc(row){return validLocs(row).some(x=>!isLowLoc(x))}
+function rowInLow(row){return validLocs(row).some(isLowLoc)}
+function hasReserved(row){return Number(row.sale||0)>0}
+function priorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.offer))}
+function hasPage(row){const p=norm(row.page);return p!==''&&p!=='0'&&p!=='-'}
+function hasAnyOffer(row){const offer=normalizeOffer(row.offer);return offer!==''&&offer!=='0'&&offer!=='-'}
+function isVial(row){return /\bvial\b/i.test(row.description||'')}
+function isCatalog(row){return /cat[aá]logo/i.test(row.description||'')}
+function isArmado(row){return ARMADOS.has(normCode(row.code))}
+function displayRow(row){return {Código:row.code,Descripción:row.description,'Ubicación PL':row.location||'Sin ubicación','Stock PL':row.stockPL,Venta:row.sale,FRC:row.frc,Page:row.page||''}}
+
+function generateLists(){
+  const order=parseTSV($('orderInput').value),sales=parseTSV($('saleInput').value),stock=parseTSV($('stockInput').value);
+  if(!order.length||!sales.length||!stock.length)return alert('Pega los tres reportes antes de generar las listas.');
+  const okCode=findKey(order[0],['Code','Código','Codigo']),okDesc=findKey(order[0],['Description','Description (eng)','Descripción','Descripcion']),okFrc=getFrcKey(order[0]),okOffer=findKey(order[0],['Oferta','Offer']),okPage=findKey(order[0],['Page','Página','Pagina']);
+  const orderMap=new Map();order.forEach(r=>{const code=normCode(r[okCode]);if(code)orderMap.set(code,{description:norm(r[okDesc]),frc:toNum(r[okFrc]),offer:normalizeOffer(okOffer?r[okOffer]:''),page:norm(okPage?r[okPage]:'')})});
+  const skCode=findKey(sales[0],['Código Producto','Codigo Producto','Code','Código','Codigo']),skDesc=findKey(sales[0],['Descripción','Descripcion','Description']),skReserved=findKey(sales[0],['Reserved']);
+  const saleMap=new Map();sales.forEach(r=>{const code=normCode(r[skCode]);if(code)saleMap.set(code,{description:norm(r[skDesc]),sale:toNum(r[skReserved])})});
+  const pkCode=findKey(stock[0],['Variante','Código','Codigo','Code']),pkLoc=findKey(stock[0],['Caja','Ubicación','Ubicacion']),pkQty=findKey(stock[0],['Physical Quantity','Cantidad','Qty']);
+  const stockMap=new Map();stock.forEach(r=>{const code=normCode(r[pkCode]);if(!code)return;const loc=norm(r[pkLoc]),qty=toNum(r[pkQty]);if(!stockMap.has(code))stockMap.set(code,{stockPL:0,locations:[]});const x=stockMap.get(code);x.stockPL+=qty;if(loc)x.locations.push(loc)});
+  const codes=new Set(stockMap.keys());saleMap.forEach((v,k)=>{if(v.sale>0)codes.add(k)});orderMap.forEach((v,k)=>{if(PRIORITY_OFFERS.has(v.offer)||(v.page&&v.page!=='0'&&v.page!=='-'))codes.add(k)});
+  consolidated=[...codes].map(code=>{const o=orderMap.get(code)||{},s=saleMap.get(code)||{},p=stockMap.get(code)||{stockPL:0,locations:[]};const locations=[...new Set(p.locations.filter(x=>!isInvalidLoc(x)))];return {code,description:s.description||o.description||'',location:locations.join(' | '),stockPL:p.stockPL||0,sale:s.sale||0,frc:o.frc||0,offer:o.offer||'',page:o.page||''}});
+  localBuckets=classifyRows(consolidated);renderLocalSummary();fillListSelect();$('publishBtn').disabled=false;openTab('listsTab',document.querySelectorAll('.tab-btn')[2]);
 }
-function getFrcKey(row){
-  const keys=Object.keys(row||{});
-  const explicit=keys.find(k=>/frc/i.test(k));
-  if(explicit) return explicit;
-  for(let i=keys.length-1;i>=0;i--){
-    const k=keys[i];
-    if(k && k.trim()!=='' && !/description|descripcion|code|codigo/i.test(k)) return k;
-  }
-  return keys[keys.length-1];
+
+function classifyRows(rows){
+  const assigned=new Set(),take=items=>items.filter(row=>{if(assigned.has(row.code))return false;assigned.add(row.code);return true});
+  const faltantes=take(rows.filter(r=>hasReserved(r)&&(!validLocs(r).length||r.stockPL<=0)));
+  const nuevos=take(rows.filter(r=>!hasReserved(r)&&(priorityOffer(r)||hasPage(r))&&(!validLocs(r).length||r.stockPL<=0)));
+  const ventaMax=take(rows.filter(r=>validLocs(r).length&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
+  const sacarT=take(rows.filter(r=>rowInLow(r)&&(hasReserved(r)||priorityOffer(r)||(hasPage(r)&&r.frc>=5)||r.frc>1000)));
+  const bulk=take(rows.filter(r=>r.stockPL>100&&!hasReserved(r)&&r.frc>=0&&r.frc<=4&&!hasAnyOffer(r)&&!hasPage(r)&&!isArmado(r)&&!isCatalog(r)).sort((a,b)=>b.stockPL-a.stockPL||a.code.localeCompare(b.code)));
+  const enviarT=take(rows.filter(r=>r.stockPL>0&&hasMainLoc(r)&&!hasReserved(r)&&!priorityOffer(r)&&r.frc>=0&&r.frc<=4&&!isArmado(r)&&!isCatalog(r)&&!isVial(r)));
+  const liberar=take(rows.filter(r=>hasMainLoc(r)&&r.sale<=10&&r.frc<=300&&!priorityOffer(r)&&!(hasPage(r)&&r.frc>=5)&&!isVial(r)));
+  return {faltantes_pl:faltantes,ingresar_nuevo:nuevos,reubicar_prioridad:ventaMax,sacar_baja:sacarT,enviar_t:enviarT,liberar_prime:liberar,bulk};
 }
-function getUsuario(){
-  const u=(document.getElementById('txtUsuario')?.value||'').trim();
-  return u || 'Usuario no identificado';
+
+function renderLocalSummary(){
+  $('localSummary').innerHTML=ACTIVITY_CONFIG.map(x=>`<div class="metric"><b>${(localBuckets[x.id]||[]).length}</b><span>${escapeHtml(x.name)}</span></div>`).join('');
 }
-function setCloudStatus(ok,msg){
-  const dot=document.getElementById('cloudDot');
-  const status=document.getElementById('cloudStatus');
-  if(dot){dot.classList.remove('ok','bad');dot.classList.add(ok?'ok':'bad');}
-  if(status) status.textContent=msg;
+function fillListSelect(){
+  $('listSelect').innerHTML=ACTIVITY_CONFIG.map(x=>`<option value="${x.id}">${escapeHtml(x.name)} · ${(localBuckets[x.id]||[]).length}</option>`).join('');renderSupervisorList();
 }
-function formatDateTime(value){
+function currentVisibleRows(){const key=$('listSelect').value,q=norm($('supervisorSearch').value).toLowerCase();return (localBuckets[key]||[]).map(displayRow).filter(r=>!q||Object.values(r).some(v=>String(v).toLowerCase().includes(q)))}
+function renderSupervisorList(){const rows=currentVisibleRows(),keys=['Código','Descripción','Ubicación PL','Stock PL','Venta','FRC','Page'];$('supervisorTable').innerHTML=rows.length?`<thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`:'<tr><td class="empty">Sin códigos en esta lista.</td></tr>'}
+async function copyVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para copiar.');const keys=Object.keys(rows[0]),text=[keys.join('\t'),...rows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');try{await navigator.clipboard.writeText(text);showToast('Lista copiada')}catch{return alert('No se pudo copiar. Usa la descarga de Excel.')}}
+function downloadVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para descargar.');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Lista');XLSX.writeFile(wb,($('listSelect').selectedOptions[0]?.textContent||'Lista_PL').replace(/[\\/:*?"<>|]/g,'')+'.xlsx')}
+
+async function deleteCollection(ref){const snap=await ref.get();let batch=db.batch(),count=0;for(const doc of snap.docs){batch.delete(doc.ref);if(++count>=400){await batch.commit();batch=db.batch();count=0}}if(count)await batch.commit()}
+async function publishLists(){
+  if(!consolidated.length)return alert('Genera las listas antes de publicar.');
+  if(!confirm('¿Publicar esta carga? Se reemplazarán las listas operativas y su avance anterior.'))return;
+  $('publishBtn').disabled=true;
   try{
-    const d=value?.toDate ? value.toDate() : (value ? new Date(value) : null);
-    if(!d || isNaN(d.getTime())) return 'Sin registro';
-    return d.toLocaleString('es-EC',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
-  }catch(e){return 'Sin registro';}
-}
-function applyCloudData(data, showResult=true){
-  if(!data) return;
-  loadingFromCloud=true;
-  txtOrder.value=data.order||'';
-  txtVenta.value=data.venta||'';
-  txtStock.value=data.stock||'';
-  if(data.locations)txtLocations.value=data.locations;
-  consolidado=Array.isArray(data.consolidado)?data.consolidado:[];
-  ventaRows=Array.isArray(data.ventaRows)?data.ventaRows:[];
-  if(data.usuario && document.getElementById('txtUsuario') && !txtUsuario.value) txtUsuario.value=data.usuario;
-  if(document.getElementById('lastUpdate')) lastUpdate.textContent=formatDateTime(data.actualizadoEn || data.fechaActualizacion);
-  if(document.getElementById('lastUser')) lastUser.textContent=data.usuario||'Sin registro';
-  updateKpis();
-  updateFaltantesAlert();
-  if(showResult && consolidado.length && (!currentRows || !currentRows.length)) showConsolidado();
-  loadingFromCloud=false;
-}
-function buildPayload(){
-  return {
-    order:txtOrder.value,
-    venta:txtVenta.value,
-    stock:txtStock.value,
-    locations:txtLocations.value,
-    consolidado,
-    ventaRows,
-    usuario:getUsuario(),
-    fechaActualizacion:new Date().toISOString()
-  };
-}
-function splitPayload(text){
-  const chunks=[];
-  for(let i=0;i<text.length;i+=CHUNK_SIZE) chunks.push(text.slice(i,i+CHUNK_SIZE));
-  return chunks;
-}
-async function deleteOldChunks(){
-  const old=await CHUNKS_REF.get();
-  if(old.empty) return;
-  let batch=db.batch();
-  let ops=0;
-  for(const doc of old.docs){
-    batch.delete(doc.ref);
-    ops++;
-    if(ops>=450){await batch.commit();batch=db.batch();ops=0;}
-  }
-  if(ops>0) await batch.commit();
-}
-async function saveInputs(showAlert=true){
-  try{
-    const data=buildPayload();
-    const payload=JSON.stringify(data);
-    const chunks=splitPayload(payload);
-
-    await deleteOldChunks();
-
-    let batch=db.batch();
-    chunks.forEach((chunk,index)=>{
-      const id='chunk_'+String(index).padStart(4,'0');
-      batch.set(CHUNKS_REF.doc(id),{index,chunk});
-    });
-    batch.set(DATA_REF,{
-      chunkCount:chunks.length,
-      payloadVersion:2,
-      usuario:data.usuario,
-      actualizadoEn: firebase.firestore.FieldValue.serverTimestamp(),
-      fechaActualizacion:data.fechaActualizacion,
-      totalCaracteres:payload.length
-    },{merge:false});
-    await batch.commit();
-
-    setCloudStatus(true,'Conectado a Firebase');
-    if(showAlert) alert('Guardado en nube. Todos verán esta misma data.');
-  }catch(err){
-    console.error(err);
-    setCloudStatus(false,'Error al guardar en Firebase');
-    alert('No se pudo guardar en Firebase. Revisa la consola; si el archivo es muy grande, esta versión ya lo divide en partes.');
-  }
-}
-async function readCloudPayload(){
-  const meta=await DATA_REF.get();
-  if(!meta.exists) return null;
-  const metaData=meta.data()||{};
-
-  // Compatibilidad con una versión anterior que guardaba todo en un solo documento.
-  if(!metaData.chunkCount){
-    return metaData;
-  }
-
-  const snap=await CHUNKS_REF.orderBy('index','asc').get();
-  if(snap.empty) return null;
-  const payload=snap.docs.map(d=>(d.data()||{}).chunk||'').join('');
-  const data=JSON.parse(payload);
-  data.actualizadoEn=metaData.actualizadoEn || data.actualizadoEn;
-  data.fechaActualizacion=metaData.fechaActualizacion || data.fechaActualizacion;
-  data.usuario=metaData.usuario || data.usuario;
-  return data;
-}
-async function loadInputs(silent=true){
-  try{
-    const data=await readCloudPayload();
-    if(!data){
-      setCloudStatus(true,'Conectado a Firebase. Aún no hay data guardada.');
-      if(!silent) alert('Firebase está conectado, pero todavía no hay información guardada.');
-      return;
+    await deleteCollection(TASKS_REF);await deleteCollection(ACTIVITIES_REF);
+    let batch=db.batch(),count=0,total=0;
+    for(const activity of ACTIVITY_CONFIG){
+      const rows=localBuckets[activity.id]||[];
+      batch.set(ACTIVITIES_REF.doc(activity.id),{activity:activity.id,name:activity.name,status:'deshabilitada',operator:'',total:rows.length,completed:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});count++;
+      for(const row of rows){const id=activity.id+'__'+encodeURIComponent(row.code);batch.set(TASKS_REF.doc(id),{activity:activity.id,code:row.code,description:row.description||'',location:row.location||'Sin ubicación',stockPL:Number(row.stockPL||0),sale:Number(row.sale||0),frc:Number(row.frc||0),page:row.page||'',offer:row.offer||'',status:'pendiente',completedBy:'',completedAt:null,createdAt:firebase.firestore.FieldValue.serverTimestamp()});count++;total++;if(count>=400){await batch.commit();batch=db.batch();count=0}}
     }
-    applyCloudData(data, true);
-    setCloudStatus(true,'Conectado a Firebase');
-    if(!silent) alert('Data sincronizada desde Firebase.');
-  }catch(err){
-    console.error(err);
-    setCloudStatus(false,'Error al leer Firebase');
-    if(!silent) alert('No se pudo leer Firebase. Revisa reglas de Firestore o conexión.');
-  }
-}
-function setupRealtime(){
-  try{
-    if(unsubscribeRealtime) unsubscribeRealtime();
-    unsubscribeRealtime=DATA_REF.onSnapshot(async (snap)=>{
-      setCloudStatus(true,'Conectado a Firebase en tiempo real');
-      if(snap.exists){
-        try{
-          const data=await readCloudPayload();
-          if(data) applyCloudData(data, false);
-        }catch(err){
-          console.error(err);
-          setCloudStatus(false,'Error al sincronizar data');
-        }
-      }
-    },(err)=>{
-      console.error(err);
-      setCloudStatus(false,'Sin conexión en tiempo real');
-    });
-  }catch(err){
-    console.error(err);
-    setCloudStatus(false,'No se pudo activar sincronización');
-  }
-}
-async function clearAll(){
-  if(!confirm('¿Seguro que deseas limpiar reportes y resultados en la nube para todos?')) return;
-  txtOrder.value=txtVenta.value=txtStock.value=txtLocations.value='';
-  consolidado=[];ventaRows=[];currentRows=[];renderTable([]);updateKpis();updateFaltantesAlert();
-  await saveInputs(false);
-  alert('Información limpiada en Firebase.');
-}
-async function generateConsolidado(){
-  const order=parseTSV(txtOrder.value);
-  const venta=parseTSV(txtVenta.value);
-  const stock=parseTSV(txtStock.value);
-  if(!order.length||!venta.length||!stock.length){alert('Pega los 3 reportes antes de generar.');return;}
-
-  const orderMap=new Map();
-  const okCode=findKey(order[0],['Code','Código','Codigo']);
-  const okDesc=findKey(order[0],['Description','Description (eng)','Descripción','Descripcion']);
-  const okFrc=getFrcKey(order[0]);
-  const okOffer=findKey(order[0],['Oferta','Offer']);
-  const okPage=findKey(order[0],['Page','Página','Pagina']);
-  order.forEach(r=>{
-    const code=normCode(r[okCode]); if(!code) return;
-    orderMap.set(code,{
-      frc:toNum(r[okFrc]),
-      desc:norm(r[okDesc]),
-      offer:normalizeOffer(okOffer?r[okOffer]:''),
-      page:norm(okPage?r[okPage]:'')
-    });
-  });
-
-  const ventaMap=new Map();
-  const vkCode=findKey(venta[0],['Código Producto','Codigo Producto','Code','Código','Codigo']);
-  const vkDesc=findKey(venta[0],['Descripción','Descripcion','Description']);
-  const vkReserved=findKey(venta[0],['Reserved']);
-  ventaRows=venta.map(r=>({
-    codigo:normCode(r[vkCode]),
-    descripcion:norm(r[vkDesc]),
-    reserved:toNum(r[vkReserved])
-  })).filter(r=>r.codigo);
-  ventaRows.forEach(r=>ventaMap.set(r.codigo,r));
-
-  const skCode=findKey(stock[0],['Variante','Código','Codigo','Code']);
-  const skZona=findKey(stock[0],['Zona']);
-  const skCaja=findKey(stock[0],['Caja','Ubicación','Ubicacion']);
-  const skQty=findKey(stock[0],['Physical Quantity','Cantidad','Qty']);
-  const grouped=new Map();
-  stock.forEach(r=>{
-    const code=normCode(r[skCode]); if(!code) return;
-    const caja=norm(r[skCaja]);
-    const qty=toNum(r[skQty]);
-    const zona=norm(skZona?r[skZona]:'');
-    if(!grouped.has(code)) grouped.set(code,{codigo:code,stockPL:0,ubicaciones:[],zona});
-    const g=grouped.get(code);
-    g.stockPL+=qty;
-    if(caja) g.ubicaciones.push(caja);
-    if(zona && !g.zona) g.zona=zona;
-  });
-
-  const selectedCodes=new Set(grouped.keys());
-  orderMap.forEach((o,code)=>{if(PRIORITY_OFFERS.has(o.offer)||hasPageValue(o.page))selectedCodes.add(code)});
-  ventaMap.forEach((v,code)=>{if(Number(v.reserved)>0)selectedCodes.add(code)});
-  consolidado=[...selectedCodes].map(code=>{
-    const g=grouped.get(code)||{codigo:code,stockPL:0,ubicaciones:[],zona:'FUERA DE PL'};
-    const v=ventaMap.get(code)||{};
-    const o=orderMap.get(code)||{};
-    const desc=v.descripcion || o.desc || '';
-    const ubicUnicas=[...new Set(g.ubicaciones)].join(' | ');
-    return {
-      Código:g.codigo,
-      Descripción:desc,
-      Zona:g.zona||'PL',
-      'Ubicación PL':ubicUnicas,
-      'Stock PL':g.stockPL,
-      Venta:toNum(v.reserved),
-      FRC:toNum(o.frc),
-      Oferta:o.offer||'',
-      Page:o.page||'',
-      Estado: ubicUnicas.includes('0-0000')?'Revisar ubicación':'OK'
-    };
-  });
-  await saveInputs(false);
-  updateKpis();
-  updateFaltantesAlert();
-  showConsolidado();
-  document.querySelectorAll('.tab-btn')[1].click();
-}
-function locList(row){return String(row['Ubicación PL']||'').split('|').map(x=>x.trim()).filter(Boolean);}
-function isTLoc(loc){return String(loc||'').trim().toUpperCase().startsWith('T');}
-function isLowZoneLoc(loc){const l=String(loc||'').trim().toUpperCase();return l.startsWith('T')||l.startsWith('M')||l.startsWith('R')}
-function isReservedLoc(loc){return ['P','N'].includes(lastLetter(loc))}
-function stationFromLoc(loc){const m=String(loc||'').toUpperCase().match(/\s(0?[1-9]|10)-/);return m?Number(m[1]):0}
-function isStation10(loc){return stationFromLoc(loc)===10}
-function isPrimeLoc(loc){const n=stationFromLoc(loc);return n>=1&&n<=3&&GOOD_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
-function isPreferredSaleLoc(loc){const n=stationFromLoc(loc);return n>=4&&n<=7&&PREFERRED_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
-function hasPreferredSaleLoc(row){return locList(row).some(isPreferredSaleLoc)}
-function isSecondaryLoc(loc){return stationFromLoc(loc)>=1&&stationFromLoc(loc)<=9&&SECONDARY_ENDINGS.has(lastLetter(loc))&&!isReservedLoc(loc)}
-function excludedEnviarTLoc(loc){
-  const l=String(loc||'').trim().toUpperCase().replace(/\s+/g,' ');
-  return l.startsWith('T') || l.startsWith('M') || l.startsWith('R') || l.startsWith('J 10-');
-}
-function rowHasExcludedEnviarTLoc(row){return locList(row).some(excludedEnviarTLoc);}
-function rowInT(row){return locList(row).some(isTLoc);}
-function rowInLowZone(row){return locList(row).some(isLowZoneLoc)}
-function lastLetter(loc){const m=String(loc).trim().match(/([A-Z])$/i);return m?m[1].toUpperCase():'';}
-function hasGoodLoc(row){return locList(row).some(isPrimeLoc);}
-function isCatalogo(row){return /cat[aá]logo/i.test(row.Descripción||'');}
-function isArmado(row){return ARMADOS.has(normCode(row.Código));}
-function isVial(row){return /\bvial\b/i.test(row.Descripción||'')}
-function isPriorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.Oferta))}
-function isNewOffer(row){return normalizeOffer(row.Oferta)==='OFFER-NEW'}
-function isProtectedOffer(row){return isPriorityOffer(row)}
-function hasPageValue(value){const v=norm(value);return v!==''&&v!=='0'&&v!=='-'}
-function hasPage(row){return hasPageValue(row?.Page)}
-function hasReserved(row){return Number(row?.Venta||0)>0}
-function hasAnyOffer(row){const v=normalizeOffer(row?.Oferta);return v!==''&&v!=='0'&&v!=='-'}
-// La prioridad de cobertura es estricta: Reserved > Oferta > Page.
-// Page solo gobierna cuando el código no tiene Reserved ni una oferta prioritaria.
-function isOfferCoverage(row){return !hasReserved(row)&&isProtectedOffer(row)}
-function isPageCoverage(row){return !hasReserved(row)&&!isProtectedOffer(row)&&hasPage(row)}
-function pageFrcBand(row){
-  const frc=Number(row?.FRC||0);
-  if(frc>1000)return 'prime';
-  if(frc>=5)return 'secondary';
-  return 'low';
-}
-function hasSuitablePageLocation(row){
-  if(!isPageCoverage(row))return false;
-  const band=pageFrcBand(row),locs=locList(row);
-  if(band==='prime')return locs.some(isPrimeLoc);
-  if(band==='secondary')return locs.some(loc=>isPrimeLoc(loc)||isPreferredSaleLoc(loc)||isSecondaryLoc(loc));
-  return locs.some(isLowZoneLoc);
-}
-function addMotivo(rows,motivo){return rows.map(r=>({...r,Motivo:r.Motivo||motivo}));}
-// Clasificación exclusiva de Acciones PL. El primer grupo que toma un código
-// lo reserva dentro del análisis y evita que aparezca en cualquier grupo posterior.
-function rawIngresarNuevosRows(){
-  return consolidado.filter(r=>!isVial(r)&&(
-    (isOfferCoverage(r)&&isNewOffer(r)&&!currentMainLocation(r)) ||
-    (isPageCoverage(r)&&pageFrcBand(r)==='secondary'&&!currentMainLocation(r)&&!rowInLowZone(r))
-  )).map(r=>isPageCoverage(r)?({...r,Grupo:'Cobertura Page',Motivo:'Page con FRC 5 a 1000: ingresar a A/D/J/M'}):r);
-}
-function rawVentaMaxRows(){
-  return consolidado.filter(r=>!isVial(r)&&!hasGoodLoc(r)&&(
-    (hasReserved(r)&&Number(r.Venta||0)>70) ||
-    isOfferCoverage(r) ||
-    (isPageCoverage(r)&&pageFrcBand(r)==='prime')
-  ));
-}
-function rawSacarTRows(){
-  const vendidos=consolidado.filter(r=>rowInLowZone(r)&&hasReserved(r))
-    .sort((a,b)=>b.Venta-a.Venta||b.FRC-a.FRC)
-    .map(r=>({...r,Grupo:'Venta real',Motivo:'Está en T/M/R y tiene Reserved actual'}));
-  const pageMedium=consolidado.filter(r=>rowInLowZone(r)&&isPageCoverage(r)&&pageFrcBand(r)==='secondary')
-    .sort((a,b)=>b.FRC-a.FRC)
-    .map(r=>({...r,Grupo:'Cobertura Page',Motivo:'Page con FRC 5 a 1000: mover de T/M/R a A/D/J/M'}));
-  const legacyHigh=consolidado.filter(r=>rowInLowZone(r)&&!hasReserved(r)&&!isProtectedOffer(r)&&!hasPage(r)&&r.FRC>1000)
-    .sort((a,b)=>b.FRC-a.FRC)
-    .map(r=>({...r,Grupo:'FRC',Motivo:'Está en T/M/R y requiere una mejor posición por FRC alto'}));
-  return [...vendidos,...pageMedium,...legacyHigh];
-}
-function rawEnviarTRows(){
-  return consolidado.filter(r=>Number(r['Stock PL']||0)>0&&!hasReserved(r)&&!isProtectedOffer(r)&&r.FRC>=0&&r.FRC<=4&&!rowHasExcludedEnviarTLoc(r)&&!isArmado(r)&&!isCatalogo(r)&&!isVial(r));
-}
-// Analiza toda la PL (estaciones 1–9), sin convertir posiciones secundarias
-// en posiciones prime. La clase del origen determina qué demanda puede liberar.
-function liberationClass(loc){
-  if(isPrimeLoc(loc))return 'prime';
-  if(isPreferredSaleLoc(loc))return 'preferred';
-  if(isSecondaryLoc(loc))return 'secondary';
-  const n=stationFromLoc(loc);
-  // Algunas terminaciones existen físicamente sin banda comercial definida
-  // (p. ej., B/C/L en estaciones 8–9). Mostrarlas sin inventar una prioridad.
-  if(n>=1&&n<=9&&!isReservedLoc(loc))return 'unclassified';
-  return '';
-}
-function liberationClassName(type){
-  return ({prime:'Prime · estaciones 1–3',preferred:'Venta normal · estaciones 4–7',secondary:'Secundaria · estaciones 1–9',unclassified:'Sin clase comercial · revisar'})[type]||'';
-}
-function getLiberationLocations(row){
-  return locList(row).filter(loc=>liberationClass(loc));
-}
-function rawLiberarARows(){
-  return consolidado.filter(r=>
-    getLiberationLocations(r).length>0&&!rowInLowZone(r)&&
-    Number(r.Venta||0)<=10&&Number(r.FRC||0)<=300&&
-    !isProtectedOffer(r)&&!(isPageCoverage(r)&&pageFrcBand(r)!=='low')&&!isVial(r)
-  ).map(r=>{
-    const positions=getLiberationLocations(r);
-    const primary=positions.find(x=>liberationClass(x)!=='unclassified')||positions[0];
-    return {...r,'Posición candidata':primary,'Tipo de posición':liberationClassName(liberationClass(primary)),
-      Motivo:Number(r.Venta||0)>0?'Baja venta: liberar únicamente si existe destino secundario y falta espacio':'Baja rotación: liberar únicamente si hace falta espacio para una prioridad'};
-  });
-}
-function rawBulkCandidateRows(){
-  return consolidado.filter(r=>
-    Number(r['Stock PL']||0)>100 &&
-    !hasReserved(r) &&
-    Number(r.FRC||0)>=0 && Number(r.FRC||0)<=4 &&
-    !hasAnyOffer(r) &&
-    !hasPage(r) &&
-    !isArmado(r) &&
-    !isCatalogo(r)
-  ).sort((a,b)=>Number(b['Stock PL']||0)-Number(a['Stock PL']||0)||normCode(a.Código).localeCompare(normCode(b.Código)));
-}
-function getActionBuckets(){
-  const assigned=new Set();
-  const take=rows=>{const result=[];for(const row of rows){const code=normCode(row.Código);if(!code||assigned.has(code))continue;assigned.add(code);result.push(row)}return result};
-  const faltantes=take(getFaltantesRows());
-  const nuevos=take(rawIngresarNuevosRows());
-  const ventaMax=take(rawVentaMaxRows());
-  const sacarT=take(rawSacarTRows());
-  const enviarT=take(rawEnviarTRows());
-  const liberarA=take(rawLiberarARows());
-  // Bulk es un reporte informativo independiente; NO reserva ni excluye códigos.
-  const bulk=rawBulkCandidateRows();
-  return {faltantes,nuevos,ventaMax,sacarT,bulk,enviarT,liberarA};
-}
-function getEnviarTRows(){return getActionBuckets().enviarT}
-function getLiberarARows(){return getActionBuckets().liberarA}
-function getSacarTRows(){return getActionBuckets().sacarT}
-function getVentaMaxRows(){return getActionBuckets().ventaMax}
-function getIngresarNuevosRows(){return getActionBuckets().nuevos}
-function getBulkCandidateRows(){return getActionBuckets().bulk}
-function showConsolidado(){setResult('📋 Consolidado general',consolidado,'Tabla cruzada: Stock PL + Venta Real + FRC.');}
-function runIngresarNuevos(){
-  const rows=getIngresarNuevosRows();
-  setResult('🆕 Ingresar nuevos',addMotivo(rows,'Offer-New sin ubicación operativa en la línea'),'Incluye Offer-New y cobertura Page 5-1000 que aún no tienen posición A/D/J/M. Sin duplicados con otras clasificaciones.');
-}
-function runEnviarT(){
-  const rows=getEnviarTRows();
-  setResult('📤 Mandar a estaciones T',addMotivo(rows,'Venta 0 y FRC 0 a 4; baja rotación'),'Clasificación exclusiva: estos códigos no aparecen en ninguna otra acción.');
-}
-function runSacarT(){
-  const rows=getSacarTRows();
-  setResult('📥 Sacar de T/M/R',rows,'Prioriza venta actual; excluye códigos ya clasificados como Faltantes, Offer-New o Venta Max.');
-}
-function runLiberarA(){
-  const rows=getLiberarARows();
-  setResult('🧹 Liberar posiciones prime',rows,'Se revisan todas las estaciones 1–9; se distingue prime, venta normal, secundaria y ubicaciones sin clasificación comercial. El plan solo ejecuta liberaciones necesarias, nunca expulsa un código con Reserved y señala los casos que requieren revisión.');
-}
-function runVentaMax(){
-  const rows=getVentaMaxRows();
-  setResult('🔥 Venta Max',addMotivo(rows,'Venta actual alta u oferta prioritaria sin ubicación prime B/C/L de estaciones 1–3'),'Reserved tiene prioridad; excluye Faltantes y Offer-New para evitar duplicados.');
-}
-function runBulkCandidates(){
-  const rows=getBulkCandidateRows().map(r=>({...r,Grupo:'Revisión Bulk',Motivo:'Stock PL mayor a 100, sin Reserved, FRC 0 a 4, sin Oferta y sin Page'}));
-  setResult('📦 Candidatos a Bulk',rows,'Listado administrativo ordenado por mayor Stock PL. No genera movimientos automáticos; revisa y decide cuáles enviar a Bulk. Bulk no modifica ni excluye códigos de las demás actividades.');
-}
-function runFaltantesPL(){
-  const rows=getActionBuckets().faltantes;
-  setResult('🚨 Faltantes en PL',rows,'Códigos sin ubicación PL con Reserved, incluidos los agregados manualmente. La ubicación se asigna en el plan según Reserved y capacidad.');
-  updateFaltantesAlert();
-}
-function setResult(title,rows,note){currentTitle=title;currentRows=rows;resultTitle.textContent=title;resultNote.textContent=note;searchBox.value='';renderTable(rows);updateKpis();updateFaltantesAlert();}
-function getDisplayedRows(rows){
-  const q=(searchBox.value||'').toLowerCase();
-  let data=(rows||[]).filter(r=>!q || Object.values(r).some(v=>String(v).toLowerCase().includes(q)));
-  if(sortState.key){data=[...data].sort((a,b)=>{
-    const av=a[sortState.key], bv=b[sortState.key];
-    const an=Number(av), bn=Number(bv);
-    if(!isNaN(an)&&!isNaN(bn)) return (an-bn)*sortState.dir;
-    return String(av??'').localeCompare(String(bv??''))*sortState.dir;
-  });}
-  return data;
-}
-function renderTable(rows){
-  const data=getDisplayedRows(rows);
-  if(!data.length){resultTable.innerHTML='<tr><td style="padding:18px">Sin resultados.</td></tr>';return;}
-  const keys=Object.keys(data[0]);
-  resultTable.innerHTML='<thead><tr>'+keys.map(k=>`<th onclick="sortBy('${k.replace(/'/g,"\\'")}')">${k} ⇅</th>`).join('')+'</tr></thead><tbody>'+data.map(r=>'<tr>'+keys.map(k=>`<td>${formatCell(k,r[k])}</td>`).join('')+'</tr>').join('')+'</tbody>';
-}
-function formatCell(k,v){
-  if(k==='Motivo'||k==='Estado') return `<span class="badge b-blue">${escapeHtml(v)}</span>`;
-  if(['Venta','FRC','Stock PL','Reserved'].includes(k)) return `<b>${escapeHtml(v)}</b>`;
-  return escapeHtml(v);
-}
-function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));}
-function sortBy(k){sortState.dir=sortState.key===k?sortState.dir*-1:1;sortState.key=k;renderTable(currentRows);}
-function copyResult(){
-  if(!currentRows.length){alert('No hay resultado para copiar.');return;}
-  const keys=Object.keys(currentRows[0]);
-  const text=[keys.join('\t'),...currentRows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');
-  navigator.clipboard.writeText(text).then(()=>alert('Tabla copiada.'));
-}
-function downloadExcel(){
-  if(!currentRows.length){alert('No hay resultado para descargar.');return;}
-  const ws=XLSX.utils.json_to_sheet(currentRows);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Resultado');
-  const name=currentTitle.replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,'_')+'.xlsx';
-  XLSX.writeFile(wb,name);
+    if(count)await batch.commit();
+    await PLAN_REF.set({mode:'listas_operativas',total,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});
+    showToast('Listas publicadas');openTab('controlTab',document.querySelectorAll('.tab-btn')[1]);
+  }catch(err){console.error(err);alert('No se pudieron publicar las listas. Revisa la conexión y los permisos de Firebase.')}finally{$('publishBtn').disabled=false}
 }
 
-function getFaltantesRows(){
-  const stockCodes=new Set(consolidado.filter(r=>Number(r['Stock PL']||0)>0||locList(r).length).map(r=>normCode(r.Código)));
-  const result=new Map();
-  ventaRows.filter(v=>Number(v.reserved)>0&&!stockCodes.has(normCode(v.codigo))).forEach(v=>result.set(normCode(v.codigo),{
-    Código:normCode(v.codigo),Descripción:v.descripcion||'',Reserved:Number(v.reserved),Origen:'Venta real',Estado:'Sin ubicación PL',Motivo:'Reserved con venta, sin stock PL'
-  }));
-  manualMissingRecords.forEach(v=>{
-    const code=normCode(v.codigo);
-    if(!code||stockCodes.has(code))return;
-    if(result.has(code)){const old=result.get(code);if(!old.Descripción&&v.descripcion)old.Descripción=v.descripcion;return}
-    result.set(code,{Código:code,Descripción:v.descripcion||'',Reserved:Number(v.reserved)||0,Origen:'Alta manual',Estado:'Sin ubicación PL',Motivo:'Código agregado manualmente con Reserved'});
-  });
-  return [...result.values()].sort((a,b)=>b.Reserved-a.Reserved||String(a.Código).localeCompare(String(b.Código)));
+function subscribeAdmin(loadPublished=false){
+  if(unsubActivities)unsubActivities();
+  unsubActivities=ACTIVITIES_REF.onSnapshot(s=>{activityState=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data()}]));renderActivityAdmin();renderOperatorActivities();setCloud(true)},()=>setCloud(false));
+  if(loadPublished&&!consolidated.length)TASKS_REF.get().then(s=>{const grouped=Object.fromEntries(ACTIVITY_CONFIG.map(a=>[a.id,[]]));s.docs.forEach(d=>{const x=d.data();if(grouped[x.activity])grouped[x.activity].push({code:x.code,description:x.description,location:x.location,stockPL:x.stockPL,sale:x.sale,frc:x.frc,page:x.page,offer:x.offer})});localBuckets=grouped;fillListSelect()}).catch(console.error);
 }
-function subscribeManualMissing(){
-  if(manualMissingUnsubscribe)return;
-  manualMissingUnsubscribe=MANUAL_MISSING_REF.onSnapshot(snap=>{
-    manualMissingRecords=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderManualMissing();updateKpis();updateFaltantesAlert();
-    if(currentTitle==='🚨 Faltantes en PL')runFaltantesPL();
-  },err=>{console.error(err);manualMissingRows.textContent='No se pudieron leer los faltantes manuales.'});
+function refreshAdmin(){subscribeAdmin(true)}
+function activityStats(id){const state=activityState[id]||{},total=Number(state.total||0),completed=Number(state.completed||0);return {total,pending:Math.max(0,total-completed),completed}}
+function statusLabel(s){return ({deshabilitada:'Bloqueada',habilitada:'Habilitada',cerrada:'Completada'})[s]||'Sin publicar'}
+function statusClass(s){return s==='habilitada'?'b-on':s==='cerrada'?'b-done':'b-off'}
+function renderActivityAdmin(){
+  const host=$('activityAdmin');if(!Object.keys(activityState).length){host.innerHTML='<div class="empty">Sin carga publicada.</div>';return}
+  host.innerHTML=ACTIVITY_CONFIG.map(a=>{const state=activityState[a.id]||{},stats=activityStats(a.id);return `<article class="activity-card"><div class="activity-card-head"><div><h3>${a.icon} ${escapeHtml(a.name)}</h3><div class="status">Disponible para varios operarios</div></div><span class="badge ${statusClass(state.status)}">${statusLabel(state.status)}</span></div><div><span class="activity-count">${stats.pending}</span><span class="status"> pendientes de ${stats.total}</span></div><div class="actions">${state.status==='habilitada'?`<button class="danger" onclick="setActivityStatus('${a.id}','deshabilitada')">Bloquear</button>`:state.status==='cerrada'?'<button class="secondary" disabled>Finalizada</button>':`<button class="primary" ${stats.pending?'':'disabled'} onclick="setActivityStatus('${a.id}','habilitada')">Habilitar</button>`}</div></article>`}).join('');
 }
-function renderManualMissing(){
-  const el=document.getElementById('manualMissingRows');if(!el)return;
-  if(!manualMissingRecords.length){el.textContent='Sin códigos manuales.';return}
-  el.innerHTML=manualMissingRecords.map(r=>`<div class="manual-entry"><b>${escapeHtml(r.codigo)}</b> · ${escapeHtml(r.descripcion||'')} · Reserved ${escapeHtml(r.reserved)} <button class="secondary" style="padding:5px 8px" onclick="removeManualMissing('${escapeHtml(r.id)}')">Quitar</button></div>`).join('');
-}
-async function addManualMissing(){
-  const code=normCode(missingCode.value),description=norm(missingDesc.value),reserved=Number(missingReserved.value);
-  if(!/^[A-Z0-9_.-]{1,80}$/.test(code))return alert('Ingresa un código válido.');
-  if(!description)return alert('Ingresa la descripción del producto.');
-  if(!Number.isSafeInteger(reserved)||reserved<1)return alert('Reserved debe ser un entero mayor a cero.');
-  const inStock=consolidado.some(r=>normCode(r.Código)===code&&(Number(r['Stock PL']||0)>0||locList(r).length));
-  if(inStock)return alert('El código ya figura en PL. Revisa el stock antes de marcarlo como faltante.');
-  try{
-    await MANUAL_MISSING_REF.doc(code).set({codigo:code,descripcion:description,reserved,creadoPor:getUsuario(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    missingCode.value='';missingDesc.value='';missingReserved.value='';
-    runFaltantesPL();
-  }catch(e){console.error(e);alert('No se pudo guardar el código manual. Revisa la conexión y reglas de Firebase.');}
-}
-async function removeManualMissing(id){
-  if(!confirm('¿Quitar este faltante manual?'))return;
-  try{await MANUAL_MISSING_REF.doc(id).delete()}catch(e){console.error(e);alert('No se pudo eliminar.');}
-}
-function updateFaltantesAlert(){
-  const n=getActionBuckets().faltantes.length;
-  const btn=document.getElementById('btnFaltantesPL');
-  const count=document.getElementById('faltantesCount');
-  if(count) count.textContent=n?`(${n})`:'';
-  if(btn) btn.classList.toggle('alert-pulse', n>0 && currentTitle!=='🚨 Faltantes en PL');
-}
-function shortDesc(value){
-  return String(value??'').trim().split(/\s+/).filter(Boolean).slice(0,2).join(' ');
-}
-function printResult(){
-  if(!currentRows.length){alert('No hay resultado para imprimir.');return;}
-  const data=getDisplayedRows(currentRows);
-  if(!data.length){alert('No hay resultado visible para imprimir.');return;}
-  const keys=['Código','Descripción','Ubicación PL','Stock PL','Venta'];
-  const printValue=(row,key)=>key==='Venta'?(row.Venta??row.Reserved??0):(row[key]??'');
-  const rows=data.map(r=>'<tr>'+keys.map(k=>`<td>${escapeHtml(printValue(r,k))}</td>`).join('')+'</tr>').join('');
-  const html=`<html><head><title>${escapeHtml(currentTitle)}</title><style>
-    @page{size:portrait;margin:8mm}
-    *{box-sizing:border-box}
-    body{font-family:Segoe UI,Arial,sans-serif;color:#123c3a;margin:0;font-size:10px}
-    h1{color:#007c70;font-size:18px;margin:0 0 4px}
-    .meta{font-size:9px;color:#496966;margin-bottom:7px}
-    table{width:100%;border-collapse:collapse;table-layout:auto;font-size:9px}
-    th{background:#dff5ef;color:#006d62;text-align:left;font-weight:800}
-    th,td{border:1px solid #d7ece7;padding:4px 5px;vertical-align:top;line-height:1.2}
-    td:nth-child(2),th:nth-child(2){width:42%}
-    td{word-break:break-word}
+async function setActivityStatus(id,status){try{await ACTIVITIES_REF.doc(id).set({status,operator:'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(err){console.error(err);alert('No se pudo actualizar la actividad.')}}
 
-    /* Mobile-first operational list */
-    .operator-wrap{max-width:900px}.operator-page{padding-bottom:40px}
-    .operator-page button{touch-action:manipulation}
-    .operator-list-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
-    .operator-list-toolbar input{flex:1;min-width:150px;width:100%;font-size:16px}
-    .operator-list{display:grid;gap:12px;max-height:65dvh;overflow:auto;overscroll-behavior:contain;padding:2px 4px 12px}
-    .operator-item{background:#fff;border:1px solid #cfeae3;border-radius:17px;padding:14px;display:grid;gap:10px}
-    .operator-item.is-done{background:#f2faf7;opacity:.75}
-    .operator-item.is-blocked{background:#f8faf9}
-    .operator-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-    .operator-item-code{font-size:23px;color:#006f65;font-weight:950;letter-spacing:.2px}
-    .operator-item-desc{font-size:15px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
-    .operator-item-route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
-    .operator-item-place{background:#f4faf8;border-radius:11px;padding:9px;min-width:0;overflow-wrap:anywhere}
-    .operator-item-place small{display:block;font-size:10px;font-weight:800;color:#547c76;margin-bottom:3px}
-    .operator-item-place strong{font-size:16px}
-    .operator-item-actions{display:grid;grid-template-columns:2fr 1fr;gap:8px}
-    .operator-item-actions button{min-height:50px;padding:10px;font-size:14px;white-space:normal}
-    .operator-item-actions button:disabled{opacity:.62;cursor:default;transform:none}
-    .operator-compact-meta{color:#64847e;font-size:12px;font-weight:650}
-    .operator-topline{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    @media(max-width:620px){.operator-head{padding-right:0;margin-top:45px}.operator-card{padding:13px;border-radius:17px}.operator-list{max-height:none;overflow:visible}.operator-item{padding:12px}.operator-item-actions{grid-template-columns:1fr 1fr}.operator-item-actions button{min-height:54px}.operator-page input{min-height:46px}}
-  </style></head><body><h1>${escapeHtml(currentTitle)}</h1><div class="meta">Registros: ${data.length}</div><table><thead><tr>${keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
-  const w=window.open('', '_blank');
-  w.document.write(html);w.document.close();w.focus();w.print();
-}
+function enterMode(mode){$('landing').classList.add('hidden');if(mode==='supervisor'){$('supervisorShell').classList.remove('hidden');subscribeAdmin(true)}else{$('operatorShell').classList.remove('hidden');$('operatorName').value=localStorage.getItem('pl_operator_name')||'';subscribeAdmin(false)}}
+function backHome(){leaveActivityView();$('supervisorShell').classList.add('hidden');$('operatorShell').classList.add('hidden');$('landing').classList.remove('hidden')}
+function openTab(id,btn){document.querySelectorAll('#supervisorShell .tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#supervisorShell .tab-btn').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');if(btn)btn.classList.add('active')}
+function setCloud(ok){$('supervisorCloud').textContent=ok?'Firebase conectado':'Sin conexión';$('operatorCloud').textContent=ok?'Firebase conectado':'Sin conexión'}
 
-// ---------- PLAN DE CAMBIO DE LÍNEA ----------
-function parseLocationMaster(){
-  const rows=[];
-  String(txtLocations.value||'').split(/\r?\n/).forEach(line=>{
-    const clean=line.trim();if(!clean||/^\|?\s*-+/.test(clean)||/PuestoCaja/i.test(clean))return;
-    const cells=clean.startsWith('|')?clean.replace(/^\||\|$/g,'').split('|').map(norm):clean.split('\t').map(norm);
-    const station=Number(cells[0]);const location=norm(cells[cells.length-1]);
-    if(Number.isFinite(station)&&location)rows.push({station,location});
-  });
-  return rows;
+function renderOperatorActivities(){
+  const host=$('operatorActivities');if(!host)return;
+  const cards=ACTIVITY_CONFIG.map(a=>{const s=activityState[a.id]||{},stats=activityStats(a.id),available=s.status==='habilitada';const text=available?'Disponible':s.status==='cerrada'?'Finalizada':'Bloqueada';return `<button class="operator-activity ${selectedActivity===a.id?'selected':''}" ${available?'':'disabled'} onclick="selectOperatorActivity('${a.id}')">${a.icon} <b>${escapeHtml(a.name)}</b><small>${text} · ${stats.pending} pendientes</small></button>`});host.innerHTML=cards.join('');$('takeActivityBtn').disabled=!selectedActivity}
+function selectOperatorActivity(id){selectedActivity=id;renderOperatorActivities()}
+async function takeActivity(){
+  const name=norm($('operatorName').value);if(!name)return alert('Ingresa tu nombre.');if(!selectedActivity)return alert('Selecciona una actividad.');localStorage.setItem('pl_operator_name',name);
+  try{const snap=await ACTIVITIES_REF.doc(selectedActivity).get();if(!snap.exists||snap.data().status!=='habilitada')throw new Error('bloqueada');startOperatorList()}catch(err){alert('La actividad ya no está habilitada.')}
 }
-function demandLoad(row){const sale=Number(row.Venta||0),frc=Number(row.FRC||0);return sale>0?sale:frc}
-function currentMainLocation(row){return locList(row).find(l=>stationFromLoc(l)>=1&&stationFromLoc(l)<=9&&!isReservedLoc(l))||''}
-function firstSourceLocation(row){return locList(row)[0]||'FUERA DE PL'}
-function planActivityLabel(v){return ({enviar_t:'Mandar a estaciones T',liberar_prime:'Liberar prime',bajar_venta:'Bajar venta normal',sacar_baja:'Sacar de T/M/R',faltantes_pl:'Faltantes en PL',ingresar_nuevo:'Ingresar nuevos · Supervisor',reubicar_prioridad:'Venta Max',verificar:'Verificar'})[v]||v}
-function taskStatusLabel(v){return ({disponible:'Disponible',asignada:'En proceso',completada:'Completada',bloqueada:'Bloqueada',novedad:'Novedad'})[v]||v}
-function taskStatusClass(v){return ({disponible:'status-pending',asignada:'status-progress',completada:'status-done',bloqueada:'status-blocked',novedad:'status-issue'})[v]||'status-blocked'}
-function locationOccupancy(){
-  const map=new Map();consolidado.forEach(row=>locList(row).forEach(loc=>{const key=loc.toUpperCase();if(!map.has(key))map.set(key,[]);map.get(key).push(row)}));return map;
+function startOperatorList(){
+  $('operatorSetup').classList.add('hidden');$('operatorWork').classList.remove('hidden');$('operatorActivityTitle').textContent=(ACTIVITY_MAP.get(selectedActivity)?.icon||'')+' '+(ACTIVITY_MAP.get(selectedActivity)?.name||'Actividad');$('operatorSearch').value='';
+  if(unsubOperatorTasks)unsubOperatorTasks();unsubOperatorTasks=TASKS_REF.where('activity','==',selectedActivity).onSnapshot(s=>{operatorRows=s.docs.map(d=>({id:d.id,...d.data()}));renderOperatorList()},err=>{console.error(err);$('operatorList').innerHTML='<div class="operator-card empty">No se pudo cargar la lista.</div>'});
 }
-function planPriority(row){
-  if(hasReserved(row))return 1;
-  if(isOfferCoverage(row))return 2;
-  if(isPageCoverage(row))return 3;
-  if(Number(row.FRC||0)>1000)return 4;
-  return 5;
+function renderOperatorList(){
+  const q=norm($('operatorSearch').value).toLowerCase(),all=operatorRows,pending=all.filter(x=>x.status!=='completado'),rows=pending.filter(x=>!q||String(x.code).toLowerCase().includes(q)||String(x.description).toLowerCase().includes(q)||String(x.location).toLowerCase().includes(q));const done=all.length-pending.length,percent=all.length?Math.round(done/all.length*100):0;
+  $('operatorProgressText').textContent=`${pending.length} pendientes · ${done} completados`;$('operatorProgressBar').style.width=percent+'%';
+  $('operatorList').innerHTML=rows.length?rows.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div><div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join(''):`<div class="operator-card empty">${pending.length?'No hay coincidencias.':'Actividad completada. No quedan códigos pendientes.'}</div>`;
 }
-let indexedStockInput=null;
-let indexedOriginUnits=new Map();
-function getOriginUnits(row,origin){
-  const source=txtStock.value||'';
-  if(indexedStockInput!==source){
-    indexedStockInput=source;indexedOriginUnits=new Map();
-    const raw=parseTSV(source);
-    if(raw.length){
-      const kc=findKey(raw[0],['Variante','Código','Codigo','Code']);
-      const kl=findKey(raw[0],['Caja','Ubicación','Ubicacion']);
-      const kq=findKey(raw[0],['Physical Quantity','Cantidad','Qty']);
-      if(kc&&kl&&kq)raw.forEach(x=>{
-        const key=normCode(x[kc])+'\u0001'+norm(x[kl]).toUpperCase();
-        indexedOriginUnits.set(key,(indexedOriginUnits.get(key)||0)+toNum(x[kq]));
-      });
-    }
-  }
-  return indexedOriginUnits.size? (indexedOriginUnits.get(normCode(row.Código)+'\u0001'+norm(origin).toUpperCase())??0) : Number(row['Stock PL']||0);
+async function completeCode(id,button){
+  const name=norm($('operatorName').value),row=operatorRows.find(x=>x.id===id);if(!row)return;
+  if(button){button.disabled=true;button.textContent='Guardando…'}
+  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(selectedActivity),taskRef=TASKS_REF.doc(id),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
 }
-function createPlanTask(activity,row,origin,destination,motive,dependency='',step=1){
-  return {id:'',activity,step,status:dependency?'bloqueada':'disponible',dependency,dependents:[],code:normCode(row.Código),description:row.Descripción||'',units:origin==='FUERA DE PL'||origin==='PENDIENTE DE INGRESO'?null:getOriginUnits(row,origin),sale:Number(row.Venta||0),frc:Number(row.FRC||0),offer:row.Oferta||'',page:row.Page||'',origin:origin||'POR DEFINIR',destination:destination||'POR DEFINIR',station:stationFromLoc(destination),motive,operator:'',startedAt:null,completedAt:null,issue:''};
-}
-function reconciliationGroups(){
-  const b=getActionBuckets();
-  return [
-    {key:'faltantes',name:'Faltantes en PL',activity:'faltantes_pl',rows:b.faltantes},
-    {key:'nuevos',name:'Ingresar nuevos',activity:'ingresar_nuevo',rows:b.nuevos},
-    {key:'ventaMax',name:'Venta Max',activity:'reubicar_prioridad',rows:b.ventaMax},
-    {key:'sacarT',name:'Sacar de T/M/R',activity:'sacar_baja',rows:b.sacarT},
-    {key:'enviarT',name:'Mandar a estaciones T',activity:'enviar_t',rows:b.enviarT},
-    {key:'liberarA',name:'Liberar posiciones prime y PL',activity:'liberar_prime',rows:b.liberarA}
-  ];
-}
-function renderPlanReconciliation(){
-  const summary=document.getElementById('reconcileSummaryTable');
-  const pendingTable=document.getElementById('reconcilePendingTable');
-  const meta=document.getElementById('reconcileMeta');
-  if(!summary||!pendingTable)return;
-  if(!planReconciliationReady){summary.innerHTML='<tr><td>Sin análisis generado.</td></tr>';pendingTable.innerHTML='<tr><td>Sin pendientes.</td></tr>';return;}
-  const groups=reconciliationGroups();
-  let all=0,planned=0,pending=0,noChange=0;
-  const lines=groups.map(g=>{
-    const rows=planReconciliation.filter(r=>r.grupo===g.key);
-    const ok=rows.filter(r=>r.estado==='Planificado').length;
-    const none=rows.filter(r=>r.estado==='Sin cambio').length;
-    const left=rows.length-ok-none;
-    all+=rows.length;planned+=ok;pending+=left;noChange+=none;
-    return `<tr><td><b>${escapeHtml(g.name)}</b></td><td>${rows.length}</td><td>${ok}</td><td>${none}</td><td>${left}</td></tr>`;
-  });
-  summary.innerHTML='<thead><tr><th>Actividad</th><th>Detectados</th><th>Planificados</th><th>Sin cambio</th><th>Pendientes</th></tr></thead><tbody>'+lines.join('')+`<tr><th>TOTAL (sin Bulk)</th><th>${all}</th><th>${planned}</th><th>${noChange}</th><th>${pending}</th></tr></tbody>`;
-  const pendingRows=planReconciliation.filter(r=>r.estado!=='Planificado');
-  pendingTable.innerHTML=pendingRows.length?'<thead><tr><th>Actividad</th><th>Código</th><th>Estado</th><th>Motivo</th></tr></thead><tbody>'+pendingRows.map(r=>`<tr><td>${escapeHtml(r.actividad)}</td><td><b>${escapeHtml(r.codigo)}</b></td><td>${escapeHtml(r.estado)}</td><td>${escapeHtml(r.motivo)}</td></tr>`).join('')+'</tbody>':'<tr><td>Sin códigos pendientes o sin cambio.</td></tr>';
-  if(meta)meta.textContent=`${all} códigos detectados · ${planned} planificados · ${noChange} sin cambio · ${pending} pendientes. Movimientos físicos: ${generatedPlan.length}. Bulk: ${getBulkCandidateRows().length} candidatos independientes.`;
-}
-function reconciliationExportRows(){
-  return planReconciliation.map(r=>({Actividad:r.actividad,Código:r.codigo,Descripción:r.descripcion,Reserved:r.reserved,FRC:r.frc,Estado:r.estado,Origen:r.origen||'',Destino:r.destino||'',Motivo:r.motivo||''}));
-}
-function reconciliationSummaryRows(){
-  return reconciliationGroups().map(g=>{
-    const rows=planReconciliation.filter(r=>r.grupo===g.key),planned=rows.filter(r=>r.estado==='Planificado').length;
-    const noChange=rows.filter(r=>r.estado==='Sin cambio').length;
-    return {Actividad:g.name,Detectados:rows.length,Planificados:planned,'Sin cambio':noChange,Pendientes:rows.length-planned-noChange};
-  });
-}
-async function copyPlanReconciliation(){
-  if(!planReconciliationReady)return alert('Genera el plan antes de copiar el reporte.');
-  const rows=reconciliationExportRows(),keys=['Actividad','Código','Descripción','Reserved','FRC','Estado','Origen','Destino','Motivo'];
-  const txt=[keys.join('\t'),...rows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');
-  try{await navigator.clipboard.writeText(txt);alert('Conciliación copiada.')}catch(e){alert('No se pudo copiar. Usa Descargar Excel.');}
-}
-function downloadPlanReconciliation(){
-  if(!planReconciliationReady)return alert('Genera el plan antes de descargar la conciliación.');
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(reconciliationSummaryRows()),'Resumen por actividad');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(reconciliationExportRows()),'Conciliacion codigos');
-  XLSX.writeFile(wb,'Picking_Line_Conciliacion_Plan.xlsx');
-}
-function generateMovementPlan(){
-  if(!consolidado.length)return alert('Primero genera el consolidado.');
-  const master=parseLocationMaster();
-  if(!master.length)return alert('Carga el maestro de ubicaciones antes de generar el plan.');
-  const occupancy=locationOccupancy();
-  const uniqueMain=[...new Map(master.filter(x=>x.station>=1&&x.station<=9&&!isReservedLoc(x.location)&&!isStation10(x.location)).map(x=>[x.location.toUpperCase(),x])).values()];
-  const emptyPools={
-    prime:uniqueMain.filter(x=>isPrimeLoc(x.location)&&!occupancy.has(x.location.toUpperCase())).map(x=>({location:x.location,releaseTask:null})),
-    preferred:uniqueMain.filter(x=>isPreferredSaleLoc(x.location)&&!occupancy.has(x.location.toUpperCase())).map(x=>({location:x.location,releaseTask:null})),
-    secondary:uniqueMain.filter(x=>isSecondaryLoc(x.location)&&!occupancy.has(x.location.toUpperCase())).map(x=>({location:x.location,releaseTask:null}))
-  };
-  const groups=reconciliationGroups(), groupMap=new Map(groups.map(g=>[g.key,g]));
-  // Una única clasificación alimenta tanto Acciones PL como el plan físico.
-  planReconciliation=groups.flatMap(g=>g.rows.map(row=>({grupo:g.key,actividad:g.name,codigo:normCode(row.Código),descripcion:row.Descripción||'',reserved:Number(row.Reserved??row.Venta??0),frc:Number(row.FRC||0),estado:'Pendiente',motivo:'No se encontró destino disponible',origen:'',destino:''})));
-  planReconciliationReady=true;
-  const recMap=new Map(planReconciliation.map(r=>[r.grupo+'|'+r.codigo,r]));
-  const tasks=[],plannedCodes=new Set(),reservedTargets=new Set();
-  const stationCurrent={};for(let i=1;i<=9;i++)stationCurrent[i]=0;
-  consolidado.forEach(row=>{const stations=new Set(locList(row).map(stationFromLoc).filter(s=>s>=1&&s<=9));stations.forEach(s=>stationCurrent[s]+=demandLoad(row));});
-  const diag=(group,row,reason)=>{const x=recMap.get(group+'|'+normCode(row.Código));if(x){x.estado='Pendiente';x.motivo=reason;}};
-  const sourceFor=(row,low=false)=>{const arr=locList(row);return low?(arr.find(isLowZoneLoc)||arr.find(x=>stationFromLoc(x)>0)||arr[0]||''):(arr.find(x=>stationFromLoc(x)>0)||arr.find(x=>/^[TMR]/i.test(x))||arr[0]||'');};
-  const validOrigin=origin=>origin&&origin!=='0-0000'&&origin!=='FUERA DE PL'&&origin!=='PENDIENTE DE INGRESO';
-  const sourceSafe=(row,origin)=>Number(row['Stock PL']||0)===0||getOriginUnits(row,origin)>0;
-  const taskFor=(group,row,origin,destination,reason,dependency=null)=>{
-    const code=normCode(row.Código),record=recMap.get(group+'|'+code);
-    if(plannedCodes.has(code)){diag(group,row,'Código ya planificado en otra actividad: revisar clasificación');return null;}
-    if(destination!=='RIEL → T'&&reservedTargets.has(destination.toUpperCase())){diag(group,row,'La ubicación destino ya está reservada');return null;}
-    const task=createPlanTask(groupMap.get(group).activity,row,origin||'FUERA DE PL',destination,reason,'',group==='enviarT'?1:group==='liberarA'?2:3);
-    // Los Faltantes sin existencias previas deben registrar cantidad al ser recibidos.
-    if(group==='faltantes'){task.units=null;task.origin='FUERA DE PL';}
-    if(group==='nuevos'&&origin==='PENDIENTE DE INGRESO')task.units=null;
-    if(dependency)task._dependencyTask=dependency;
-    tasks.push(task);plannedCodes.add(code);
-    if(destination!=='RIEL → T'&&stationFromLoc(destination)){
-      reservedTargets.add(destination.toUpperCase());stationCurrent[stationFromLoc(destination)]+=demandLoad(row);
-    }
-    if(stationFromLoc(origin)>=1&&stationFromLoc(origin)<=9)stationCurrent[stationFromLoc(origin)]-=demandLoad(row);
-    if(record){record.estado='Planificado';record.motivo=reason;record.origen=task.origin;record.destino=task.destination;}
-    return task;
-  };
-  const canFreeSlot=(origin,row)=>{
-    const existing=occupancy.get(origin.toUpperCase())||[];
-    return existing.length===1&&normCode(existing[0].Código)===normCode(row.Código);
-  };
-  const registerRelease=(task,row,origin)=>{
-    if(!task||!canFreeSlot(origin,row))return;
-    const type=isPrimeLoc(origin)?'prime':isPreferredSaleLoc(origin)?'preferred':isSecondaryLoc(origin)?'secondary':'';
-    if(type)emptyPools[type].push({location:origin,releaseTask:task});
-  };
-  // 1) Mandar a T: TODOS los candidatos detectados válidos generan un movimiento.
-  // Se termina en RIEL: la asignación exacta a T corresponde al pistoleo posterior.
-  groupMap.get('enviarT').rows.forEach(row=>{
-    const origins=[...new Set(locList(row).filter(validOrigin))].filter(x=>getOriginUnits(row,x)>0);
-    if(!origins.length)return diag('enviarT',row,'No hay ubicaciones de origen PL con stock físico registrado');
-    origins.forEach((origin,index)=>{
-      const motive='Baja rotación: Reserved 0 y FRC 0–4. Entregar al riel para ubicación posterior.';
-      let task;
-      if(index===0)task=taskFor('enviarT',row,origin,'RIEL → T',motive);
-      else{
-        task=createPlanTask('enviar_t',row,origin,'RIEL → T',motive,'',1);
-        tasks.push(task);
-      }
-      registerRelease(task,row,origin);
-    });
-  });
-  // 2) Demanda de ubicaciones por clase, usando los mismos grupos exclusivos.
-  function targetType(group,row){
-    if(group==='ventaMax')return 'prime';
-    if(isOfferCoverage(row))return 'prime';
-    if(isPageCoverage(row)&&pageFrcBand(row)==='prime')return 'prime';
-    const reserved=Number(row.Reserved??row.Venta??0);
-    if(reserved>70)return 'prime';
-    if(reserved>=11)return 'preferred';
-    if(reserved>0)return 'secondary';
-    if(Number(row.FRC||0)>1000)return 'prime';
-    return 'secondary';
-  }
-  const inbound=['faltantes','nuevos','ventaMax','sacarT'].flatMap(group=>groupMap.get(group).rows.map(row=>({group,row,type:targetType(group,row)})));
-  const demandCount={prime:0,preferred:0,secondary:0};
-  inbound.forEach(x=>demandCount[x.type]++);
-  const shortage=Object.fromEntries(Object.keys(demandCount).map(type=>[type,Math.max(0,demandCount[type]-emptyPools[type].length)]));
-  const liberables=[...groupMap.get('liberarA').rows].sort((a,b)=>Number(a.Venta||0)-Number(b.Venta||0)||Number(a.FRC||0)-Number(b.FRC||0));
-  const possibleReleases={prime:[],preferred:[],secondary:[]};
-  for(const row of liberables){
-    const origins=getLiberationLocations(row).filter(origin=>validOrigin(origin)&&canFreeSlot(origin,row)&&sourceSafe(row,origin));
-    const availableTypes=[...new Set(origins.map(liberationClass))];
-    if(!availableTypes.some(type=>['prime','preferred','secondary'].includes(type))){
-      diag('liberarA',row,'Ubicación en estaciones 1–9 sin clase comercial configurada; requiere revisión del supervisor');
-      continue;
-    }
-    // Se asigna cada código a una clase según la necesidad real, sin duplicarlo.
-    const preferredType=['prime','preferred','secondary'].find(type=>shortage[type]>possibleReleases[type].length&&availableTypes.includes(type))
-      ||['prime','preferred','secondary'].find(type=>availableTypes.includes(type));
-    if(!preferredType){diag('liberarA',row,'La posición está ocupada por varios códigos o no dispone de stock físico');continue;}
-    const origin=origins.find(loc=>liberationClass(loc)===preferredType);
-    possibleReleases[preferredType].push({row,origin});
-  }
-  // Venta real > 0 nunca se envía a T: las liberaciones prime/preferentes
-  // necesitan una posición secundaria; liberar secundaria requiere Reserved 0.
-  const plannedHigh={prime:possibleReleases.prime.slice(0,shortage.prime),preferred:possibleReleases.preferred.slice(0,shortage.preferred)};
-  const positiveMoves=[...plannedHigh.prime,...plannedHigh.preferred].filter(x=>Number(x.row.Venta||0)>0).length;
-  const neededSecondary=Math.max(0,demandCount.secondary+positiveMoves-emptyPools.secondary.length);
-  const secondaryCandidates=possibleReleases.secondary.filter(x=>Number(x.row.Venta||0)===0&&Number(x.row.FRC||0)<=4);
-  let releasedSecondary=0;
-  for(const {row,origin} of secondaryCandidates){
-    if(releasedSecondary>=neededSecondary)break;
-    const task=taskFor('liberarA',row,origin,'RIEL → T','Liberar ubicación secundaria de baja rotación para cubrir demanda PL');
-    if(task){releasedSecondary++;registerRelease(task,row,origin);}
-  }
-  // Por seguridad, nunca se traslada a T un código secundario con FRC >4:
-  // ya no sería una baja rotación apta para salida automática.
-  // Las posiciones prime y preferentes no se confunden: cada destino recibe
-  // únicamente un producto cuya prioridad corresponde a su clase.
-  const madeHigh={prime:0,preferred:0};
-  for(const type of ['prime','preferred']){
-    for(const {row,origin} of plannedHigh[type]){
-      const sale=Number(row.Venta||0);
-      let destination='RIEL → T',dependency=null;
-      if(sale>0){
-        const free=emptyPools.secondary.filter(x=>
-          x.location.toUpperCase()!==origin.toUpperCase()&&
-          !reservedTargets.has(x.location.toUpperCase())
-        ).sort((a,b)=>Number(Boolean(a.releaseTask))-Number(Boolean(b.releaseTask))||
-          (stationCurrent[stationFromLoc(a.location)]||0)-(stationCurrent[stationFromLoc(b.location)]||0));
-        if(!free.length){diag('liberarA',row,'No hay posición secundaria disponible para preservar Reserved dentro de PL');continue;}
-        destination=free[0].location;dependency=free[0].releaseTask;
-      }
-      const motivo='Liberar ubicación '+liberationClassName(type)+' para un código de mayor prioridad';
-      const task=taskFor('liberarA',row,origin,destination,motivo,dependency);
-      if(task){
-        madeHigh[type]++;
-        registerRelease(task,row,origin);
-        if(destination!=='RIEL → T')emptyPools.secondary=emptyPools.secondary.filter(x=>x.location.toUpperCase()!==destination.toUpperCase());
-      }
-    }
-  }
-  // Todos los candidatos quedan visibles en la conciliación aunque no sea
-  // necesario moverlos. Un Reserved positivo en secundaria nunca sale a T.
-  for(const row of liberables){
-    const record=recMap.get('liberarA|'+normCode(row.Código));
-    if(!record||record.estado!=='Pendiente'||record.motivo!=='No se encontró destino disponible')continue;
-    record.estado='Sin cambio';
-    record.motivo='No hace falta liberar su ubicación para las prioridades actuales';
-  }
-  // 3) Destinos se asignan según Reserved, Oferta y FRC, con capacidad y dependencias.
-  // Preferencia por huecos hoy libres; los liberados son destinos bloqueados hasta confirmar la salida.
-  const order={faltantes:0,nuevos:1,ventaMax:2,sacarT:3};
-  inbound.sort((a,b)=>({prime:0,preferred:1,secondary:2}[a.type])-({prime:0,preferred:1,secondary:2}[b.type])||order[a.group]-order[b.group]||Number(b.row.Reserved??b.row.Venta??0)-Number(a.row.Reserved??a.row.Venta??0)||Number(b.row.FRC||0)-Number(a.row.FRC||0));
-  inbound.forEach(({group,row,type})=>{
-    const missing=group==='faltantes';
-    const tentativeSource=sourceFor(row,group==='sacarT');
-    const origin=missing?'FUERA DE PL':(group==='nuevos'&&Number(row['Stock PL']||0)===0&&!validOrigin(tentativeSource))?'PENDIENTE DE INGRESO':tentativeSource;
-    if(!missing&&origin!=='PENDIENTE DE INGRESO'&&!validOrigin(origin))return diag(group,row,'Código sin ubicación física origen identificable');
-    if(!missing&&origin!=='PENDIENTE DE INGRESO'&&!sourceSafe(row,origin))return diag(group,row,'El origen no presenta stock físico suficiente para planificar');
-    const candidates=emptyPools[type].filter(x=>x.location.toUpperCase()!==String(origin).toUpperCase()&&!reservedTargets.has(x.location.toUpperCase()));
-    candidates.sort((a,b)=>Number(Boolean(a.releaseTask))-Number(Boolean(b.releaseTask))||(stationCurrent[stationFromLoc(a.location)]||0)-(stationCurrent[stationFromLoc(b.location)]||0)||a.location.localeCompare(b.location));
-    if(!candidates.length)return diag(group,row,'Sin cupo '+(type==='prime'?'prime B/C/L (est. 1–3)':type==='preferred'?'B/C (est. 4–7)':'secundario A/D/J/K/M')+' disponible; no se asigna destino ficticio');
-    const slot=candidates[0],sale=Number(row.Reserved??row.Venta??0);
-    const reason=missing?'Faltante PL: Reserved '+sale+'; ingreso desde fuera de PL':group==='nuevos'?'Alta nueva según cobertura comercial':group==='ventaMax'?'Venta Max: prioridad prime por Reserved/Oferta/Page':group==='sacarT'?'Salida de T/M/R por venta o cobertura':'Movimiento validado';
-    const task=taskFor(group,row,origin,slot.location,reason,slot.releaseTask);
-    if(task)emptyPools[type]=emptyPools[type].filter(x=>x.location.toUpperCase()!==slot.location.toUpperCase());
-  });
-  // Toda clasificación queda contabilizada; Bulk no interfiere en este plan.
-  const targets=new Set();
-  for(const task of tasks){
-    if(task.destination==='RIEL → T'||!stationFromLoc(task.destination))continue;
-    const key=task.destination.toUpperCase();
-    if(targets.has(key))return alert('Destino PL duplicado: '+task.destination+'. Se canceló el plan.');
-    targets.add(key);
-  }
-  tasks.forEach((t,i)=>t.id='mov_'+String(i+1).padStart(4,'0'));
-  tasks.forEach(t=>{if(t._dependencyTask){t.dependency=t._dependencyTask.id;t.status='bloqueada';t._dependencyTask.dependents.push(t.id);delete t._dependencyTask;}});
-  generatedPlan=tasks;stationLoads=stationCurrent;livePlanRows=[...tasks];preliminaryPlanVisible=true;
-  renderPlanDashboard();renderPlanReconciliation();
-  const planned=planReconciliation.filter(x=>x.estado==='Planificado').length;
-  const noChange=planReconciliation.filter(x=>x.estado==='Sin cambio').length;
-  const pending=planReconciliation.length-planned-noChange;
-  planMeta.textContent=`Plan preliminar · ${tasks.length} movimientos (${planned} códigos) · ${noChange} sin cambio · ${pending} pendientes`;
-  alert(`Plan generado: ${tasks.length} movimientos para ${planned} códigos de ${planReconciliation.length} candidatos. ${noChange} no requieren cambio; ${pending} quedan pendientes con motivo. Revisa la Conciliación antes de publicar.`);
-}
-async function deleteOldAlternateReservations(){
-  const snap=await ALT_LOCATIONS_REF.get();let batch=db.batch(),count=0;
-  for(const d of snap.docs){batch.delete(d.ref);if(++count>=400){await batch.commit();batch=db.batch();count=0}}
-  if(count)await batch.commit();
-}
-async function deletePublishedTasks(){
-  const snap=await PLAN_TASKS_REF.get();let batch=db.batch(),ops=0;
-  for(const d of snap.docs){batch.delete(d.ref);ops++;if(ops>=450){await batch.commit();batch=db.batch();ops=0}}
-  if(ops)await batch.commit();
-}
-async function publishMovementPlan(){
-  if(!generatedPlan.length)return alert('Genera y revisa el plan antes de publicarlo.');
-  try{
-    const active=await PLAN_TASKS_REF.limit(1).get();
-    if(!active.empty && !confirm('Ya existe un plan publicado. Reemplazarlo eliminará su progreso. ¿Deseas reemplazarlo expresamente?'))return;
-  }catch(e){console.error(e);return alert('No se pudo comprobar si existe un plan activo.');}
-  if(!confirm(`¿Publicar ${generatedPlan.length} movimientos para los operadores?`))return;
-  try{
-    await deletePublishedTasks();await deleteOldAlternateReservations();let batch=db.batch(),ops=0;
-    for(const task of generatedPlan){batch.set(PLAN_TASKS_REF.doc(task.id),{...task,createdAt:firebase.firestore.FieldValue.serverTimestamp()});ops++;if(ops>=430){await batch.commit();batch=db.batch();ops=0}}
-    const firstActivity=OPERATOR_ACTIVITIES.find(activity=>generatedPlan.some(task=>task.activity===activity));
-    for(const activity of OPERATOR_ACTIVITIES){
-      const hasTasks=activity==='verificar'||generatedPlan.some(task=>task.activity===activity);
-      const phaseStatus=hasTasks?(activity===firstActivity?'disponible':'bloqueada'):'no_aplica';
-      batch.set(PLAN_ACTIVITIES_REF.doc(activity),{activity,status:phaseStatus,operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});ops++;
-    }
-    batch.set(PLAN_META_REF,{active:true,total:generatedPlan.length,stationLoads,mainLocations:[...new Set(parseLocationMaster().filter(x=>x.station>=1&&x.station<=9&&!isReservedLoc(x.location)).map(x=>x.location.toUpperCase()))],occupiedAtStart:[...locationOccupancy().keys()],createdBy:getUsuario(),createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});ops++;
-    if(ops)await batch.commit();preliminaryPlanVisible=false;alert('Plan publicado. Los celulares ya pueden tomar actividades.');loadPlanDashboard();
-  }catch(err){console.error(err);alert('No se pudo publicar el plan. Revisa las reglas de Firebase.')}
-}
-function loadPlanDashboard(){
-  subscribeActivityAssignments();
-  if(planUnsubscribe)return;
-  planUnsubscribe=PLAN_TASKS_REF.onSnapshot(snap=>{if(preliminaryPlanVisible)return;livePlanRows=snap.docs.map(d=>({id:d.id,...d.data()}));renderPlanDashboard();refreshOperatorProgress()},err=>{console.error(err);if(!preliminaryPlanVisible)planMeta.textContent='No se pudo leer el plan publicado'});
-  PLAN_META_REF.get().then(s=>{if(preliminaryPlanVisible)return;if(s.exists){const d=s.data()||{};stationLoads=d.stationLoads||stationLoads;planMeta.textContent=`Plan publicado por ${d.createdBy||'Supervisor'} · ${d.total||0} movimientos`;renderStationBalance()}}).catch(()=>{});
-}
-function renderPlanDashboard(){
-  const rows=livePlanRows||[];const count=s=>rows.filter(x=>x.status===s).length;
-  planTotal.textContent=rows.length;planAvailable.textContent=count('disponible');planProgress.textContent=count('asignada');planDone.textContent=count('completada');planBlocked.textContent=count('bloqueada');planIssues.textContent=count('novedad');
-  planProgressBar.style.width=(rows.length?Math.round(count('completada')/rows.length*100):0)+'%';renderPlanTable();renderStationBalance();if(document.getElementById('maestroFinal')?.classList.contains('active'))renderFinalMaster();
-}
-function renderStationBalance(){
-  const values=Object.values(stationLoads||{}).map(Number).filter(Number.isFinite),avg=values.length?values.reduce((a,b)=>a+b,0)/values.length:0;
-  stationBalance.innerHTML=Object.keys(stationLoads||{}).length?Object.entries(stationLoads).sort((a,b)=>Number(a[0])-Number(b[0])).map(([station,load])=>{const diff=avg?Math.round((Number(load)-avg)/avg*100):0,state=Math.abs(diff)<=10?'Equilibrada':Math.abs(diff)<=20?'Revisar':'Rebalancear';return `<div class="station-card"><b>Estación ${station}</b><span>Carga: ${Math.round(load).toLocaleString('es-EC')}</span><span>${state} · ${diff>0?'+':''}${diff}% vs. promedio</span></div>`}).join(''):'<div class="empty-state">Genera un plan para calcular el balance.</div>';
-}
-function renderPlanTable(){
-  const filter=planStatusFilter.value;const rows=(livePlanRows||[]).filter(x=>filter==='todos'||x.status===filter).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
-  if(!rows.length){planTable.innerHTML='<tr><td style="padding:18px">Sin movimientos para este filtro.</td></tr>';return}
-  planTable.innerHTML='<thead><tr><th>Paso</th><th>Actividad</th><th>Código</th><th>Producto</th><th>Reserved</th><th>Oferta</th><th>Page</th><th>Origen</th><th>Destino</th><th>Estado</th><th>Operario</th><th>Acción</th></tr></thead><tbody>'+rows.map(x=>`<tr><td>${x.step||''}</td><td>${planActivityLabel(x.activity)}</td><td><b>${escapeHtml(x.code)}</b></td><td>${escapeHtml(shortDesc(x.description))}</td><td><b>${x.sale||0}</b></td><td>${escapeHtml(x.offer||'—')}</td><td>${escapeHtml(x.page||'—')}</td><td>${escapeHtml(x.origin)}</td><td><b>${escapeHtml(x.destination)}</b></td><td><span class="badge ${taskStatusClass(x.status)}">${taskStatusLabel(x.status)}</span></td><td>${escapeHtml(x.operator||'—')}</td><td>${supervisorTaskAction(x)}</td></tr>`).join('')+'</tbody>';
-}
-function supervisorTaskAction(task){
-  if(task.activity==='ingresar_nuevo'&&task.status==='disponible')return `<button class="primary" onclick="supervisorCompleteAdminTask('${task.id}')">Completar ingreso</button>`;
-  if(['asignada','novedad'].includes(task.status))return `<button class="secondary" onclick="supervisorReleaseTask('${task.id}')">Liberar</button>`;
-  return '—';
-}
-async function supervisorReleaseTask(id){
-  if(!confirm('¿Liberar esta tarea para que otro operario pueda tomarla?'))return;
-  await PLAN_TASKS_REF.doc(id).update({status:'disponible',operator:'',startedAt:null,issue:''});
-}
-function addVerificationTaskToBatch(batch,task){
-  if(task.activity==='verificar')return;
-  const verifyRef=PLAN_TASKS_REF.doc('ver_'+task.id);
-  batch.set(verifyRef,{...task,id:verifyRef.id,activity:'verificar',step:4,status:'disponible',dependency:task.id,dependents:[],operator:'',startedAt:null,completedAt:null,issue:'',motive:'Verificar físicamente el movimiento completado',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-}
-async function reopenVerificationActivity(){
-  const ref=PLAN_ACTIVITIES_REF.doc('verificar');
-  await db.runTransaction(async tx=>{const snap=await tx.get(ref);if(!snap.exists||snap.data().status==='completada')tx.set(ref,{activity:'verificar',status:'disponible',operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})});
-}
-async function supervisorCompleteAdminTask(id){
-  const task=(livePlanRows||[]).find(x=>x.id===id);if(!task||task.activity!=='ingresar_nuevo'||task.status!=='disponible')return;
-  let ingresoUnidades=Number(task.units)||0;
-  if(task.origin==='PENDIENTE DE INGRESO'||task.origin==='FUERA DE PL'){
-    const entry=prompt(`¿Cuántas unidades del código ${task.code} ingresaron físicamente a PL?`,'1');
-    if(entry===null)return;
-    ingresoUnidades=Number(entry);
-    if(!Number.isSafeInteger(ingresoUnidades)||ingresoUnidades<1)return alert('Confirma una cantidad física entera mayor a cero.');
-  }
-  if(!confirm(`¿Confirmar el ingreso del código ${task.code}?`))return;
-  try{const batch=db.batch();batch.update(PLAN_TASKS_REF.doc(id),{status:'completada',units:ingresoUnidades||task.units||null,operator:getUsuario()||'Supervisor',completedAt:firebase.firestore.FieldValue.serverTimestamp()});(task.dependents||[]).forEach(dep=>batch.update(PLAN_TASKS_REF.doc(dep),{status:'disponible'}));addVerificationTaskToBatch(batch,{...task,units:ingresoUnidades||task.units||null});await batch.commit();await reopenVerificationActivity()}catch(err){console.error(err);alert('No se pudo completar el ingreso.')}
-}
-async function supervisorReleaseActivity(activity){
-  const assignment=activityAssignments[activity];if(!assignment||assignment.status!=='asignada')return;
-  if(!confirm(`¿Liberar ${planActivityLabel(activity)} asignada a ${assignment.operator||'este operario'}?`))return;
-  try{
-    const snap=await PLAN_TASKS_REF.where('activity','==',activity).get(),batch=db.batch();
-    snap.docs.forEach(doc=>{const data=doc.data();if(data.status==='asignada'&&data.operator===assignment.operator)batch.update(doc.ref,{status:'disponible',operator:'',startedAt:null})});
-    batch.set(PLAN_ACTIVITIES_REF.doc(activity),{activity,status:'disponible',operator:'',startedAt:null,completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});await batch.commit();
-  }catch(err){console.error(err);alert('No se pudo liberar la actividad.')}
-}
+function leaveActivityView(){if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
+function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)}
 
-// ---------- OPERADOR MULTIDISPOSITIVO ----------
-async function findAssignedOperatorTask(name,activity){
-  const snap=await PLAN_TASKS_REF.where('activity','==',activity).get();
-  return snap.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.status==='asignada'&&sameOperatorName(x.operator,name))||null;
-}
-let operatorActivityRows=[];
-let operatorListFilter='';
-let operatorBusyId='';
-let operatorListUnsubscribe=null;
-let operatorAudioContext=null;
-function playOperatorSuccess(){
-  try{
-    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-    const ctx=operatorAudioContext||(operatorAudioContext=new AC());
-    if(ctx.state==='suspended')ctx.resume().catch(()=>{});
-    const now=ctx.currentTime;
-    for(const [i,hz] of [740,988].entries()){
-      const oscillator=ctx.createOscillator(),gain=ctx.createGain();
-      oscillator.type='sine';oscillator.frequency.value=hz;
-      gain.gain.setValueAtTime(.0001,now+i*.105);
-      gain.gain.exponentialRampToValueAtTime(.13,now+i*.105+.012);
-      gain.gain.exponentialRampToValueAtTime(.0001,now+i*.105+.095);
-      oscillator.connect(gain);gain.connect(ctx.destination);
-      oscillator.start(now+i*.105);oscillator.stop(now+i*.105+.1);
-    }
-  }catch(e){console.warn('Audio no disponible',e)}
-}
-function stopOperatorList(){
-  if(operatorListUnsubscribe){operatorListUnsubscribe();operatorListUnsubscribe=null}
-  operatorActivityRows=[];operatorListFilter='';operatorBusyId='';
-}
-function showOperatorList(){
-  operatorSetup.classList.add('hidden');operatorTaskPanel.classList.remove('hidden');
-  operatorTaskCard.innerHTML=`<div class="operator-topline"><h2 style="margin:0">${escapeHtml(planActivityLabel(selectedActivity))}</h2><button class="secondary" onclick="exitOperatorActivity()">Salir</button></div>
-    <div class="operator-list-toolbar" style="margin-top:12px"><input id="operatorCodeSearch" type="search" placeholder="Buscar código o producto" oninput="operatorListFilter=this.value;renderOperatorItems()"></div>
-    <div id="operatorItems" class="operator-list"></div>`;
-  renderOperatorItems();
-}
-function startOperatorListSubscription(){
-  stopOperatorList();
-  showOperatorList();
-  operatorListUnsubscribe=PLAN_TASKS_REF.where('activity','==',selectedActivity).onSnapshot(snap=>{
-    operatorActivityRows=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>Number(a.step||0)-Number(b.step||0)||String(a.id).localeCompare(String(b.id)));
-    renderOperatorItems();refreshOperatorProgressLocal();
-  },err=>{console.error(err);const el=document.getElementById('operatorItems');if(el)el.innerHTML='<div class="empty-state">No se pudo actualizar la lista.</div>'});
-}
-function renderOperatorItems(){
-  const host=document.getElementById('operatorItems');if(!host)return;
-  const q=norm(operatorListFilter).toLocaleLowerCase('es');
-  const rows=operatorActivityRows.filter(x=>!q||String(x.code||'').toLowerCase().includes(q)||String(x.description||'').toLocaleLowerCase('es').includes(q));
-  if(!rows.length){host.innerHTML='<div class="empty-state">Sin códigos para mostrar.</div>';return}
-  host.innerHTML=rows.map(x=>{
-    const done=x.status==='completada',blocked=x.status==='bloqueada',issue=x.status==='novedad';
-    const canAct=!done&&!blocked&&!issue&&!operatorBusyId;
-    const status=done?'Completado':blocked?'Bloqueado':issue?'Novedad':x.status==='asignada'?'En proceso':'Pendiente';
-    const statusColor=done?'b-green':issue?'b-red':blocked?'b-yellow':'b-blue';
-    const actionLabel=done?'Completado':blocked?'Bloqueado':issue?'Con novedad':'Confirmar';
-    return `<article class="operator-item ${done?'is-done':''} ${blocked?'is-blocked':''}">
-      <div class="operator-item-top"><span class="operator-item-code">${escapeHtml(x.code)}</span><span class="badge ${statusColor}">${status}</span></div>
-      <div class="operator-item-desc">${escapeHtml(x.description||'')}</div>
-      <div class="operator-item-route"><div class="operator-item-place"><small>ORIGEN</small><strong>${escapeHtml(x.origin||'—')}</strong></div><span>→</span><div class="operator-item-place"><small>DESTINO</small><strong>${escapeHtml(x.destination||'—')}</strong></div></div>
-      <div class="operator-compact-meta">Cant. ${escapeHtml(x.units??'Por confirmar')} · Reserved ${escapeHtml(x.sale??0)} · FRC ${escapeHtml(x.frc??0)}</div>
-      ${x.activity==='faltantes_pl'&&!done?`<label class="operator-compact-meta">Unidades recibidas <input id="units_${escapeHtml(x.id)}" type="number" min="1" step="1" inputmode="numeric" style="width:100%;margin-top:4px" placeholder="Cantidad física" value="${Number(x.units)>0?Number(x.units):''}"></label>`:''}
-      <div class="operator-item-actions"><button class="primary" ${canAct?'':'disabled'} onclick="completeOperatorItem('${escapeHtml(x.id)}')">${operatorBusyId===x.id?'Guardando…':actionLabel}</button><button class="warning" ${canAct?'':'disabled'} onclick="reportOperatorItemIssue('${escapeHtml(x.id)}')">Novedad</button>
-      ${x.activity!=='enviar_t'&&stationFromLoc(x.destination)?`<button class="secondary" style="grid-column:1/-1" ${canAct?'':'disabled'} onclick="findAlternateOperatorLocation('${escapeHtml(x.id)}')">↻ Buscar otra ubicación</button>`:''}</div>
-    </article>`;
-  }).join('');
-}
-function refreshOperatorProgressLocal(){
-  const rows=operatorActivityRows,done=rows.filter(x=>x.status==='completada').length;
-  operatorProgress.textContent=`${done} / ${rows.length} completados`;
-  operatorProgressBar.style.width=(rows.length?Math.round(done/rows.length*100):0)+'%';
-  // Abrir la siguiente fase solo después de completar todos los códigos actuales.
-  if(rows.length&&done===rows.length&&selectedActivity){
-    const activity=selectedActivity,name=norm(operatorName.value);
-    db.runTransaction(async tx=>{
-      const ref=PLAN_ACTIVITIES_REF.doc(activity),snap=await tx.get(ref);
-      const nextRefs=OPERATOR_ACTIVITIES.slice(OPERATOR_ACTIVITIES.indexOf(activity)+1).map(a=>PLAN_ACTIVITIES_REF.doc(a));
-      const nextSnaps=[];for(const nextRef of nextRefs)nextSnaps.push(await tx.get(nextRef));
-      if(!snap.exists||snap.data().status!=='asignada'||!sameOperatorName(snap.data().operator,name))return;
-      tx.update(ref,{status:'completada',completedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      const following=nextSnaps.find(x=>x.exists&&x.data().status==='bloqueada');
-      if(following)tx.update(following.ref,{status:'disponible',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    }).catch(console.error);
-  }
-}
-function permittedAlternateClass(destination){
-  if(isPrimeLoc(destination))return 'prime';
-  if(isPreferredSaleLoc(destination))return 'preferred';
-  if(isSecondaryLoc(destination))return 'secondary';
-  return '';
-}
-function locationHasClass(location,type){
-  return type==='prime'?isPrimeLoc(location):type==='preferred'?isPreferredSaleLoc(location):type==='secondary'?isSecondaryLoc(location):false;
-}
-async function findAlternateOperatorLocation(id){
-  const task=operatorActivityRows.find(x=>x.id===id);
-  if(!task||operatorBusyId||!['disponible','asignada'].includes(task.status))return;
-  const type=permittedAlternateClass(task.destination);
-  if(!type)return alert('Este movimiento no admite otro destino en PL.');
-  operatorBusyId=id;renderOperatorItems();
-  try{
-    const [metaSnap,tasksSnap]=await Promise.all([PLAN_META_REF.get(),PLAN_TASKS_REF.get()]);
-    if(!metaSnap.exists)throw new Error('sin_plan');
-    const meta=metaSnap.data()||{};
-    const tasks=tasksSnap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.activity!=='verificar');
-    const reservedDestinations=new Set(tasks.filter(x=>stationFromLoc(x.destination)).map(x=>String(x.destination).toUpperCase()));
-    const occupied=new Set(meta.occupiedAtStart||[]);
-    const done=tasks.filter(x=>x.status==='completada').sort((a,b)=>(a.completedAt?.toMillis?.()||0)-(b.completedAt?.toMillis?.()||0));
-    done.forEach(x=>{if(stationFromLoc(x.origin))occupied.delete(String(x.origin).toUpperCase());if(stationFromLoc(x.destination))occupied.add(String(x.destination).toUpperCase())});
-    const rejected=new Set([...(task.rejectedDestinations||[]),task.destination].map(x=>String(x).toUpperCase()));
-    const choices=(meta.mainLocations||[]).filter(loc=>locationHasClass(loc,type)&&!occupied.has(loc)&&!reservedDestinations.has(loc)&&!rejected.has(loc));
-    if(!choices.length){alert('No hay otra ubicación compatible y libre según el plan. Registra una novedad.');return}
-    // Priorizar la misma estación si está disponible; después equilibrar por cercanía.
-    choices.sort((a,b)=>Math.abs(stationFromLoc(a)-stationFromLoc(task.destination))-Math.abs(stationFromLoc(b)-stationFromLoc(task.destination))||a.localeCompare(b));
-    const candidate=choices[0],name=norm(operatorName.value);
-    await db.runTransaction(async tx=>{
-      const taskRef=PLAN_TASKS_REF.doc(id),activityRef=PLAN_ACTIVITIES_REF.doc(selectedActivity);
-      const candidateRef=ALT_LOCATIONS_REF.doc(encodeURIComponent(candidate));
-      const oldRef=ALT_LOCATIONS_REF.doc(encodeURIComponent(task.destination));
-      const [activitySnap,freshSnap,candidateSnap,oldSnap]=await Promise.all([tx.get(activityRef),tx.get(taskRef),tx.get(candidateRef),tx.get(oldRef)]);
-      if(!activitySnap.exists||activitySnap.data().status!=='asignada'||!sameOperatorName(activitySnap.data().operator,name))throw new Error('actividad_liberada');
-      if(!freshSnap.exists||!['disponible','asignada'].includes(freshSnap.data().status))throw new Error('no_disponible');
-      if(freshSnap.data().destination!==task.destination)throw new Error('destino_cambiado');
-      if(candidateSnap.exists&&candidateSnap.data()?.taskId!==id)throw new Error('destino_reservado');
-      if(oldSnap.exists&&oldSnap.data()?.taskId===id)tx.delete(oldRef);
-      tx.set(candidateRef,{taskId:id,code:task.code,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      tx.update(taskRef,{destination:candidate,station:stationFromLoc(candidate),rejectedDestinations:firebase.firestore.FieldValue.arrayUnion(task.destination),destinationChangedBy:name,destinationChangedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    });
-  }catch(err){console.error(err);alert('No se pudo reservar otra ubicación. Reintenta o registra una novedad.');}
-  finally{operatorBusyId='';renderOperatorItems()}
-}
-async function completeOperatorItem(id){
-  const task=operatorActivityRows.find(x=>x.id===id);if(!task||operatorBusyId||['completada','bloqueada','novedad'].includes(task.status))return;
-  // Capturar el valor antes de reconstruir las tarjetas, o se perdería la cantidad digitada.
-  const unitsField=document.getElementById('units_'+id);
-  const confirmedUnits=task.activity==='faltantes_pl'?Number(unitsField?.value):null;
-  if(task.activity==='faltantes_pl'&&(!Number.isSafeInteger(confirmedUnits)||confirmedUnits<1))return alert('Ingresa la cantidad física recibida.');
-  operatorBusyId=id;renderOperatorItems();
-  try{
-    const name=norm(operatorName.value),activityRef=PLAN_ACTIVITIES_REF.doc(selectedActivity),taskRef=PLAN_TASKS_REF.doc(id);
-    await db.runTransaction(async tx=>{
-      const act=await tx.get(activityRef),fresh=await tx.get(taskRef);
-      if(!act.exists||act.data().status!=='asignada'||!sameOperatorName(act.data().operator,name))throw new Error('actividad_liberada');
-      if(!fresh.exists||!['disponible','asignada'].includes(fresh.data().status))throw new Error('no_disponible');
-      if(fresh.data().status==='asignada'&&!sameOperatorName(fresh.data().operator,name))throw new Error('no_disponible');
-      tx.update(taskRef,{status:'completada',operator:name,units:task.activity==='faltantes_pl'?confirmedUnits:fresh.data().units,startedAt:fresh.data().startedAt||firebase.firestore.FieldValue.serverTimestamp(),completedAt:firebase.firestore.FieldValue.serverTimestamp()});
-      (fresh.data().dependents||[]).forEach(dep=>tx.update(PLAN_TASKS_REF.doc(dep),{status:'disponible'}));
-      addVerificationTaskToBatch(tx,{id,...fresh.data(),units:task.activity==='faltantes_pl'?confirmedUnits:fresh.data().units});
-    });
-    playOperatorSuccess();
-    if(selectedActivity!=='verificar')await reopenVerificationActivity();
-  }catch(err){console.error(err);alert(err.message==='actividad_liberada'?'La actividad fue reasignada.':err.message==='unidades_requeridas'?'Ingresa la cantidad física recibida.':'No se pudo confirmar el movimiento.');}
-  finally{operatorBusyId='';renderOperatorItems()}
-}
-async function reportOperatorItemIssue(id){
-  const task=operatorActivityRows.find(x=>x.id===id);if(!task||operatorBusyId||['completada','bloqueada','novedad'].includes(task.status))return;
-  const issue=prompt('Describe la novedad');if(!norm(issue))return;
-  operatorBusyId=id;renderOperatorItems();
-  try{
-    const name=norm(operatorName.value);
-    await db.runTransaction(async tx=>{
-      const ref=PLAN_ACTIVITIES_REF.doc(selectedActivity),taskRef=PLAN_TASKS_REF.doc(id);
-      const act=await tx.get(ref),fresh=await tx.get(taskRef);
-      if(!act.exists||act.data().status!=='asignada'||!sameOperatorName(act.data().operator,name))throw new Error('actividad_liberada');
-      if(!fresh.exists||!['disponible','asignada'].includes(fresh.data().status))throw new Error('no_disponible');
-      tx.update(taskRef,{status:'novedad',operator:name,issue:norm(issue),issueAt:firebase.firestore.FieldValue.serverTimestamp()});
-    });
-  }catch(err){console.error(err);alert('No se pudo registrar la novedad.')}
-  finally{operatorBusyId='';renderOperatorItems()}
-}
-async function acquireOperatorActivity(name,activity){
-  try{
-    const assignments=await PLAN_ACTIVITIES_REF.get();
-    const ownOther=assignments.docs.map(d=>({id:d.id,...d.data()})).find(x=>x.status==='asignada'&&x.id!==activity&&sameOperatorName(x.operator,name));
-    if(ownOther){alert(`Ya tienes asignada la actividad ${planActivityLabel(ownOther.id)}.`);return false}
-    const ref=PLAN_ACTIVITIES_REF.doc(activity);
-    await db.runTransaction(async tx=>{
-      const snap=await tx.get(ref);if(!snap.exists)throw new Error('sin_plan');
-      const data=snap.data();
-      if(data.status==='completada'||data.status==='no_aplica')throw new Error('completada');
-      if(data.status==='bloqueada')throw new Error('fase_bloqueada');
-      if(data.status==='asignada'&&!sameOperatorName(data.operator,name))throw new Error('ocupada');
-      tx.set(ref,{activity,status:'asignada',operator:name,startedAt:data.startedAt||firebase.firestore.FieldValue.serverTimestamp(),completedAt:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
-    });
-    return true;
-  }catch(err){
-    if(err.message==='sin_plan')alert('Esta actividad todavía no forma parte de un plan publicado.');
-    else if(err.message==='completada')alert('Esta actividad ya fue completada.');
-    else if(err.message==='ocupada')alert('Otro operario ya tomó esta actividad.');
-    else if(err.message==='fase_bloqueada')alert('Primero debe terminar la fase anterior.');
-    else{console.error(err);alert('No se pudo asignar la actividad. Revisa la conexión.')}
-    return false;
-  }
-}
-async function startOperatorWork(){
-  const name=norm(operatorName.value);if(!name)return alert('Ingresa tu nombre.');
-  if(!selectedActivity)return alert('Elige una actividad.');
-  localStorage.setItem('pl_operator_name',name);
-  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){operatorAudioContext=operatorAudioContext||new AC();if(operatorAudioContext.state==='suspended')operatorAudioContext.resume().catch(()=>{})}}catch{}
-  if(await acquireOperatorActivity(name,selectedActivity))startOperatorListSubscription();
-}
-async function exitOperatorActivity(){
-  const activity=selectedActivity,name=norm(operatorName.value);
-  // Exit the screen only: keep exclusive ownership until completed or supervisor releases it.
-  stopOperatorList();selectedActivity='';currentOperatorTask=null;
-  document.querySelectorAll('.activity-btn').forEach(btn=>btn.classList.remove('active'));
-  operatorTaskPanel.classList.add('hidden');operatorSetup.classList.remove('hidden');
-  renderActivityAssignments();
-}
-async function refreshOperatorProgress(){refreshOperatorProgressLocal()}
-
-// Maestro final: reconstrucción por código + posición; no infiere posiciones T definitivas.
-function buildFinalMaster(){
-  const raw=parseTSV(txtStock.value||'');
-  const positionMap=new Map(),history=[];
-  const kc=raw.length?findKey(raw[0],['Variante','Código','Codigo','Code']):'';
-  const kl=raw.length?findKey(raw[0],['Caja','Ubicación','Ubicacion']):'';
-  const kq=raw.length?findKey(raw[0],['Physical Quantity','Cantidad','Qty']):'';
-  const descriptions=new Map(consolidado.map(r=>[normCode(r.Código),r.Descripción]));
-  raw.forEach(r=>{const code=normCode(r[kc]),loc=norm(r[kl]),qty=toNum(r[kq]);if(!code||!loc||qty<=0)return;
-    const key=code+'\u0001'+loc.toUpperCase(),entry=positionMap.get(key);
-    if(entry)entry.qty+=qty;else positionMap.set(key,{code,loc,qty,initialOrigin:loc,initial:true,operator:'',date:'',status:'Sin movimiento'});
-  });
-  const tasks=(livePlanRows||[]).filter(t=>t.activity!=='verificar'&&t.code);
-  const done=tasks.filter(t=>t.status==='completada').sort((a,b)=>{
-    const da=a.completedAt?.toMillis?.()||0,db=b.completedAt?.toMillis?.()||0;return da-db||String(a.id).localeCompare(String(b.id));
-  });
-  const pendingByCode=new Set(tasks.filter(t=>t.status!=='completada').map(t=>normCode(t.code)));
-  const toT=[];
-  done.forEach(t=>{
-    const code=normCode(t.code),origin=norm(t.origin),destination=norm(t.destination),amount=Number(t.units)||0,date=formatDateTime(t.completedAt);
-    if(amount<=0){history.push({Código:code,Descripción:t.description||descriptions.get(code)||'',Cantidad:'', 'Ubicación inicial':origin,'Ubicación final':'SIN CANTIDAD',Estado:'Revisar cantidad',Operador:t.operator||'',Fecha:date});return}
-    const okey=code+'\u0001'+origin.toUpperCase(),orig=positionMap.get(okey);
-    if(orig){if(orig.qty<amount){history.push({Código:code,Descripción:t.description||'',Cantidad:amount,'Ubicación inicial':origin,'Ubicación final':destination,Estado:'Diferencia de cantidad',Operador:t.operator||'',Fecha:date});return}
-      orig.qty-=amount;if(orig.qty<=0)positionMap.delete(okey);
-    }else if(origin!=='FUERA DE PL'&&origin!=='PENDIENTE DE INGRESO'){
-      history.push({Código:code,Descripción:t.description||'',Cantidad:amount,'Ubicación inicial':origin,'Ubicación final':destination,Estado:'Origen no conciliado',Operador:t.operator||'',Fecha:date});return;
-    }
-    if(t.activity==='enviar_t'||/RIEL/.test(destination)){
-      toT.push({Código:code,Descripción:t.description||descriptions.get(code)||'',Cantidad:amount,'Ubicación inicial':origin,'Ubicación final':'Pendiente de ubicación T/M/R',Estado:'Enviado a T',Operador:t.operator||'',Fecha:date});
-    }else{
-      const dkey=code+'\u0001'+destination.toUpperCase(),prev=positionMap.get(dkey);
-      if(prev){prev.qty+=amount;prev.status='Reubicado';prev.operator=t.operator||'';prev.date=date}
-      else positionMap.set(dkey,{code,loc:destination,qty:amount,initialOrigin:orig?.initialOrigin||origin,initial:false,status:'Reubicado',operator:t.operator||'',date});
-    }
-  });
-  const list=[...positionMap.values()].filter(x=>x.qty>0).map(x=>({Código:x.code,Descripción:descriptions.get(x.code)||'',Cantidad:x.qty,'Ubicación inicial':x.initialOrigin||x.loc,'Ubicación final':x.loc,Estado:pendingByCode.has(x.code)?'Pendiente de movimiento':x.status,Operador:x.operator||'',Fecha:x.date||''}));
-  const noLocation=getFaltantesRows().filter(r=>!tasks.some(t=>normCode(t.code)===normCode(r.Código)&&t.status==='completada')).map(r=>({Código:r.Código,Descripción:r.Descripción,Cantidad:'','Ubicación inicial':'FUERA DE PL','Ubicación final':tasks.find(t=>t.code===r.Código)?.destination||'Sin destino asignado',Estado:'Faltante pendiente',Operador:'',Fecha:''}));
-  return [...list,...toT,...history,...noLocation].sort((a,b)=>String(a.Código).localeCompare(String(b.Código))||String(a['Ubicación final']).localeCompare(String(b['Ubicación final'])));
-}
-function renderFinalMaster(){
-  finalMasterRows=buildFinalMaster();renderFinalMasterTable();
-  const counts={};finalMasterRows.forEach(x=>counts[x.Estado]=(counts[x.Estado]||0)+1);
-  const all=finalMasterRows.length,unmoved=counts['Sin movimiento']||0,reallocated=counts['Reubicado']||0,toT=counts['Enviado a T']||0,issues=all-unmoved-reallocated-toT;
-  finalMetrics.innerHTML=[['Registros',all],['Sin movimiento',unmoved],['Reubicados',reallocated],['Enviados a T',toT],['Pendientes y novedades',issues]].map(([title,val])=>`<div class="plan-kpi"><span>${title}</span><b>${val}</b></div>`).join('');
-  finalMeta.textContent='Maestro operativo provisional · pendiente de validación mediante pistoleo';
-}
-function displayedFinalRows(){const q=norm(finalSearch.value).toLowerCase();return finalMasterRows.filter(r=>!q||Object.values(r).some(v=>String(v).toLowerCase().includes(q)))}
-function renderFinalMasterTable(){
-  const data=displayedFinalRows();if(!data.length){finalTable.innerHTML='<tr><td>Sin resultados.</td></tr>';return}
-  const keys=Object.keys(data[0]);finalTable.innerHTML='<thead><tr>'+keys.map(k=>`<th>${escapeHtml(k)}</th>`).join('')+'</tr></thead><tbody>'+data.map(r=>'<tr>'+keys.map(k=>`<td>${escapeHtml(r[k]??'')}</td>`).join('')+'</tr>').join('')+'</tbody>';
-}
-async function copyFinalMaster(){
-  renderFinalMaster();const rows=displayedFinalRows();if(!rows.length)return alert('Sin datos para copiar.');
-  const keys=Object.keys(rows[0]),txt=[keys.join('\t'),...rows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');
-  try{await navigator.clipboard.writeText(txt);alert('Maestro copiado.')}catch(e){alert('No se pudo copiar; utiliza la descarga de Excel.');}
-}
-function downloadFinalMaster(){
-  renderFinalMaster();if(!finalMasterRows.length)return alert('Sin datos para descargar.');
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(finalMasterRows),'Maestro PL');
-  const tasks=(livePlanRows||[]).filter(t=>t.activity!=='verificar');
-  const movementReport=tasks.map(t=>({Código:t.code,Descripción:t.description,Actividad:planActivityLabel(t.activity),Unidades:t.units??'',Reserved:t.sale,Origen:t.origin,Destino:t.destination,Estado:taskStatusLabel(t.status),Operador:t.operator||'',Fecha:formatDateTime(t.completedAt),Novedad:t.issue||''}));
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(movementReport.length?movementReport:[{Estado:'Sin movimientos'}]),'Movimientos');
-  const exceptions=finalMasterRows.filter(x=>!['Sin movimiento','Reubicado','Enviado a T'].includes(x.Estado));
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(exceptions.length?exceptions:[{Estado:'Sin novedades'}]),'Pendientes');
-  if(planReconciliationReady){XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(reconciliationSummaryRows()),'Conciliacion resumen');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(reconciliationExportRows()),'Conciliacion detalle');}
-  XLSX.writeFile(wb,'Picking_Line_Maestro_Final.xlsx');
-}
-function updateKpis(){
-  const buckets=getActionBuckets();
-  kTotal.textContent=consolidado.length;
-  kT.textContent=buckets.enviarT.length;
-  kOutT.textContent=buckets.sacarT.length;
-  kLib.textContent=buckets.liberarA.length;
-  kMax.textContent=buckets.ventaMax.length;
-  kBulk.textContent=buckets.bulk.length;
-}
-window.addEventListener('load',()=>{if(!txtLocations.value)txtLocations.value=DEFAULT_LOCATIONS;operatorName.value=localStorage.getItem('pl_operator_name')||'';toggleHeroDetails(localStorage.getItem('pl_header_collapsed')!=='0');setupRealtime();loadInputs(true);subscribeManualMissing();});
+window.addEventListener('load',()=>{setCloud(false)});
 </script>
 </body>
 </html>
