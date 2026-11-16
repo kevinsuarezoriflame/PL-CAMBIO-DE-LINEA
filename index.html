@@ -10,6 +10,11 @@
   <style>
     :root{--green:#00a88e;--dark:#007c70;--mint:#e8f8f4;--soft:#c8eee6;--ink:#143d39;--muted:#64817d;--white:#fff;--warn:#f2b84b;--red:#e46767;--blue:#4d9ee8;--shadow:0 12px 34px rgba(0,94,80,.12);--radius:20px}
     *{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#eaf8f5,#fafffd 55%,#dff4ef);color:var(--ink);font-family:Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}button,input,select,textarea{font:inherit}button{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;transition:.15s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}.primary{background:linear-gradient(135deg,var(--green),#008d7d);color:#fff}.secondary{background:#edf9f6;color:var(--dark);border:1px solid var(--soft)}.warning{background:#fff4dd;color:#9a6200;border:1px solid #f5cf83}.danger{background:#fff0f0;color:#b53c3c;border:1px solid #f3c1c1}.info{background:#eaf4ff;color:#236ba7;border:1px solid #bedcf8}.hidden{display:none!important}.pill{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--soft);border-radius:999px;padding:7px 12px;color:var(--dark);font-size:12px;font-weight:900;letter-spacing:.4px}.landing{min-height:100vh;display:grid;place-items:center;padding:22px}.landing-box{width:min(820px,100%);background:rgba(255,255,255,.92);border:1px solid var(--soft);border-radius:28px;padding:30px;box-shadow:var(--shadow)}h1,h2,h3{margin:0;color:var(--dark)}.landing h1{font-size:clamp(27px,5vw,44px);margin:10px 0 22px}.profiles{display:grid;grid-template-columns:1fr 1fr;gap:14px}.profile{background:#f8fffd;border:1px solid var(--soft);border-radius:20px;padding:25px;text-align:left;color:var(--ink)}.profile span{font-size:38px;display:block;margin-bottom:10px}.profile p{color:var(--muted);line-height:1.45}.shell{min-height:100vh}.topbar{position:sticky;top:0;z-index:20;background:rgba(234,248,245,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--soft);padding:12px 18px}.topbar-inner{max-width:1320px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{display:flex;align-items:center;gap:10px}.brand b{font-size:20px;color:var(--dark)}.status{font-size:12px;font-weight:800;color:var(--muted)}main{max-width:1320px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:4px;margin-bottom:16px}.tab-btn{white-space:nowrap;background:#fff;color:var(--dark);border:1px solid var(--soft)}.tab-btn.active{background:var(--green);color:#fff}.tab{display:none}.tab.active{display:block}.card{background:rgba(255,255,255,.96);border:1px solid var(--soft);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.input-card textarea{width:100%;height:270px;margin-top:12px;border:1px solid var(--soft);border-radius:14px;padding:12px;resize:vertical;color:var(--ink);background:#fbfffe}.input-card small,.note{color:var(--muted);line-height:1.4}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.actions{display:flex;gap:9px;flex-wrap:wrap}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:16px 0}.metric{background:#f5fcfa;border:1px solid var(--soft);border-radius:16px;padding:14px}.metric b{display:block;font-size:26px;color:var(--dark)}.metric span{font-size:12px;color:var(--muted);font-weight:800}.activity-admin{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px}.activity-card{background:#fff;border:1px solid var(--soft);border-radius:18px;padding:15px;display:grid;gap:10px}.activity-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.activity-card h3{font-size:16px}.activity-count{font-size:26px;font-weight:950;color:var(--dark)}.badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900}.b-off{background:#edf1f0;color:#62716f}.b-on{background:#dff8ee;color:#087459}.b-assigned{background:#e5f1ff;color:#286aa0}.b-done{background:#e6f8e4;color:#347130}.list-controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.list-controls select,.list-controls input,.operator-field input{border:1px solid var(--soft);border-radius:14px;padding:12px;background:#fff;color:var(--ink)}.list-controls input{flex:1;min-width:200px}.table-wrap{overflow:auto;max-height:62vh;border:1px solid var(--soft);border-radius:15px}table{border-collapse:collapse;width:100%;font-size:13px;background:#fff}th,td{padding:10px;border-bottom:1px solid #e4f1ee;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#e5f7f2;color:var(--dark);z-index:1}td:nth-child(2){white-space:normal;min-width:240px}.operator-page{max-width:760px;margin:auto;padding:12px 12px 36px}.operator-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:8px 0 14px}.operator-card{background:#fff;border:1px solid var(--soft);border-radius:20px;padding:16px;box-shadow:var(--shadow)}.operator-field{display:grid;gap:7px;margin:14px 0}.operator-field label{font-size:12px;font-weight:900;color:var(--muted)}.operator-field input{width:100%;font-size:17px;min-height:50px}.operator-activities{display:grid;grid-template-columns:1fr 1fr;gap:10px}.operator-activity{min-height:92px;background:#f7fdfb;border:1px solid var(--soft);text-align:left;color:var(--dark)}.operator-activity.selected{background:var(--green);color:#fff}.operator-activity small{display:block;margin-top:5px;opacity:.82}.operator-list-head{position:sticky;top:8px;z-index:15;background:rgba(234,248,245,.96);backdrop-filter:blur(10px);padding:8px 0 10px}.operator-search{width:100%;border:1px solid var(--soft);border-radius:14px;padding:13px;font-size:16px;margin-top:9px}.operator-list{display:grid;gap:10px}.product-card{background:#fff;border:1px solid var(--soft);border-radius:18px;padding:14px;box-shadow:0 8px 22px rgba(0,94,80,.08);display:grid;gap:10px}.product-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.code{font-size:24px;font-weight:950;color:var(--dark)}.description{font-weight:800;line-height:1.35;overflow-wrap:anywhere}.location{background:#eff9f6;border-radius:12px;padding:10px;color:var(--dark);font-size:15px;font-weight:850}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.fact{background:#f7fbfa;border:1px solid #e0efec;border-radius:10px;padding:8px;min-width:0}.fact span{display:block;font-size:9px;color:var(--muted);font-weight:900;text-transform:uppercase}.fact b{display:block;margin-top:3px;font-size:14px;overflow-wrap:anywhere}.complete{width:100%;min-height:50px;font-size:16px}.empty{text-align:center;padding:26px;color:var(--muted);font-weight:800}.progress{height:9px;background:#dcebe8;border-radius:999px;overflow:hidden}.progress>div{height:100%;background:var(--green);width:0;transition:.2s}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:#103f3a;color:#fff;padding:12px 18px;border-radius:14px;z-index:100;font-weight:800;transition:.25s;box-shadow:var(--shadow)}.toast.show{transform:translateX(-50%) translateY(0)}
+    .reset-panel{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;border:1px solid #f1c1c1;background:#fffafa;border-radius:16px;padding:14px;margin-top:20px}
+    .reset-panel>b,.reset-panel b{color:#9a3030}.reset-panel .note{margin:5px 0 0;max-width:720px}
+    .operation-notice{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--soft);background:#f0fbf8;color:var(--dark);font-size:13px;font-weight:700;line-height:1.5}
+    .operation-notice.warning-notice{background:#fff8e6;color:#805800;border-color:#efd087}
+    .operation-notice.error-notice{background:#fff1f1;color:#a63232;border-color:#ecc2c2}
     @media(max-width:850px){.grid3{grid-template-columns:1fr}.input-card textarea{height:190px}.profiles{grid-template-columns:1fr}}
     @media(max-width:560px){main{padding:12px}.topbar{padding:9px 10px}.brand b{font-size:16px}.status{max-width:120px;text-align:right}.card{padding:14px;border-radius:17px}.operator-activities{grid-template-columns:1fr 1fr}.operator-activity{padding:11px;min-height:86px}.facts{grid-template-columns:1fr 1fr}.product-card{padding:13px}.code{font-size:22px}.location{font-size:14px}.toolbar>.actions{width:100%}.toolbar>.actions button{flex:1}}
   </style>
@@ -44,6 +49,7 @@
         <article class="card" style="margin-top:14px">
           <div class="toolbar"><div><h2>Generar listas</h2><p class="note">No se recomendarán destinos ni códigos. Solo se crearán listas por actividad.</p></div><div class="actions"><button class="primary" onclick="generateLists()">Generar listas</button><button id="publishBtn" class="warning" onclick="publishLists()" disabled>Publicar carga</button></div></div>
           <div id="localSummary" class="summary"></div>
+          <div id="importNotice" class="operation-notice hidden" role="status" aria-live="polite"></div>
         </article>
       </section>
 
@@ -51,6 +57,11 @@
         <article class="card">
           <div class="toolbar"><div><h2>Control de actividades</h2><p class="note">Cada actividad se habilita de forma independiente y puede ser trabajada simultáneamente por varios operarios.</p></div><button class="secondary" onclick="refreshAdmin()">Actualizar</button></div>
           <div id="activityAdmin" class="activity-admin" style="margin-top:14px"><div class="empty">Sin carga publicada.</div></div>
+          <div class="reset-panel">
+            <div><b>🗑️ Reiniciar toda la operación</b><p class="note">Elimina únicamente las tareas, avances y actividades publicadas de Picking Line. La limpieza se sincroniza con todos los equipos. No afecta a otras aplicaciones.</p></div>
+            <button id="resetAllBtn" class="danger" onclick="resetAllData()">🗑️ Eliminar todo</button>
+          </div>
+          <div id="operationNotice" class="operation-notice hidden" role="status" aria-live="polite"></div>
         </article>
       </section>
 
@@ -110,64 +121,121 @@ const ACTIVITY_CONFIG=[
 ];
 const ACTIVITY_MAP=new Map(ACTIVITY_CONFIG.map(x=>[x.id,x]));
 let consolidated=[],localBuckets={},activityState={},selectedActivity='',operatorRows=[];
-let unsubActivities=null,unsubOperatorTasks=null;
+let unsubActivities=null,unsubOperatorTasks=null,unsubPlan=null;
+let planState={},operationBusy=false,loadedPublishedOnce=false,loadRevision=0;
+let operatorViewActive=false;
+// La autenticación de Supervisor depende de las reglas de Firestore, no de ocultar botones.
+// Sin credenciales/cuentas provisionadas no se cambia el acceso existente (ver aviso de entrega).
 
 const $=id=>document.getElementById(id);
-const norm=v=>String(v??'').trim();
+const norm=v=>String(v??'').replace(/\uFEFF/g,'').replace(/\u00A0/g,' ').trim();
 const normCode=v=>norm(v).replace(/\.0$/,'').toUpperCase();
 const escapeHtml=v=>String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
 const toNum=v=>{const n=Number(String(v??'').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:0};
-const normalizeOffer=v=>norm(v).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+(NEW|TOP|BO|ALDEAS)$/,'OFFER-$1');
-
-function parseTSV(text){
-  const lines=String(text||'').split(/\r?\n/).filter(x=>x.trim());if(lines.length<2)return [];
-  const delimiter=lines[0].includes('\t')?'\t':lines[0].includes(';')?';':',';
-  const headers=lines[0].split(delimiter).map(norm);
-  return lines.slice(1).map(line=>{const cells=line.split(delimiter),row={};headers.forEach((h,i)=>row[h]=cells[i]??'');return row});
+const headerToken=v=>norm(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+const normalizeOffer=v=>{const x=norm(v).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+/,'').trim();return ['NEW','TOP','BO','ALDEAS'].includes(x)?'OFFER-'+x:x};
+function splitDelimited(line,delimiter){
+  const cells=[];let value='',quoted=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){if(quoted&&line[i+1]==='"'){value+='"';i++}else quoted=!quoted}
+    else if(c===delimiter&&!quoted){cells.push(norm(value));value=''}
+    else value+=c;
+  }
+  cells.push(norm(value));return cells;
 }
-function findKey(row,candidates){const keys=Object.keys(row||{});for(const candidate of candidates){const exact=keys.find(k=>norm(k).toLowerCase()===candidate.toLowerCase());if(exact)return exact}return ''}
-function getFrcKey(row){const keys=Object.keys(row||{});return keys.find(k=>/^frc/i.test(norm(k)))||findKey(row,['FRC'])}
+function parseTSV(text){
+  const lines=String(text||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim());
+  if(!lines.length)return [];
+  const delimiter=lines[0].includes('\t')?'\t':lines[0].includes(';')?';':',';
+  const headers=splitDelimited(lines[0],delimiter);
+  return lines.slice(1).map(line=>{const cells=splitDelimited(line,delimiter),row={};headers.forEach((h,i)=>row[h]=cells[i]??'');return row}).filter(row=>Object.values(row).some(v=>norm(v)));
+}
+function findKey(row,candidates){
+  const keys=Object.keys(row||{});for(const candidate of candidates){const exact=keys.find(k=>headerToken(k)===headerToken(candidate));if(exact)return exact}
+  return '';
+}
+function getFrcKey(row){return findKey(row,['FRC C15','FRC'])||Object.keys(row||{}).find(k=>headerToken(k).startsWith('frc'))||''}
+function requiredKey(row,candidates,report){const key=findKey(row,candidates);if(!key)throw new Error(`En ${report} falta la columna «${candidates[0]}». Cabeceras detectadas: ${Object.keys(row||{}).join(' | ')||'(sin encabezados)'}`);return key}
 function locList(row){return String(row.location||row['Ubicación PL']||'').split('|').map(norm).filter(Boolean)}
-function isInvalidLoc(loc){const x=norm(loc).toUpperCase();return !x||x==='0-0000'||x==='FUERA DE PL'}
-function validLocs(row){return locList(row).filter(x=>!isInvalidLoc(x))}
-function isLowLoc(loc){return /^[TMR]/i.test(norm(loc))}
+function isInvalidLoc(loc){const x=norm(loc).toUpperCase();return !x||x==='0-0000'||x==='FUERA DE PL'||x==='SIN UBICACIÓN'||x==='SIN UBICACION'}
 function lastLetter(loc){const m=norm(loc).match(/([A-Z])$/i);return m?m[1].toUpperCase():''}
-function isGoodLoc(loc){return ['B','C','K','L'].includes(lastLetter(loc))&&!/^[TMR]/i.test(norm(loc))}
+function isProtectedLocation(loc){
+  const s=norm(loc).toUpperCase();if(!s)return false;
+  // REFF y las posiciones P/N quedan intocables incluso si el código tiene otras ubicaciones.
+  if(s.includes('REFF')||['P','N'].includes(lastLetter(s)))return true;
+  if(/^(?:P|N)(?:[\s\-]|\d)/.test(s)||/(?:^|\s)(?:P|N)\s+(?:0?[1-9]|10)-/.test(s))return true;
+  return false;
+}
+function isProtectedProduct(row){
+  const descriptions=[row.description,row.orderDescription,row.saleDescription].filter(Boolean);
+  return descriptions.some(d=>/^\s*(?:NOVAGE|WELLOSOPHY)\b/i.test(d)||/\b(?:VIAL|VIALS|VIALES)\b/i.test(d))||locList(row).some(isProtectedLocation);
+}
+function validLocs(row){return locList(row).filter(x=>!isInvalidLoc(x)&&!isProtectedLocation(x))}
+function isLowLoc(loc){return /^[TMR]/i.test(norm(loc))}
+function isGoodLoc(loc){return ['B','C','K','L'].includes(lastLetter(loc))&&!isLowLoc(loc)}
 function hasGoodLoc(row){return validLocs(row).some(isGoodLoc)}
 function hasMainLoc(row){return validLocs(row).some(x=>!isLowLoc(x))}
 function rowInLow(row){return validLocs(row).some(isLowLoc)}
 function hasReserved(row){return Number(row.sale||0)>0}
 function priorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.offer))}
-function hasPage(row){const p=norm(row.page);return p!==''&&p!=='0'&&p!=='-'}
+function hasPage(row){const p=norm(row.page).toUpperCase();return p!==''&&p!=='0'&&p!=='-'&&p!=='N/A'}
 function hasAnyOffer(row){const offer=normalizeOffer(row.offer);return offer!==''&&offer!=='0'&&offer!=='-'}
-function isVial(row){return /\bvial\b/i.test(row.description||'')}
+function isVial(row){return /\b(?:VIAL|VIALS|VIALES)\b/i.test(row.description||'')}
 function isCatalog(row){return /cat[aá]logo/i.test(row.description||'')}
 function isArmado(row){return ARMADOS.has(normCode(row.code))}
-function displayRow(row){return {Código:row.code,Descripción:row.description,'Ubicación PL':row.location||'Sin ubicación','Stock PL':row.stockPL,Venta:row.sale,FRC:row.frc,Page:row.page||''}}
+function stationFromLoc(loc){
+  const s=norm(loc).toUpperCase();
+  // Se aceptan ubicaciones «B 01-...», «01-...», «B01-...» y «B-01-...».
+  const match=s.match(/(?:^|\s|[A-Z]-?)(0?[1-9]|10)(?=[-\s])/);
+  return match?Number(match[1]):0;
+}
+function stationForRow(row){const stations=validLocs(row).map(stationFromLoc).filter(n=>n>=1&&n<=10);return stations.length?Math.min(...stations):99}
+function compareRowsByStationAndCode(a,b){return stationForRow(a)-stationForRow(b)||normCode(b.code).localeCompare(normCode(a.code),'es',{numeric:true})}
+function displayRow(row){return {Código:row.code,Descripción:row.description,'Ubicación PL':row.location||'Sin ubicación','Stock PL':row.stockPL,'Disponible':row.available??0,Venta:row.sale,FRC:row.frc,Page:row.page||'',Oferta:row.offer||''}}
+function noteNotice(id,message,type=''){$(id).className='operation-notice'+(type?' '+type+'-notice':'');$(id).textContent=message}
+function clearNotice(id){$(id).className='operation-notice hidden';$(id).textContent=''}
+function clearLocalData(){consolidated=[];localBuckets={};$('orderInput').value='';$('saleInput').value='';$('stockInput').value='';$('supervisorSearch').value='';$('publishBtn').disabled=true;$('localSummary').innerHTML='';fillListSelect();clearNotice('importNotice')}
+function isPlanBusy(){return ['limpiando','publicando','error_reinicio','error_publicacion'].includes(planState.mode)}
 
 function generateLists(){
-  const order=parseTSV($('orderInput').value),sales=parseTSV($('saleInput').value),stock=parseTSV($('stockInput').value);
-  if(!order.length||!sales.length||!stock.length)return alert('Pega los tres reportes antes de generar las listas.');
-  const okCode=findKey(order[0],['Code','Código','Codigo']),okDesc=findKey(order[0],['Description','Description (eng)','Descripción','Descripcion']),okFrc=getFrcKey(order[0]),okOffer=findKey(order[0],['Oferta','Offer']),okPage=findKey(order[0],['Page','Página','Pagina']);
-  const orderMap=new Map();order.forEach(r=>{const code=normCode(r[okCode]);if(code)orderMap.set(code,{description:norm(r[okDesc]),frc:toNum(r[okFrc]),offer:normalizeOffer(okOffer?r[okOffer]:''),page:norm(okPage?r[okPage]:'')})});
-  const skCode=findKey(sales[0],['Código Producto','Codigo Producto','Code','Código','Codigo']),skDesc=findKey(sales[0],['Descripción','Descripcion','Description']),skReserved=findKey(sales[0],['Reserved']);
-  const saleMap=new Map();sales.forEach(r=>{const code=normCode(r[skCode]);if(code)saleMap.set(code,{description:norm(r[skDesc]),sale:toNum(r[skReserved])})});
-  const pkCode=findKey(stock[0],['Variante','Código','Codigo','Code']),pkLoc=findKey(stock[0],['Caja','Ubicación','Ubicacion']),pkQty=findKey(stock[0],['Physical Quantity','Cantidad','Qty']);
-  const stockMap=new Map();stock.forEach(r=>{const code=normCode(r[pkCode]);if(!code)return;const loc=norm(r[pkLoc]),qty=toNum(r[pkQty]);if(!stockMap.has(code))stockMap.set(code,{stockPL:0,locations:[]});const x=stockMap.get(code);x.stockPL+=qty;if(loc)x.locations.push(loc)});
-  const codes=new Set(stockMap.keys());saleMap.forEach((v,k)=>{if(v.sale>0)codes.add(k)});orderMap.forEach((v,k)=>{if(PRIORITY_OFFERS.has(v.offer)||(v.page&&v.page!=='0'&&v.page!=='-'))codes.add(k)});
-  consolidated=[...codes].map(code=>{const o=orderMap.get(code)||{},s=saleMap.get(code)||{},p=stockMap.get(code)||{stockPL:0,locations:[]};const locations=[...new Set(p.locations.filter(x=>!isInvalidLoc(x)))];return {code,description:s.description||o.description||'',location:locations.join(' | '),stockPL:p.stockPL||0,sale:s.sale||0,frc:o.frc||0,offer:o.offer||'',page:o.page||''}});
-  localBuckets=classifyRows(consolidated);renderLocalSummary();fillListSelect();$('publishBtn').disabled=false;openTab('listsTab',document.querySelectorAll('.tab-btn')[2]);
+  if(operationBusy||['limpiando','publicando'].includes(planState.mode))return alert('Hay una operación de publicación o reinicio pendiente en Firebase.');
+  try{
+    const order=parseTSV($('orderInput').value),sales=parseTSV($('saleInput').value),stock=parseTSV($('stockInput').value);
+    if(!order.length||!sales.length||!stock.length)throw new Error('Pega los tres reportes, con encabezados y al menos una fila, antes de generar listas.');
+    const okCode=requiredKey(order[0],['Code','Código','Codigo'],'Order Lite'),okDesc=requiredKey(order[0],['Description (eng)','Description','Descripción','Descripcion'],'Order Lite'),okFrc=getFrcKey(order[0]),okOffer=requiredKey(order[0],['Oferta','Offer'],'Order Lite'),okPage=requiredKey(order[0],['Page','Página','Pagina'],'Order Lite'),okAvailable=requiredKey(order[0],['Available','Disponible'],'Order Lite');
+    if(!okFrc)throw new Error('En Order Lite falta «FRC C15» (o encabezado FRC equivalente).');
+    const skCode=requiredKey(sales[0],['Código Producto','Codigo Producto','Code','Código','Codigo'],'Venta / Reserved'),skDesc=findKey(sales[0],['Descripción','Descripcion','Description']),skReserved=requiredKey(sales[0],['Reserved'],'Venta / Reserved');
+    const pkCode=requiredKey(stock[0],['Variante','Código','Codigo','Code'],'Stock PL'),pkLoc=requiredKey(stock[0],['Caja','Ubicación','Ubicacion'],'Stock PL'),pkQty=requiredKey(stock[0],['Physical Quantity','Cantidad','Qty'],'Stock PL');
+    const orderMap=new Map();order.forEach(r=>{const code=normCode(r[okCode]);if(code)orderMap.set(code,{description:norm(r[okDesc]),frc:toNum(r[okFrc]),offer:normalizeOffer(r[okOffer]),page:norm(r[okPage]),available:toNum(r[okAvailable])})});
+    const saleMap=new Map();sales.forEach(r=>{const code=normCode(r[skCode]);if(code)saleMap.set(code,{description:norm(r[skDesc]),sale:toNum(r[skReserved])})});
+    const stockMap=new Map();stock.forEach(r=>{const code=normCode(r[pkCode]);if(!code)return;const loc=norm(r[pkLoc]),qty=toNum(r[pkQty]);if(!stockMap.has(code))stockMap.set(code,{stockPL:0,locations:[]});const x=stockMap.get(code);x.stockPL+=qty;if(loc)x.locations.push(loc)});
+    const codes=new Set(stockMap.keys());saleMap.forEach((v,k)=>{if(v.sale>0)codes.add(k)});orderMap.forEach((v,k)=>{if(PRIORITY_OFFERS.has(v.offer)||(v.page&&v.page!=='0'&&v.page!=='-'))codes.add(k)});
+    const missingOrderCodes=[...codes].filter(code=>!orderMap.has(code));
+    consolidated=[...codes].map(code=>{const o=orderMap.get(code)||{},s=saleMap.get(code)||{},p=stockMap.get(code)||{stockPL:0,locations:[]};const locations=[...new Set(p.locations.filter(x=>!isInvalidLoc(x)))];return {code,description:o.description||s.description||'',orderDescription:o.description||'',saleDescription:s.description||'',location:locations.join(' | '),stockPL:p.stockPL||0,available:o.available??0,sale:s.sale||0,frc:o.frc??0,offer:o.offer||'',page:o.page||''}});
+    const excluded=consolidated.filter(isProtectedProduct).length;
+    localBuckets=classifyRows(consolidated);renderLocalSummary();fillListSelect();$('publishBtn').disabled=false;
+    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Excluidos por protección: ${excluded}.`;
+    noteNotice('importNotice',diagnosed+(missingOrderCodes.length?` ATENCIÓN: ${missingOrderCodes.length} códigos no aparecen en Order Lite y por eso no tienen Page/FRC. Ej.: ${missingOrderCodes.slice(0,8).join(', ')}.`:''),missingOrderCodes.length?'warning':'');
+    openTab('listsTab',document.querySelectorAll('.tab-btn')[2]);
+  }catch(error){
+    console.error(error);consolidated=[];localBuckets={};$('publishBtn').disabled=true;renderLocalSummary();fillListSelect();
+    noteNotice('importNotice',error.message,'error');alert(error.message);
+  }
 }
 
 function classifyRows(rows){
+  const clean=rows.filter(r=>!isProtectedProduct(r));
   const assigned=new Set(),take=items=>items.filter(row=>{if(assigned.has(row.code))return false;assigned.add(row.code);return true});
-  const faltantes=take(rows.filter(r=>hasReserved(r)&&(!validLocs(r).length||r.stockPL<=0)));
-  const nuevos=take(rows.filter(r=>!hasReserved(r)&&(priorityOffer(r)||hasPage(r))&&(!validLocs(r).length||r.stockPL<=0)));
-  const ventaMax=take(rows.filter(r=>validLocs(r).length&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
-  const sacarT=take(rows.filter(r=>rowInLow(r)&&(hasReserved(r)||priorityOffer(r)||(hasPage(r)&&r.frc>=5)||r.frc>1000)));
-  const bulk=take(rows.filter(r=>r.stockPL>100&&!hasReserved(r)&&r.frc>=0&&r.frc<=4&&!hasAnyOffer(r)&&!hasPage(r)&&!isArmado(r)&&!isCatalog(r)).sort((a,b)=>b.stockPL-a.stockPL||a.code.localeCompare(b.code)));
-  const enviarT=take(rows.filter(r=>r.stockPL>0&&hasMainLoc(r)&&!hasReserved(r)&&!priorityOffer(r)&&r.frc>=0&&r.frc<=4&&!isArmado(r)&&!isCatalog(r)&&!isVial(r)));
-  const liberar=take(rows.filter(r=>hasMainLoc(r)&&r.sale<=10&&r.frc<=300&&!priorityOffer(r)&&!(hasPage(r)&&r.frc>=5)&&!isVial(r)));
+  // Prioridad de actividad: Reserved > Oferta prioritaria > Page.
+  const faltantes=take(clean.filter(r=>hasReserved(r)&&(!validLocs(r).length||r.stockPL<=0)));
+  const nuevos=take(clean.filter(r=>!hasReserved(r)&&(priorityOffer(r)||hasPage(r))&&(!validLocs(r).length||r.stockPL<=0)));
+  const ventaMax=take(clean.filter(r=>validLocs(r).length&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
+  const sacarT=take(clean.filter(r=>rowInLow(r)&&(hasReserved(r)||priorityOffer(r)||(hasPage(r)&&r.frc>=5)||r.frc>1000)));
+  const bulk=take(clean.filter(r=>r.stockPL>100&&!hasReserved(r)&&r.frc>=0&&r.frc<=4&&!hasAnyOffer(r)&&!hasPage(r)&&!isArmado(r)&&!isCatalog(r)));
+  // No enviar a baja rotación artículos con Reserved, Oferta ni Page.
+  const enviarT=take(clean.filter(r=>r.stockPL>0&&hasMainLoc(r)&&!hasReserved(r)&&!hasAnyOffer(r)&&!hasPage(r)&&r.frc>=0&&r.frc<=4&&!isArmado(r)&&!isCatalog(r)));
+  const liberar=take(clean.filter(r=>hasMainLoc(r)&&!hasReserved(r)&&!hasAnyOffer(r)&&!hasPage(r)&&r.frc<=300&&!isArmado(r)&&!isCatalog(r)));
   return {faltantes_pl:faltantes,ingresar_nuevo:nuevos,reubicar_prioridad:ventaMax,sacar_baja:sacarT,enviar_t:enviarT,liberar_prime:liberar,bulk};
 }
 
@@ -177,34 +245,128 @@ function renderLocalSummary(){
 function fillListSelect(){
   $('listSelect').innerHTML=ACTIVITY_CONFIG.map(x=>`<option value="${x.id}">${escapeHtml(x.name)} · ${(localBuckets[x.id]||[]).length}</option>`).join('');renderSupervisorList();
 }
-function currentVisibleRows(){const key=$('listSelect').value,q=norm($('supervisorSearch').value).toLowerCase();return (localBuckets[key]||[]).map(displayRow).filter(r=>!q||Object.values(r).some(v=>String(v).toLowerCase().includes(q)))}
-function renderSupervisorList(){const rows=currentVisibleRows(),keys=['Código','Descripción','Ubicación PL','Stock PL','Venta','FRC','Page'];$('supervisorTable').innerHTML=rows.length?`<thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`:'<tr><td class="empty">Sin códigos en esta lista.</td></tr>'}
+function currentVisibleRows(){const key=$('listSelect').value,q=norm($('supervisorSearch').value).toLowerCase();return (localBuckets[key]||[]).filter(r=>!isProtectedProduct(r)).slice().sort(compareRowsByStationAndCode).map(displayRow).filter(r=>!q||Object.values(r).some(v=>String(v).toLowerCase().includes(q)))}
+function renderSupervisorList(){const rows=currentVisibleRows(),keys=['Código','Descripción','Ubicación PL','Stock PL','Disponible','Venta','FRC','Page','Oferta'];$('supervisorTable').innerHTML=rows.length?`<thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`:'<tr><td class="empty">Sin códigos en esta lista.</td></tr>'}
 async function copyVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para copiar.');const keys=Object.keys(rows[0]),text=[keys.join('\t'),...rows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');try{await navigator.clipboard.writeText(text);showToast('Lista copiada')}catch{return alert('No se pudo copiar. Usa la descarga de Excel.')}}
 function downloadVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para descargar.');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Lista');XLSX.writeFile(wb,($('listSelect').selectedOptions[0]?.textContent||'Lista_PL').replace(/[\\/:*?"<>|]/g,'')+'.xlsx')}
 
-async function deleteCollection(ref){const snap=await ref.get();let batch=db.batch(),count=0;for(const doc of snap.docs){batch.delete(doc.ref);if(++count>=400){await batch.commit();batch=db.batch();count=0}}if(count)await batch.commit()}
+async function deleteCollection(ref){
+  let deleted=0;
+  while(true){
+    const snap=await ref.limit(350).get();
+    if(snap.empty)break;
+    const batch=db.batch();snap.docs.forEach(doc=>batch.delete(doc.ref));await batch.commit();deleted+=snap.size;
+  }
+  return deleted;
+}
+async function beginExclusiveOperation(mode){
+  await db.runTransaction(async tx=>{
+    const snap=await tx.get(PLAN_REF),data=snap.exists?snap.data():{};
+    if(['limpiando','publicando'].includes(data.mode))throw new Error('Ya se está ejecutando un reinicio o publicación desde otro equipo.');
+    tx.set(PLAN_REF,{mode,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+  });
+}
+async function disableAllActivities(){
+  const snap=await ACTIVITIES_REF.get();if(snap.empty)return;
+  const batch=db.batch();snap.docs.forEach(doc=>batch.set(doc.ref,{status:'deshabilitada',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}));await batch.commit();
+}
 async function publishLists(){
+  if(operationBusy||['limpiando','publicando'].includes(planState.mode))return alert('Hay otra operación de publicación o reinicio pendiente.');
   if(!consolidated.length)return alert('Genera las listas antes de publicar.');
-  if(!confirm('¿Publicar esta carga? Se reemplazarán las listas operativas y su avance anterior.'))return;
-  $('publishBtn').disabled=true;
+  if(!confirm('¿Publicar esta carga? Se reemplazarán las listas operativas y sus avances anteriores en todos los equipos.'))return;
+  operationBusy=true;$('publishBtn').disabled=true;$('resetAllBtn').disabled=true;loadRevision++;
+  let locked=false;
   try{
+    await beginExclusiveOperation('publicando');locked=true;
+    await disableAllActivities();
     await deleteCollection(TASKS_REF);await deleteCollection(ACTIVITIES_REF);
     let batch=db.batch(),count=0,total=0;
     for(const activity of ACTIVITY_CONFIG){
       const rows=localBuckets[activity.id]||[];
       batch.set(ACTIVITIES_REF.doc(activity.id),{activity:activity.id,name:activity.name,status:'deshabilitada',operator:'',total:rows.length,completed:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});count++;
-      for(const row of rows){const id=activity.id+'__'+encodeURIComponent(row.code);batch.set(TASKS_REF.doc(id),{activity:activity.id,code:row.code,description:row.description||'',location:row.location||'Sin ubicación',stockPL:Number(row.stockPL||0),sale:Number(row.sale||0),frc:Number(row.frc||0),page:row.page||'',offer:row.offer||'',status:'pendiente',completedBy:'',completedAt:null,createdAt:firebase.firestore.FieldValue.serverTimestamp()});count++;total++;if(count>=400){await batch.commit();batch=db.batch();count=0}}
+      for(const row of rows){
+        if(isProtectedProduct(row))continue;
+        const id=activity.id+'__'+encodeURIComponent(row.code);
+        batch.set(TASKS_REF.doc(id),{activity:activity.id,code:row.code,description:row.description||'',location:row.location||'Sin ubicación',stockPL:Number(row.stockPL||0),available:Number(row.available||0),sale:Number(row.sale||0),frc:Number(row.frc||0),page:row.page||'',offer:row.offer||'',status:'pendiente',completedBy:'',completedAt:null,createdAt:firebase.firestore.FieldValue.serverTimestamp()});count++;total++;
+        if(count>=350){await batch.commit();batch=db.batch();count=0}
+      }
     }
     if(count)await batch.commit();
-    await PLAN_REF.set({mode:'listas_operativas',total,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});
-    showToast('Listas publicadas');openTab('controlTab',document.querySelectorAll('.tab-btn')[1]);
-  }catch(err){console.error(err);alert('No se pudieron publicar las listas. Revisa la conexión y los permisos de Firebase.')}finally{$('publishBtn').disabled=false}
+    await PLAN_REF.set({mode:'listas_operativas',total,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    noteNotice('operationNotice',`✅ Se publicaron ${total} códigos. Todas las actividades quedan bloqueadas hasta que el supervisor las habilite.`);
+    loadedPublishedOnce=false;showToast('Listas publicadas');openTab('controlTab',document.querySelectorAll('.tab-btn')[1]);
+  }catch(err){
+    console.error(err);
+    if(locked)await PLAN_REF.set({mode:'error_publicacion',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(console.error);
+    noteNotice('operationNotice','Publicación incompleta. Verifica los permisos o la conexión antes de volver a publicar.','error');
+    alert('No se pudieron publicar todas las listas: '+err.message);
+  }finally{operationBusy=false;$('publishBtn').disabled=!consolidated.length;$('resetAllBtn').disabled=false}
 }
-
+async function resetAllData(){
+  if(operationBusy||['limpiando','publicando'].includes(planState.mode))return alert('Ya hay una publicación o reinicio pendiente.');
+  if(!confirm('PRIMERA CONFIRMACIÓN: ¿Eliminar todas las listas, conteos de avance y actividades de Picking Line para comenzar una nueva carga? Se reflejará en TODOS los equipos.'))return;
+  if(prompt('SEGUNDA CONFIRMACIÓN: escribe ELIMINAR para borrar permanentemente toda la operación actual.')!=='ELIMINAR')return;
+  operationBusy=true;loadRevision++;$('resetAllBtn').disabled=true;$('publishBtn').disabled=true;
+  let locked=false;
+  try{
+    await beginExclusiveOperation('limpiando');locked=true;
+    noteNotice('operationNotice','Borrando la operación de Picking Line en Firebase…');
+    await disableAllActivities();
+    const tasks=await deleteCollection(TASKS_REF);
+    const activities=await deleteCollection(ACTIVITIES_REF);
+    await PLAN_REF.set({mode:'sin_carga',total:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});
+    activityState={};operatorRows=[];leaveActivityView();clearLocalData();renderActivityAdmin();renderOperatorActivities();
+    noteNotice('operationNotice',`✅ Reinicio completo: ${tasks} tareas y ${activities} actividades eliminadas. Ya puedes pegar una nueva data.`);
+    showToast('Operación eliminada');
+  }catch(err){
+    console.error(err);
+    if(locked)await PLAN_REF.set({mode:'error_reinicio',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(console.error);
+    noteNotice('operationNotice','El reinicio NO terminó. Algunas tareas pueden seguir presentes. No publiques ni habilites actividades hasta resolver el error y repetir el reinicio.','error');
+    alert('No se completó el reinicio: '+err.message);
+  }finally{operationBusy=false;$('resetAllBtn').disabled=false}
+}
+function onPlanSnapshot(snapshot){
+  const priorMode=planState.mode;
+  planState=snapshot.exists?snapshot.data():{};
+  if(['limpiando','publicando','sin_carga','error_reinicio','error_publicacion'].includes(planState.mode)){
+    if(operatorViewActive)leaveActivityView();
+    if(planState.mode==='sin_carga'&&!operationBusy){
+      loadRevision++;activityState={};operatorRows=[];loadedPublishedOnce=false;
+      if(priorMode&&priorMode!=='sin_carga')clearLocalData();else{localBuckets={};fillListSelect()}
+      renderActivityAdmin();renderOperatorActivities();
+    }
+    if(['limpiando','publicando'].includes(planState.mode)){
+      noteNotice('operationNotice','Sincronizando cambios desde Firebase. Las actividades quedan temporalmente bloqueadas.');
+    }
+    if(['error_reinicio','error_publicacion'].includes(planState.mode)){
+      noteNotice('operationNotice','Se detectó una operación incompleta en Firebase. Requiere revisión del supervisor.','error');
+    }
+  }
+  // Al abrir desde otro equipo, reconstruir las listas publicadas, sin conservar data obsoleta.
+  if(planState.mode==='listas_operativas'&&['sin_carga','limpiando','publicando'].includes(priorMode)){
+    loadedPublishedOnce=false;if(!$('supervisorShell').classList.contains('hidden'))loadPublishedLists();
+  }
+  renderOperatorActivities();
+}
+function watchPlan(){
+  if(unsubPlan)return;
+  unsubPlan=PLAN_REF.onSnapshot(onPlanSnapshot,err=>console.error('Estado de carga:',err));
+}
+function loadPublishedLists(){
+  if(operationBusy||isPlanBusy()||consolidated.length)return;
+  const revision=++loadRevision;
+  return TASKS_REF.get().then(s=>{
+    if(revision!==loadRevision||operationBusy||isPlanBusy()||consolidated.length)return;
+    const grouped=Object.fromEntries(ACTIVITY_CONFIG.map(a=>[a.id,[]]));
+    s.docs.forEach(d=>{const x=d.data();if(grouped[x.activity]&&!isProtectedProduct(x))grouped[x.activity].push({code:x.code,description:x.description,location:x.location,stockPL:x.stockPL,available:x.available??0,sale:x.sale,frc:x.frc,page:x.page,offer:x.offer})});
+    localBuckets=grouped;loadedPublishedOnce=true;fillListSelect();
+  }).catch(err=>{console.error(err);noteNotice('operationNotice','No se pudieron leer las listas publicadas.','error')});
+}
 function subscribeAdmin(loadPublished=false){
+  watchPlan();
   if(unsubActivities)unsubActivities();
   unsubActivities=ACTIVITIES_REF.onSnapshot(s=>{activityState=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data()}]));renderActivityAdmin();renderOperatorActivities();setCloud(true)},()=>setCloud(false));
-  if(loadPublished&&!consolidated.length)TASKS_REF.get().then(s=>{const grouped=Object.fromEntries(ACTIVITY_CONFIG.map(a=>[a.id,[]]));s.docs.forEach(d=>{const x=d.data();if(grouped[x.activity])grouped[x.activity].push({code:x.code,description:x.description,location:x.location,stockPL:x.stockPL,sale:x.sale,frc:x.frc,page:x.page,offer:x.offer})});localBuckets=grouped;fillListSelect()}).catch(console.error);
+  if(loadPublished)loadPublishedLists();
 }
 function refreshAdmin(){subscribeAdmin(true)}
 function activityStats(id){const state=activityState[id]||{},total=Number(state.total||0),completed=Number(state.completed||0);return {total,pending:Math.max(0,total-completed),completed}}
@@ -214,7 +376,14 @@ function renderActivityAdmin(){
   const host=$('activityAdmin');if(!Object.keys(activityState).length){host.innerHTML='<div class="empty">Sin carga publicada.</div>';return}
   host.innerHTML=ACTIVITY_CONFIG.map(a=>{const state=activityState[a.id]||{},stats=activityStats(a.id);return `<article class="activity-card"><div class="activity-card-head"><div><h3>${a.icon} ${escapeHtml(a.name)}</h3><div class="status">Disponible para varios operarios</div></div><span class="badge ${statusClass(state.status)}">${statusLabel(state.status)}</span></div><div><span class="activity-count">${stats.pending}</span><span class="status"> pendientes de ${stats.total}</span></div><div class="actions">${state.status==='habilitada'?`<button class="danger" onclick="setActivityStatus('${a.id}','deshabilitada')">Bloquear</button>`:state.status==='cerrada'?'<button class="secondary" disabled>Finalizada</button>':`<button class="primary" ${stats.pending?'':'disabled'} onclick="setActivityStatus('${a.id}','habilitada')">Habilitar</button>`}</div></article>`}).join('');
 }
-async function setActivityStatus(id,status){try{await ACTIVITIES_REF.doc(id).set({status,operator:'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(err){console.error(err);alert('No se pudo actualizar la actividad.')}}
+async function setActivityStatus(id,status){
+  if(operationBusy||isPlanBusy())return alert('La carga se está reiniciando o publicando.');
+  try{await db.runTransaction(async tx=>{
+    const plan=await tx.get(PLAN_REF),activity=await tx.get(ACTIVITIES_REF.doc(id));
+    if(!plan.exists||plan.data().mode!=='listas_operativas'||!activity.exists)throw new Error('No hay una carga activa.');
+    tx.update(ACTIVITIES_REF.doc(id),{status,operator:'',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  })}catch(err){console.error(err);alert('No se pudo actualizar la actividad: '+err.message)}
+}
 
 function enterMode(mode){$('landing').classList.add('hidden');if(mode==='supervisor'){$('supervisorShell').classList.remove('hidden');subscribeAdmin(true)}else{$('operatorShell').classList.remove('hidden');$('operatorName').value=localStorage.getItem('pl_operator_name')||'';subscribeAdmin(false)}}
 function backHome(){leaveActivityView();$('supervisorShell').classList.add('hidden');$('operatorShell').classList.add('hidden');$('landing').classList.remove('hidden')}
@@ -223,30 +392,30 @@ function setCloud(ok){$('supervisorCloud').textContent=ok?'Firebase conectado':'
 
 function renderOperatorActivities(){
   const host=$('operatorActivities');if(!host)return;
-  const cards=ACTIVITY_CONFIG.map(a=>{const s=activityState[a.id]||{},stats=activityStats(a.id),available=s.status==='habilitada';const text=available?'Disponible':s.status==='cerrada'?'Finalizada':'Bloqueada';return `<button class="operator-activity ${selectedActivity===a.id?'selected':''}" ${available?'':'disabled'} onclick="selectOperatorActivity('${a.id}')">${a.icon} <b>${escapeHtml(a.name)}</b><small>${text} · ${stats.pending} pendientes</small></button>`});host.innerHTML=cards.join('');$('takeActivityBtn').disabled=!selectedActivity}
+  const cards=ACTIVITY_CONFIG.map(a=>{const s=activityState[a.id]||{},stats=activityStats(a.id),available=s.status==='habilitada'&&!isPlanBusy()&&planState.mode==='listas_operativas';const text=available?'Disponible':s.status==='cerrada'?'Finalizada':'Bloqueada';return `<button class="operator-activity ${selectedActivity===a.id?'selected':''}" ${available?'':'disabled'} onclick="selectOperatorActivity('${a.id}')">${a.icon} <b>${escapeHtml(a.name)}</b><small>${text} · ${stats.pending} pendientes</small></button>`});host.innerHTML=cards.join('');$('takeActivityBtn').disabled=!selectedActivity}
 function selectOperatorActivity(id){selectedActivity=id;renderOperatorActivities()}
 async function takeActivity(){
-  const name=norm($('operatorName').value);if(!name)return alert('Ingresa tu nombre.');if(!selectedActivity)return alert('Selecciona una actividad.');localStorage.setItem('pl_operator_name',name);
-  try{const snap=await ACTIVITIES_REF.doc(selectedActivity).get();if(!snap.exists||snap.data().status!=='habilitada')throw new Error('bloqueada');startOperatorList()}catch(err){alert('La actividad ya no está habilitada.')}
+  const name=norm($('operatorName').value);if(!name)return alert('Ingresa tu nombre.');if(!selectedActivity)return alert('Selecciona una actividad.');if(isPlanBusy()||planState.mode!=='listas_operativas')return alert('La carga no está activa.');localStorage.setItem('pl_operator_name',name);
+  try{const snap=await ACTIVITIES_REF.doc(selectedActivity).get();if(!snap.exists||snap.data().status!=='habilitada'||isPlanBusy()||planState.mode!=='listas_operativas')throw new Error('bloqueada');startOperatorList()}catch(err){alert('La actividad ya no está habilitada.')}
 }
 function startOperatorList(){
-  $('operatorSetup').classList.add('hidden');$('operatorWork').classList.remove('hidden');$('operatorActivityTitle').textContent=(ACTIVITY_MAP.get(selectedActivity)?.icon||'')+' '+(ACTIVITY_MAP.get(selectedActivity)?.name||'Actividad');$('operatorSearch').value='';
-  if(unsubOperatorTasks)unsubOperatorTasks();unsubOperatorTasks=TASKS_REF.where('activity','==',selectedActivity).onSnapshot(s=>{operatorRows=s.docs.map(d=>({id:d.id,...d.data()}));renderOperatorList()},err=>{console.error(err);$('operatorList').innerHTML='<div class="operator-card empty">No se pudo cargar la lista.</div>'});
+  operatorViewActive=true;$('operatorSetup').classList.add('hidden');$('operatorWork').classList.remove('hidden');$('operatorActivityTitle').textContent=(ACTIVITY_MAP.get(selectedActivity)?.icon||'')+' '+(ACTIVITY_MAP.get(selectedActivity)?.name||'Actividad');$('operatorSearch').value='';
+  if(unsubOperatorTasks)unsubOperatorTasks();unsubOperatorTasks=TASKS_REF.where('activity','==',selectedActivity).onSnapshot(s=>{operatorRows=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!isProtectedProduct(x));renderOperatorList()},err=>{console.error(err);$('operatorList').innerHTML='<div class="operator-card empty">No se pudo cargar la lista.</div>'});
 }
 function renderOperatorList(){
-  const q=norm($('operatorSearch').value).toLowerCase(),all=operatorRows,pending=all.filter(x=>x.status!=='completado'),rows=pending.filter(x=>!q||String(x.code).toLowerCase().includes(q)||String(x.description).toLowerCase().includes(q)||String(x.location).toLowerCase().includes(q));const done=all.length-pending.length,percent=all.length?Math.round(done/all.length*100):0;
+  const q=norm($('operatorSearch').value).toLowerCase(),all=operatorRows,pending=all.filter(x=>x.status!=='completado'),rows=pending.filter(x=>!q||String(x.code).toLowerCase().includes(q)||String(x.description).toLowerCase().includes(q)||String(x.location).toLowerCase().includes(q)).sort(compareRowsByStationAndCode);const done=all.length-pending.length,percent=all.length?Math.round(done/all.length*100):0;
   $('operatorProgressText').textContent=`${pending.length} pendientes · ${done} completados`;$('operatorProgressBar').style.width=percent+'%';
-  $('operatorList').innerHTML=rows.length?rows.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div><div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join(''):`<div class="operator-card empty">${pending.length?'No hay coincidencias.':'Actividad completada. No quedan códigos pendientes.'}</div>`;
+  $('operatorList').innerHTML=rows.length?rows.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div><div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div><div class="fact"><span>Disponible</span><b>${escapeHtml(x.available??0)}</b></div><div class="fact"><span>Oferta</span><b>${escapeHtml(x.offer||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join(''):`<div class="operator-card empty">${pending.length?'No hay coincidencias.':'Actividad completada. No quedan códigos pendientes.'}</div>`;
 }
 async function completeCode(id,button){
-  const name=norm($('operatorName').value),row=operatorRows.find(x=>x.id===id);if(!row)return;
+  const name=norm($('operatorName').value),row=operatorRows.find(x=>x.id===id);if(!row||isProtectedProduct(row)||isPlanBusy())return;
   if(button){button.disabled=true;button.textContent='Guardando…'}
-  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(selectedActivity),taskRef=TASKS_REF.doc(id),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
+  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(selectedActivity),taskRef=TASKS_REF.doc(id),plan=await tx.get(PLAN_REF),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!plan.exists||plan.data().mode!=='listas_operativas')throw new Error('sin_carga');if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(isProtectedProduct(task.data()))throw new Error('excluido');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
 }
-function leaveActivityView(){if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
+function leaveActivityView(){operatorViewActive=false;if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
 function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)}
 
-window.addEventListener('load',()=>{setCloud(false)});
+window.addEventListener('load',()=>{setCloud(false);clearNotice('importNotice')});
 </script>
 </body>
 </html>
