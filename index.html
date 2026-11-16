@@ -15,6 +15,10 @@
     .operation-notice{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--soft);background:#f0fbf8;color:var(--dark);font-size:13px;font-weight:700;line-height:1.5}
     .operation-notice.warning-notice{background:#fff8e6;color:#805800;border-color:#efd087}
     .operation-notice.error-notice{background:#fff1f1;color:#a63232;border-color:#ecc2c2}
+    .list-count{font-size:12px;color:var(--muted);font-weight:800;margin:8px 0}
+    .load-more{width:100%;padding:12px;margin:8px 0;border:1px solid var(--soft);background:#f4fcfa;color:var(--dark)}
+    .task-warning{background:#fff8e6;border:1px solid #f4cf84;color:#725400;border-radius:14px;padding:14px;font-weight:750;line-height:1.55}
+    .task-error{background:#ffefef;border:1px solid #efb9b9;color:#ab3030;border-radius:14px;padding:14px;font-weight:800;line-height:1.55}
     @media(max-width:850px){.grid3{grid-template-columns:1fr}.input-card textarea{height:190px}.profiles{grid-template-columns:1fr}}
     @media(max-width:560px){main{padding:12px}.topbar{padding:9px 10px}.brand b{font-size:16px}.status{max-width:120px;text-align:right}.card{padding:14px;border-radius:17px}.operator-activities{grid-template-columns:1fr 1fr}.operator-activity{padding:11px;min-height:86px}.facts{grid-template-columns:1fr 1fr}.product-card{padding:13px}.code{font-size:22px}.location{font-size:14px}.toolbar>.actions{width:100%}.toolbar>.actions button{flex:1}}
   </style>
@@ -43,7 +47,7 @@
       <section id="loadTab" class="tab active">
         <div class="grid3">
           <article class="card input-card"><h2>Order Lite / FRC</h2><textarea id="orderInput" placeholder="Code, Description, FRC, Oferta y Page"></textarea><small>Prioridad: Reserved → Oferta → Page.</small></article>
-          <article class="card input-card"><h2>Venta / Reserved</h2><textarea id="saleInput" placeholder="Código Producto, Descripción y Reserved"></textarea><small>Reserved se utiliza como venta actual.</small></article>
+          <article class="card input-card"><h2>Venta / Reserved</h2><textarea id="saleInput" placeholder="Código Producto, Descripción y Reserved"></textarea><small>Reserved es la cantidad vendida. Ingresar nuevos = Reserved &gt; 0 y Stock PL = 0.</small></article>
           <article class="card input-card"><h2>Stock PL</h2><textarea id="stockInput" placeholder="Variante, Caja y Physical Quantity"></textarea><small>Caja corresponde a la ubicación actual en PL.</small></article>
         </div>
         <article class="card" style="margin-top:14px">
@@ -57,6 +61,7 @@
         <article class="card">
           <div class="toolbar"><div><h2>Control de actividades</h2><p class="note">Cada actividad se habilita de forma independiente y puede ser trabajada simultáneamente por varios operarios.</p></div><button class="secondary" onclick="refreshAdmin()">Actualizar</button></div>
           <div id="activityAdmin" class="activity-admin" style="margin-top:14px"><div class="empty">Sin carga publicada.</div></div>
+          <div class="actions" style="margin-top:15px"><button id="auditTasksBtn" class="secondary" onclick="auditPublishedTasks()">🔎 Verificar listas publicadas</button></div>
           <div class="reset-panel">
             <div><b>🗑️ Reiniciar toda la operación</b><p class="note">Elimina únicamente las tareas, avances y actividades publicadas de Picking Line. La limpieza se sincroniza con todos los equipos. No afecta a otras aplicaciones.</p></div>
             <button id="resetAllBtn" class="danger" onclick="resetAllData()">🗑️ Eliminar todo</button>
@@ -68,8 +73,8 @@
       <section id="listsTab" class="tab">
         <article class="card">
           <div class="toolbar"><div><h2>Listados</h2><p class="note">Todas las listas, incluyendo Candidatos a Bulk, pueden habilitarse para los operarios.</p></div><div class="actions"><button class="secondary" onclick="copyVisibleList()">Copiar</button><button class="primary" onclick="downloadVisibleList()">Descargar Excel</button></div></div>
-          <div class="list-controls"><select id="listSelect" onchange="renderSupervisorList()"></select><input id="supervisorSearch" type="search" placeholder="Buscar código, descripción o ubicación" oninput="renderSupervisorList()"></div>
-          <div class="table-wrap"><table id="supervisorTable"></table></div>
+          <div class="list-controls"><select id="listSelect" onchange="renderSupervisorList()"></select><input id="supervisorSearch" type="search" placeholder="Buscar código, descripción o ubicación" oninput="scheduleSupervisorRender()"></div>
+          <div id="listCount" class="list-count" aria-live="polite"></div><div class="table-wrap"><table id="supervisorTable"></table></div>
         </article>
       </section>
     </main>
@@ -91,7 +96,7 @@
           <article class="operator-card" style="padding:13px">
             <div class="toolbar"><div><h2 id="operatorActivityTitle">Actividad</h2><div id="operatorProgressText" class="status"></div></div><button class="secondary" onclick="leaveActivityView()">Volver</button></div>
             <div class="progress" style="margin-top:9px"><div id="operatorProgressBar"></div></div>
-            <input id="operatorSearch" class="operator-search" type="search" placeholder="Buscar código o producto" oninput="renderOperatorList()">
+            <input id="operatorSearch" class="operator-search" type="search" placeholder="Buscar código o producto" oninput="operatorRenderLimit=40;renderOperatorList()">
           </article>
         </div>
         <div id="operatorList" class="operator-list"></div>
@@ -123,7 +128,9 @@ const ACTIVITY_MAP=new Map(ACTIVITY_CONFIG.map(x=>[x.id,x]));
 let consolidated=[],localBuckets={},activityState={},selectedActivity='',operatorRows=[];
 let unsubActivities=null,unsubOperatorTasks=null,unsubPlan=null;
 let planState={},operationBusy=false,loadedPublishedOnce=false,loadRevision=0;
-let operatorViewActive=false;
+let operatorViewActive=false,activeActivityId='',operatorSnapshotSource='cargando',operatorLoadError='',operatorRenderLimit=40,operatorAuditInFlight=false;
+let supervisorRenderTimer=null;
+const MAX_SUPERVISOR_ROWS=150, OPERATOR_PAGE_SIZE=40;
 // La autenticación de Supervisor depende de las reglas de Firestore, no de ocultar botones.
 // Sin credenciales/cuentas provisionadas no se cambia el acceso existente (ver aviso de entrega).
 
@@ -215,7 +222,7 @@ function generateLists(){
     consolidated=[...codes].map(code=>{const o=orderMap.get(code)||{},s=saleMap.get(code)||{},p=stockMap.get(code)||{stockPL:0,locations:[]};const locations=[...new Set(p.locations.filter(x=>!isInvalidLoc(x)))];return {code,description:o.description||s.description||'',orderDescription:o.description||'',saleDescription:s.description||'',location:locations.join(' | '),stockPL:p.stockPL||0,available:o.available??0,sale:s.sale||0,frc:o.frc??0,offer:o.offer||'',page:o.page||''}});
     const excluded=consolidated.filter(isProtectedProduct).length;
     localBuckets=classifyRows(consolidated);renderLocalSummary();fillListSelect();$('publishBtn').disabled=false;
-    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Excluidos por protección: ${excluded}.`;
+    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Excluidos por protección: ${excluded}. Ingresar nuevos exige Reserved > 0 y Stock PL = 0.`;
     noteNotice('importNotice',diagnosed+(missingOrderCodes.length?` ATENCIÓN: ${missingOrderCodes.length} códigos no aparecen en Order Lite y por eso no tienen Page/FRC. Ej.: ${missingOrderCodes.slice(0,8).join(', ')}.`:''),missingOrderCodes.length?'warning':'');
     openTab('listsTab',document.querySelectorAll('.tab-btn')[2]);
   }catch(error){
@@ -228,8 +235,11 @@ function classifyRows(rows){
   const clean=rows.filter(r=>!isProtectedProduct(r));
   const assigned=new Set(),take=items=>items.filter(row=>{if(assigned.has(row.code))return false;assigned.add(row.code);return true});
   // Prioridad de actividad: Reserved > Oferta prioritaria > Page.
-  const faltantes=take(clean.filter(r=>hasReserved(r)&&(!validLocs(r).length||r.stockPL<=0)));
-  const nuevos=take(clean.filter(r=>!hasReserved(r)&&(priorityOffer(r)||hasPage(r))&&(!validLocs(r).length||r.stockPL<=0)));
+  // Ingresar nuevos: venta confirmada (Reserved > 0) sin una sola unidad física en PL.
+  // Faltantes: hay unidades en PL, pero NO alcanzan para cubrir la venta.
+  // Ambas listas son mutuamente excluyentes, sin usar Page ni Oferta para decidir el ingreso.
+  const nuevos=take(clean.filter(r=>hasReserved(r)&&r.stockPL<=0));
+  const faltantes=take(clean.filter(r=>hasReserved(r)&&r.stockPL>0&&r.sale>r.stockPL));
   const ventaMax=take(clean.filter(r=>validLocs(r).length&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
   const sacarT=take(clean.filter(r=>rowInLow(r)&&(hasReserved(r)||priorityOffer(r)||(hasPage(r)&&r.frc>=5)||r.frc>1000)));
   const bulk=take(clean.filter(r=>r.stockPL>100&&!hasReserved(r)&&r.frc>=0&&r.frc<=4&&!hasAnyOffer(r)&&!hasPage(r)&&!isArmado(r)&&!isCatalog(r)));
@@ -239,6 +249,8 @@ function classifyRows(rows){
   return {faltantes_pl:faltantes,ingresar_nuevo:nuevos,reubicar_prioridad:ventaMax,sacar_baja:sacarT,enviar_t:enviarT,liberar_prime:liberar,bulk};
 }
 
+// Aclara el origen de cada lista; los códigos de Page u Oferta sin venta
+// no deben generar falsas tareas de ingreso de productos.
 function renderLocalSummary(){
   $('localSummary').innerHTML=ACTIVITY_CONFIG.map(x=>`<div class="metric"><b>${(localBuckets[x.id]||[]).length}</b><span>${escapeHtml(x.name)}</span></div>`).join('');
 }
@@ -246,7 +258,12 @@ function fillListSelect(){
   $('listSelect').innerHTML=ACTIVITY_CONFIG.map(x=>`<option value="${x.id}">${escapeHtml(x.name)} · ${(localBuckets[x.id]||[]).length}</option>`).join('');renderSupervisorList();
 }
 function currentVisibleRows(){const key=$('listSelect').value,q=norm($('supervisorSearch').value).toLowerCase();return (localBuckets[key]||[]).filter(r=>!isProtectedProduct(r)).slice().sort(compareRowsByStationAndCode).map(displayRow).filter(r=>!q||Object.values(r).some(v=>String(v).toLowerCase().includes(q)))}
-function renderSupervisorList(){const rows=currentVisibleRows(),keys=['Código','Descripción','Ubicación PL','Stock PL','Disponible','Venta','FRC','Page','Oferta'];$('supervisorTable').innerHTML=rows.length?`<thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`:'<tr><td class="empty">Sin códigos en esta lista.</td></tr>'}
+function scheduleSupervisorRender(){clearTimeout(supervisorRenderTimer);supervisorRenderTimer=setTimeout(renderSupervisorList,160)}
+function renderSupervisorList(){
+  const rows=currentVisibleRows(),keys=['Código','Descripción','Ubicación PL','Stock PL','Disponible','Venta','FRC','Page','Oferta'],visible=rows.slice(0,MAX_SUPERVISOR_ROWS);
+  $('listCount').textContent=rows.length>MAX_SUPERVISOR_ROWS?`Mostrando ${visible.length} de ${rows.length} códigos. La búsqueda filtra toda la lista; Copiar y Excel incluyen todos los resultados.`:`${rows.length} código${rows.length===1?'':'s'} en esta lista.`;
+  $('supervisorTable').innerHTML=visible.length?`<thead><tr>${keys.map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${visible.map(r=>`<tr>${keys.map(k=>`<td>${escapeHtml(r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`:'<tr><td class="empty">Sin códigos en esta lista.</td></tr>';
+}
 async function copyVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para copiar.');const keys=Object.keys(rows[0]),text=[keys.join('\t'),...rows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');try{await navigator.clipboard.writeText(text);showToast('Lista copiada')}catch{return alert('No se pudo copiar. Usa la descarga de Excel.')}}
 function downloadVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para descargar.');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Lista');XLSX.writeFile(wb,($('listSelect').selectedOptions[0]?.textContent||'Lista_PL').replace(/[\\/:*?"<>|]/g,'')+'.xlsx')}
 
@@ -292,6 +309,9 @@ async function publishLists(){
       }
     }
     if(count)await batch.commit();
+    // Confirmar el total antes de declarar publicada la carga. Si falla, modo error_publicacion.
+    const auditSnap=await TASKS_REF.get({source:'server'});
+    if(auditSnap.size!==total)throw new Error(`Publicación parcial: se esperaban ${total} tareas y el servidor confirma ${auditSnap.size}.`);
     await PLAN_REF.set({mode:'listas_operativas',total,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
     noteNotice('operationNotice',`✅ Se publicaron ${total} códigos. Todas las actividades quedan bloqueadas hasta que el supervisor las habilite.`);
     loadedPublishedOnce=false;showToast('Listas publicadas');openTab('controlTab',document.querySelectorAll('.tab-btn')[1]);
@@ -365,10 +385,25 @@ function loadPublishedLists(){
 function subscribeAdmin(loadPublished=false){
   watchPlan();
   if(unsubActivities)unsubActivities();
-  unsubActivities=ACTIVITIES_REF.onSnapshot(s=>{activityState=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data()}]));renderActivityAdmin();renderOperatorActivities();setCloud(true)},()=>setCloud(false));
+  unsubActivities=ACTIVITIES_REF.onSnapshot(s=>{activityState=Object.fromEntries(s.docs.map(d=>[d.id,{id:d.id,...d.data()}]));if(operatorViewActive&&activityState[activeActivityId]?.status==='deshabilitada'){leaveActivityView();showToast('Actividad bloqueada por el supervisor')}renderActivityAdmin();renderOperatorActivities();setCloud(true)},()=>setCloud(false));
   if(loadPublished)loadPublishedLists();
 }
 function refreshAdmin(){subscribeAdmin(true)}
+async function auditPublishedTasks(){
+  if(isPlanBusy()||operationBusy)return alert('No se puede auditar durante una publicación o reinicio.');
+  const button=$('auditTasksBtn');button.disabled=true;
+  noteNotice('operationNotice','Verificando tareas de la carga actual directamente en Firebase…');
+  try{
+    const snapshot=await TASKS_REF.get({source:'server'});
+    const totals=Object.fromEntries(ACTIVITY_CONFIG.map(a=>[a.id,{total:0,done:0}]));
+    snapshot.docs.forEach(doc=>{const x=doc.data();if(!totals[x.activity]||isProtectedProduct(x))return;totals[x.activity].total++;if(x.status==='completado')totals[x.activity].done++});
+    const issues=[];
+    for(const a of ACTIVITY_CONFIG){const expected=activityState[a.id]||{},actual=totals[a.id];if(Number(expected.total||0)!==actual.total||Number(expected.completed||0)!==actual.done)issues.push(`${a.name}: contador ${Number(expected.total||0)-Number(expected.completed||0)} pendiente(s), realmente ${actual.total-actual.done}`)}
+    if(issues.length)noteNotice('operationNotice','⚠️ Contadores y tareas no coinciden: '+issues.join(' · ')+'. Se debe generar y publicar nuevamente la carga para corregirlos.','warning');
+    else noteNotice('operationNotice',`✅ Verificación correcta: ${snapshot.size} tareas en Firebase. Contadores y códigos publicados coinciden.`);
+  }catch(err){console.error(err);noteNotice('operationNotice','No se pudieron verificar las tareas en el servidor: '+err.message,'error')}
+  finally{button.disabled=false}
+}
 function activityStats(id){const state=activityState[id]||{},total=Number(state.total||0),completed=Number(state.completed||0);return {total,pending:Math.max(0,total-completed),completed}}
 function statusLabel(s){return ({deshabilitada:'Bloqueada',habilitada:'Habilitada',cerrada:'Completada'})[s]||'Sin publicar'}
 function statusClass(s){return s==='habilitada'?'b-on':s==='cerrada'?'b-done':'b-off'}
@@ -392,27 +427,60 @@ function setCloud(ok){$('supervisorCloud').textContent=ok?'Firebase conectado':'
 
 function renderOperatorActivities(){
   const host=$('operatorActivities');if(!host)return;
-  const cards=ACTIVITY_CONFIG.map(a=>{const s=activityState[a.id]||{},stats=activityStats(a.id),available=s.status==='habilitada'&&!isPlanBusy()&&planState.mode==='listas_operativas';const text=available?'Disponible':s.status==='cerrada'?'Finalizada':'Bloqueada';return `<button class="operator-activity ${selectedActivity===a.id?'selected':''}" ${available?'':'disabled'} onclick="selectOperatorActivity('${a.id}')">${a.icon} <b>${escapeHtml(a.name)}</b><small>${text} · ${stats.pending} pendientes</small></button>`});host.innerHTML=cards.join('');$('takeActivityBtn').disabled=!selectedActivity}
-function selectOperatorActivity(id){selectedActivity=id;renderOperatorActivities()}
+  const cards=ACTIVITY_CONFIG.map(a=>{const s=activityState[a.id]||{},stats=activityStats(a.id),available=s.status==='habilitada'&&stats.pending>0&&!isPlanBusy()&&planState.mode==='listas_operativas';const text=available?'Disponible':s.status==='cerrada'?'Finalizada':'Bloqueada';return `<button class="operator-activity ${selectedActivity===a.id?'selected':''}" ${available?'':'disabled'} onclick="selectOperatorActivity('${a.id}')">${a.icon} <b>${escapeHtml(a.name)}</b><small>${text} · ${stats.pending} pendientes</small></button>`});host.innerHTML=cards.join('');$('takeActivityBtn').disabled=!selectedActivity||!cards.some((_,i)=>ACTIVITY_CONFIG[i].id===selectedActivity&&activityState[selectedActivity]?.status==='habilitada'&&activityStats(selectedActivity).pending>0);
+}
+function selectOperatorActivity(id){if(!activityState[id]||activityState[id].status!=='habilitada'||activityStats(id).pending<=0)return;selectedActivity=id;renderOperatorActivities()}
 async function takeActivity(){
   const name=norm($('operatorName').value);if(!name)return alert('Ingresa tu nombre.');if(!selectedActivity)return alert('Selecciona una actividad.');if(isPlanBusy()||planState.mode!=='listas_operativas')return alert('La carga no está activa.');localStorage.setItem('pl_operator_name',name);
-  try{const snap=await ACTIVITIES_REF.doc(selectedActivity).get();if(!snap.exists||snap.data().status!=='habilitada'||isPlanBusy()||planState.mode!=='listas_operativas')throw new Error('bloqueada');startOperatorList()}catch(err){alert('La actividad ya no está habilitada.')}
+  try{const snap=await ACTIVITIES_REF.doc(selectedActivity).get({source:'server'});if(!snap.exists||snap.data().status!=='habilitada'||isPlanBusy()||planState.mode!=='listas_operativas')throw new Error('bloqueada');startOperatorList()}catch(err){alert('La actividad no está disponible o no se pudo validar con Firebase. '+(err.message||''))}
 }
 function startOperatorList(){
-  operatorViewActive=true;$('operatorSetup').classList.add('hidden');$('operatorWork').classList.remove('hidden');$('operatorActivityTitle').textContent=(ACTIVITY_MAP.get(selectedActivity)?.icon||'')+' '+(ACTIVITY_MAP.get(selectedActivity)?.name||'Actividad');$('operatorSearch').value='';
-  if(unsubOperatorTasks)unsubOperatorTasks();unsubOperatorTasks=TASKS_REF.where('activity','==',selectedActivity).onSnapshot(s=>{operatorRows=s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!isProtectedProduct(x));renderOperatorList()},err=>{console.error(err);$('operatorList').innerHTML='<div class="operator-card empty">No se pudo cargar la lista.</div>'});
+  activeActivityId=selectedActivity;operatorViewActive=true;operatorRows=[];operatorSnapshotSource='cargando';operatorLoadError='';operatorRenderLimit=OPERATOR_PAGE_SIZE;operatorAuditInFlight=false;
+  $('operatorSetup').classList.add('hidden');$('operatorWork').classList.remove('hidden');$('operatorActivityTitle').textContent=(ACTIVITY_MAP.get(activeActivityId)?.icon||'')+' '+(ACTIVITY_MAP.get(activeActivityId)?.name||'Actividad');$('operatorSearch').value='';
+  renderOperatorList();
+  if(unsubOperatorTasks)unsubOperatorTasks();
+  const query=TASKS_REF.where('activity','==',activeActivityId),activityAtStart=activeActivityId;
+  // includeMetadataChanges: el snapshot inicial puede ser caché vacía. Esperamos servidor.
+  unsubOperatorTasks=query.onSnapshot({includeMetadataChanges:true},snap=>{
+    if(!operatorViewActive||activeActivityId!==activityAtStart)return;
+    const raw=snap.docs.map(d=>({id:d.id,...d.data()}));
+    operatorRows=raw.filter(x=>!isProtectedProduct(x));
+    operatorSnapshotSource=snap.metadata&&snap.metadata.fromCache?'cache':'servidor';operatorLoadError='';renderOperatorList();
+    // Si el contador indica pendientes pero la consulta está vacía, reconfirmar
+    // una vez con el servidor antes de señalar un error de publicación.
+    if(!raw.length&&activityStats(activityAtStart).pending>0&&operatorSnapshotSource==='servidor'&&!operatorAuditInFlight){
+      operatorAuditInFlight=true;
+      query.get({source:'server'}).then(verified=>{
+        if(!operatorViewActive||activeActivityId!==activityAtStart)return;
+        operatorRows=verified.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!isProtectedProduct(x));operatorSnapshotSource='servidor';renderOperatorList();
+      }).catch(err=>{if(operatorViewActive&&activeActivityId===activityAtStart){operatorLoadError='No se pudo confirmar la lista con Firebase: '+err.message;renderOperatorList()}});
+    }
+  },err=>{console.error(err);if(activeActivityId!==activityAtStart)return;operatorLoadError='Error consultando tareas de Firebase: '+err.message;operatorSnapshotSource='error';renderOperatorList()});
 }
+function showMoreOperatorRows(){operatorRenderLimit+=OPERATOR_PAGE_SIZE;renderOperatorList()}
 function renderOperatorList(){
-  const q=norm($('operatorSearch').value).toLowerCase(),all=operatorRows,pending=all.filter(x=>x.status!=='completado'),rows=pending.filter(x=>!q||String(x.code).toLowerCase().includes(q)||String(x.description).toLowerCase().includes(q)||String(x.location).toLowerCase().includes(q)).sort(compareRowsByStationAndCode);const done=all.length-pending.length,percent=all.length?Math.round(done/all.length*100):0;
-  $('operatorProgressText').textContent=`${pending.length} pendientes · ${done} completados`;$('operatorProgressBar').style.width=percent+'%';
-  $('operatorList').innerHTML=rows.length?rows.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div><div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div><div class="fact"><span>Disponible</span><b>${escapeHtml(x.available??0)}</b></div><div class="fact"><span>Oferta</span><b>${escapeHtml(x.offer||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join(''):`<div class="operator-card empty">${pending.length?'No hay coincidencias.':'Actividad completada. No quedan códigos pendientes.'}</div>`;
+  if(!operatorViewActive)return;
+  const q=norm($('operatorSearch').value).toLowerCase(),all=operatorRows,stats=activityStats(activeActivityId),pending=all.filter(x=>x.status!=='completado'),rows=pending.filter(x=>!q||String(x.code).toLowerCase().includes(q)||String(x.description).toLowerCase().includes(q)||String(x.location).toLowerCase().includes(q)).sort(compareRowsByStationAndCode);
+  const done=all.length-pending.length,percent=all.length?Math.round(done/all.length*100):0;
+  $('operatorProgressText').textContent=operatorSnapshotSource==='cargando'?'Cargando tareas desde Firebase…':`${pending.length} pendientes · ${done} completados${operatorSnapshotSource==='cache'?' · caché local':''}`;
+  $('operatorProgressBar').style.width=percent+'%';
+  if(operatorLoadError){$('operatorList').innerHTML=`<div class="task-error">⚠️ ${escapeHtml(operatorLoadError)}. Verifica los permisos y la conexión; no se registró ningún código como completado.</div>`;return}
+  if(operatorSnapshotSource==='cargando'){ $('operatorList').innerHTML='<div class="operator-card empty">Consultando códigos publicados en Firebase…</div>';return}
+  if(operatorSnapshotSource==='cache'&&!all.length){$('operatorList').innerHTML='<div class="operator-card empty">Esperando confirmación del servidor. La caché local todavía no contiene los códigos.</div>';return}
+  const mismatch=operatorSnapshotSource==='servidor'&&((stats.total>0&&all.length!==stats.total)||(stats.pending>0&&!pending.length));
+  const warn=mismatch?`<div class="task-warning">⚠️ La actividad muestra ${stats.pending} pendientes en Control, pero Firebase devolvió ${pending.length} códigos pendientes (${all.length} registros en total, frente a ${stats.total} esperados). No se marcará como completada: el supervisor debe verificar y volver a publicar las listas.</div>`:'';
+  const visible=rows.slice(0,operatorRenderLimit);
+  const cards=visible.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div><div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div><div class="fact"><span>Disponible</span><b>${escapeHtml(x.available??0)}</b></div><div class="fact"><span>Oferta</span><b>${escapeHtml(x.offer||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join('');
+  const more=rows.length>visible.length?`<button class="load-more" onclick="showMoreOperatorRows()">Mostrar ${Math.min(OPERATOR_PAGE_SIZE,rows.length-visible.length)} más · ${rows.length-visible.length} por visualizar</button>`:'';
+  const none=pending.length?(q?'No hay coincidencias con la búsqueda.':'No hay códigos disponibles.'):all.length&&all.length===done?'Actividad completada. No quedan códigos pendientes.':'No hay tareas publicadas para esta actividad.';
+  $('operatorList').innerHTML=warn+(rows.length?cards+more:`<div class="operator-card empty">${none}</div>`);
 }
 async function completeCode(id,button){
   const name=norm($('operatorName').value),row=operatorRows.find(x=>x.id===id);if(!row||isProtectedProduct(row)||isPlanBusy())return;
   if(button){button.disabled=true;button.textContent='Guardando…'}
-  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(selectedActivity),taskRef=TASKS_REF.doc(id),plan=await tx.get(PLAN_REF),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!plan.exists||plan.data().mode!=='listas_operativas')throw new Error('sin_carga');if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(isProtectedProduct(task.data()))throw new Error('excluido');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
+  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(activeActivityId),taskRef=TASKS_REF.doc(id),plan=await tx.get(PLAN_REF),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!plan.exists||plan.data().mode!=='listas_operativas')throw new Error('sin_carga');if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(isProtectedProduct(task.data()))throw new Error('excluido');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
 }
-function leaveActivityView(){operatorViewActive=false;if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
+function leaveActivityView(){operatorViewActive=false;activeActivityId='';operatorLoadError='';operatorSnapshotSource='cargando';if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
 function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)}
 
 window.addEventListener('load',()=>{setCloud(false);clearNotice('importNotice')});
