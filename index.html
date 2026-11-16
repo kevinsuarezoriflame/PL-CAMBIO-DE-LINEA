@@ -46,7 +46,7 @@
 
       <section id="loadTab" class="tab active">
         <div class="grid3">
-          <article class="card input-card"><h2>Order Lite / FRC</h2><textarea id="orderInput" placeholder="Code, Description, FRC, Oferta y Page"></textarea><small>Prioridad: Reserved → Oferta → Page.</small></article>
+          <article class="card input-card"><h2>Order Lite / FRC</h2><textarea id="orderInput" placeholder="Code, Description, FRC, Oferta y Page"></textarea><small>Prioridad: Reserved → Oferta → Page. «NF» se interpreta como sin página comercial.</small></article>
           <article class="card input-card"><h2>Venta / Reserved</h2><textarea id="saleInput" placeholder="Código Producto, Descripción y Reserved"></textarea><small>Reserved es la cantidad vendida. Ingresar nuevos = Reserved &gt; 0 y Stock PL = 0.</small></article>
           <article class="card input-card"><h2>Stock PL</h2><textarea id="stockInput" placeholder="Variante, Caja y Physical Quantity"></textarea><small>Caja corresponde a la ubicación actual en PL.</small></article>
         </div>
@@ -186,7 +186,8 @@ function hasMainLoc(row){return validLocs(row).some(x=>!isLowLoc(x))}
 function rowInLow(row){return validLocs(row).some(isLowLoc)}
 function hasReserved(row){return Number(row.sale||0)>0}
 function priorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.offer))}
-function hasPage(row){const p=norm(row.page).toUpperCase();return p!==''&&p!=='0'&&p!=='-'&&p!=='N/A'}
+// NF (No Figura) no es una pagina comercial. Se conserva el texto original al mostrar el dato.
+function hasPage(row){const p=norm(row.page).toUpperCase().replace(/\s+/g,'');return !['','0','-','N/A','NA','NF','N/F'].includes(p)}
 function hasAnyOffer(row){const offer=normalizeOffer(row.offer);return offer!==''&&offer!=='0'&&offer!=='-'}
 function isVial(row){return /\b(?:VIAL|VIALS|VIALES)\b/i.test(row.description||'')}
 function isCatalog(row){return /cat[aá]logo/i.test(row.description||'')}
@@ -217,12 +218,12 @@ function generateLists(){
     const orderMap=new Map();order.forEach(r=>{const code=normCode(r[okCode]);if(code)orderMap.set(code,{description:norm(r[okDesc]),frc:toNum(r[okFrc]),offer:normalizeOffer(r[okOffer]),page:norm(r[okPage]),available:toNum(r[okAvailable])})});
     const saleMap=new Map();sales.forEach(r=>{const code=normCode(r[skCode]);if(code)saleMap.set(code,{description:norm(r[skDesc]),sale:toNum(r[skReserved])})});
     const stockMap=new Map();stock.forEach(r=>{const code=normCode(r[pkCode]);if(!code)return;const loc=norm(r[pkLoc]),qty=toNum(r[pkQty]);if(!stockMap.has(code))stockMap.set(code,{stockPL:0,locations:[]});const x=stockMap.get(code);x.stockPL+=qty;if(loc)x.locations.push(loc)});
-    const codes=new Set(stockMap.keys());saleMap.forEach((v,k)=>{if(v.sale>0)codes.add(k)});orderMap.forEach((v,k)=>{if(PRIORITY_OFFERS.has(v.offer)||(v.page&&v.page!=='0'&&v.page!=='-'))codes.add(k)});
+    const codes=new Set(stockMap.keys());saleMap.forEach((v,k)=>{if(v.sale>0)codes.add(k)});orderMap.forEach((v,k)=>{if(PRIORITY_OFFERS.has(v.offer)||hasPage(v))codes.add(k)});
     const missingOrderCodes=[...codes].filter(code=>!orderMap.has(code));
     consolidated=[...codes].map(code=>{const o=orderMap.get(code)||{},s=saleMap.get(code)||{},p=stockMap.get(code)||{stockPL:0,locations:[]};const locations=[...new Set(p.locations.filter(x=>!isInvalidLoc(x)))];return {code,description:o.description||s.description||'',orderDescription:o.description||'',saleDescription:s.description||'',location:locations.join(' | '),stockPL:p.stockPL||0,available:o.available??0,sale:s.sale||0,frc:o.frc??0,offer:o.offer||'',page:o.page||''}});
     const excluded=consolidated.filter(isProtectedProduct).length;
     localBuckets=classifyRows(consolidated);renderLocalSummary();fillListSelect();$('publishBtn').disabled=false;
-    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Excluidos por protección: ${excluded}. Ingresar nuevos exige Reserved > 0 y Stock PL = 0.`;
+    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Excluidos por protección: ${excluded} · Mandar a T/M/R: ${(localBuckets.enviar_t||[]).length} · Candidatos a Bulk: ${(localBuckets.bulk||[]).length}. Page = NF se considera sin página; ingresar nuevos exige Reserved > 0 y Stock PL = 0.`;
     noteNotice('importNotice',diagnosed+(missingOrderCodes.length?` ATENCIÓN: ${missingOrderCodes.length} códigos no aparecen en Order Lite y por eso no tienen Page/FRC. Ej.: ${missingOrderCodes.slice(0,8).join(', ')}.`:''),missingOrderCodes.length?'warning':'');
     openTab('listsTab',document.querySelectorAll('.tab-btn')[2]);
   }catch(error){
@@ -243,7 +244,9 @@ function classifyRows(rows){
   const ventaMax=take(clean.filter(r=>validLocs(r).length&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
   const sacarT=take(clean.filter(r=>rowInLow(r)&&(hasReserved(r)||priorityOffer(r)||(hasPage(r)&&r.frc>=5)||r.frc>1000)));
   const bulk=take(clean.filter(r=>r.stockPL>100&&!hasReserved(r)&&r.frc>=0&&r.frc<=4&&!hasAnyOffer(r)&&!hasPage(r)&&!isArmado(r)&&!isCatalog(r)));
-  // No enviar a baja rotación artículos con Reserved, Oferta ni Page.
+  // Baja rotación: stock físico en PL principal; sin venta/Reserved, Oferta ni página real.
+  // Se priorizan previamente Candidatos a Bulk (>100 unidades); los demás elegibles
+  // se asignan a Mandar a T/M/R. NF NO cuenta como página.
   const enviarT=take(clean.filter(r=>r.stockPL>0&&hasMainLoc(r)&&!hasReserved(r)&&!hasAnyOffer(r)&&!hasPage(r)&&r.frc>=0&&r.frc<=4&&!isArmado(r)&&!isCatalog(r)));
   const liberar=take(clean.filter(r=>hasMainLoc(r)&&!hasReserved(r)&&!hasAnyOffer(r)&&!hasPage(r)&&r.frc<=300&&!isArmado(r)&&!isCatalog(r)));
   return {faltantes_pl:faltantes,ingresar_nuevo:nuevos,reubicar_prioridad:ventaMax,sacar_baja:sacarT,enviar_t:enviarT,liberar_prime:liberar,bulk};
