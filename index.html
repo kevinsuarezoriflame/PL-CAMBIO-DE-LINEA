@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Picking Line · Listas operativas</title>
+  <title>Picking Line · Listas operativas V6</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -15,6 +15,7 @@
     .operation-notice{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--soft);background:#f0fbf8;color:var(--dark);font-size:13px;font-weight:700;line-height:1.5}
     .operation-notice.warning-notice{background:#fff8e6;color:#805800;border-color:#efd087}
     .operation-notice.error-notice{background:#fff1f1;color:#a63232;border-color:#ecc2c2}
+    .priority-full-price{display:inline-flex;align-items:center;align-self:start;background:#fff1cb;color:#7d5000;border:1px solid #efc66c;border-radius:10px;padding:7px 10px;font-size:12px;font-weight:900}
     .list-count{font-size:12px;color:var(--muted);font-weight:800;margin:8px 0}
     .load-more{width:100%;padding:12px;margin:8px 0;border:1px solid var(--soft);background:#f4fcfa;color:var(--dark)}
     .task-warning{background:#fff8e6;border:1px solid #f4cf84;color:#725400;border-radius:14px;padding:14px;font-weight:750;line-height:1.55}
@@ -47,8 +48,8 @@
       <section id="loadTab" class="tab active">
         <div class="grid3">
           <article class="card input-card"><h2>Order Lite / FRC</h2><textarea id="orderInput" placeholder="Code, Description, FRC, Oferta y Page"></textarea><small>Prioridad: Reserved → Oferta → Page. «NF» se interpreta como sin página comercial.</small></article>
-          <article class="card input-card"><h2>Venta / Reserved</h2><textarea id="saleInput" placeholder="Código Producto, Descripción y Reserved"></textarea><small>Reserved es la cantidad vendida. Ingresar nuevos = Reserved &gt; 0 y Stock PL = 0.</small></article>
-          <article class="card input-card"><h2>Stock PL</h2><textarea id="stockInput" placeholder="Variante, Caja y Physical Quantity"></textarea><small>Caja corresponde a la ubicación actual en PL.</small></article>
+          <article class="card input-card"><h2>Venta / Reserved</h2><textarea id="saleInput" placeholder="Código Producto, Descripción y Reserved"></textarea><small>Reserved es la venta. Ingresar nuevos y Faltantes exigen venta &gt; 0 y stock físico PL = 0; se separan según si el producto es novedad o faltante.</small></article>
+          <article class="card input-card"><h2>Stock PL</h2><textarea id="stockInput" placeholder="Variante, Caja y Physical Quantity"></textarea><small>Caja es la ubicación física de PL. Si «Zona» indica BULK, esa fila no se suma. «Available» no es stock PL.</small></article>
         </div>
         <article class="card" style="margin-top:14px">
           <div class="toolbar"><div><h2>Generar listas</h2><p class="note">No se recomendarán destinos ni códigos. Solo se crearán listas por actividad.</p></div><div class="actions"><button class="primary" onclick="generateLists()">Generar listas</button><button id="publishBtn" class="warning" onclick="publishLists()" disabled>Publicar carga</button></div></div>
@@ -113,7 +114,7 @@ const PLAN_REF=db.collection('planes_cambio_linea').doc('activo');
 const TASKS_REF=PLAN_REF.collection('tareas');
 const ACTIVITIES_REF=PLAN_REF.collection('actividades');
 
-const PRIORITY_OFFERS=new Set(['OFFER-NEW','OFFER-TOP','OFFER-BO','OFFER-ALDEAS']);
+const PRIORITY_OFFERS=new Set(['OFFER-NEW','OFFER-TOP','OFFER-BO','OFFER-ALDEAS','FULL PRICE']);
 const ARMADOS=new Set(['43691','43695','45590','45591','45592','45595','45608','45923','832020']);
 const ACTIVITY_CONFIG=[
   {id:'faltantes_pl',icon:'🚨',name:'Faltantes en PL'},
@@ -140,7 +141,7 @@ const normCode=v=>norm(v).replace(/\.0$/,'').toUpperCase();
 const escapeHtml=v=>String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
 const toNum=v=>{const n=Number(String(v??'').replace(/\s/g,'').replace(',','.'));return Number.isFinite(n)?n:0};
 const headerToken=v=>norm(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
-const normalizeOffer=v=>{const x=norm(v).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+/,'').trim();return ['NEW','TOP','BO','ALDEAS'].includes(x)?'OFFER-'+x:x};
+const normalizeOffer=v=>{const x=norm(v).toUpperCase().replace(/[–—]/g,'-').replace(/\s+/g,' ').replace(/^OFFER[ -]+/,'').trim();if(x.replace(/[\s-]/g,'')==='FULLPRICE')return 'FULL PRICE';return ['NEW','TOP','BO','ALDEAS'].includes(x)?'OFFER-'+x:x};
 function splitDelimited(line,delimiter){
   const cells=[];let value='',quoted=false;
   for(let i=0;i<line.length;i++){
@@ -186,9 +187,47 @@ function hasMainLoc(row){return validLocs(row).some(x=>!isLowLoc(x))}
 function rowInLow(row){return validLocs(row).some(isLowLoc)}
 function hasReserved(row){return Number(row.sale||0)>0}
 function priorityOffer(row){return PRIORITY_OFFERS.has(normalizeOffer(row.offer))}
+function isFullPrice(row){return normalizeOffer(row.offer)==='FULL PRICE'}
 // NF (No Figura) no es una pagina comercial. Se conserva el texto original al mostrar el dato.
 function hasPage(row){const p=norm(row.page).toUpperCase().replace(/\s+/g,'');return !['','0','-','N/A','NA','NF','N/F'].includes(p)}
 function hasAnyOffer(row){const offer=normalizeOffer(row.offer);return offer!==''&&offer!=='0'&&offer!=='-'}
+// La venta procede exclusivamente de Reserved; Available (Order Lite) nunca representa PL.
+function isExplicitlyOtherZone(zone){
+  const z=headerToken(zone);
+  // No descartar «Bodega PL» ni nombres de áreas ambiguas de los reportes.
+  if(!z||z.includes('pickingline')||z.includes('picking')||z.endsWith('pl')||z.startsWith('pl'))return false;
+  return /^(?:bulk|zonabulk|bodegabulk|almacenbulk|reserva|reservas|transito|cuarentena)/.test(z);
+}
+// «Nuevo» es un producto vendido sin PL que además está identificado como lanzamiento
+// (OFFER-NEW) o cuenta con Page real y aún no tiene ubicación de PL.
+function isNewArrival(row){return normalizeOffer(row.offer)==='OFFER-NEW'||(hasPage(row)&&!validLocs(row).length)}
+// Bloqueo defensivo: también se aplica al leer tareas publicadas de una versión anterior.
+// Los mismos predicados se usan al generar listas y al validar tareas publicadas.
+// Así una versión anterior no puede mostrar trabajos que ahora incumplen las reglas.
+function canLiberarPrime(row){
+  return row.stockPL>0&&hasGoodLoc(row)&&!rowInLow(row)
+    &&Number(row.sale||0)>=0&&Number(row.sale||0)<=70
+    &&!hasAnyOffer(row)&&!hasPage(row)&&row.frc>=0&&row.frc<=300
+    &&!isArmado(row)&&!isCatalog(row);
+}
+function canMandarT(row){
+  return row.stockPL>0&&row.stockPL<=100&&hasMainLoc(row)&&!rowInLow(row)
+    &&!validLocs(row).some(loc=>/^J\s*-?\s*10[-\s]/i.test(loc))
+    &&!hasReserved(row)&&!hasAnyOffer(row)&&!hasPage(row)
+    &&row.frc>=0&&row.frc<=4&&!isArmado(row)&&!isCatalog(row)
+    &&!canLiberarPrime(row);
+}
+function isEligibleTask(row){
+  if(isProtectedProduct(row))return false;
+  const sale=Number(row.sale||0),pl=Number(row.stockPL||0),activity=row.activity;
+  if(activity==='sacar_baja')return sale>0&&pl>0&&rowInLow(row);
+  if(activity==='faltantes_pl'||activity==='ingresar_nuevo')return sale>0&&pl<=0;
+  if(activity==='enviar_t')return canMandarT(row);
+  if(activity==='liberar_prime')return canLiberarPrime(row);
+  if(activity==='reubicar_prioridad')return pl>0&&hasMainLoc(row)&&!rowInLow(row)&&!hasGoodLoc(row)
+    &&((sale>70)||priorityOffer(row)||(hasPage(row)&&row.frc>1000));
+  return true;
+}
 function isVial(row){return /\b(?:VIAL|VIALS|VIALES)\b/i.test(row.description||'')}
 function isCatalog(row){return /cat[aá]logo/i.test(row.description||'')}
 function isArmado(row){return ARMADOS.has(normCode(row.code))}
@@ -214,16 +253,25 @@ function generateLists(){
     const okCode=requiredKey(order[0],['Code','Código','Codigo'],'Order Lite'),okDesc=requiredKey(order[0],['Description (eng)','Description','Descripción','Descripcion'],'Order Lite'),okFrc=getFrcKey(order[0]),okOffer=requiredKey(order[0],['Oferta','Offer'],'Order Lite'),okPage=requiredKey(order[0],['Page','Página','Pagina'],'Order Lite'),okAvailable=requiredKey(order[0],['Available','Disponible'],'Order Lite');
     if(!okFrc)throw new Error('En Order Lite falta «FRC C15» (o encabezado FRC equivalente).');
     const skCode=requiredKey(sales[0],['Código Producto','Codigo Producto','Code','Código','Codigo'],'Venta / Reserved'),skDesc=findKey(sales[0],['Descripción','Descripcion','Description']),skReserved=requiredKey(sales[0],['Reserved'],'Venta / Reserved');
-    const pkCode=requiredKey(stock[0],['Variante','Código','Codigo','Code'],'Stock PL'),pkLoc=requiredKey(stock[0],['Caja','Ubicación','Ubicacion'],'Stock PL'),pkQty=requiredKey(stock[0],['Physical Quantity','Cantidad','Qty'],'Stock PL');
+    const pkCode=requiredKey(stock[0],['Variante','Código','Codigo','Code'],'Stock PL'),pkLoc=requiredKey(stock[0],['Caja','Ubicación','Ubicacion'],'Stock PL'),pkQty=requiredKey(stock[0],['Physical Quantity','Cantidad','Qty'],'Stock PL'),pkZone=findKey(stock[0],['Zona']);
     const orderMap=new Map();order.forEach(r=>{const code=normCode(r[okCode]);if(code)orderMap.set(code,{description:norm(r[okDesc]),frc:toNum(r[okFrc]),offer:normalizeOffer(r[okOffer]),page:norm(r[okPage]),available:toNum(r[okAvailable])})});
     const saleMap=new Map();sales.forEach(r=>{const code=normCode(r[skCode]);if(code)saleMap.set(code,{description:norm(r[skDesc]),sale:toNum(r[skReserved])})});
-    const stockMap=new Map();stock.forEach(r=>{const code=normCode(r[pkCode]);if(!code)return;const loc=norm(r[pkLoc]),qty=toNum(r[pkQty]);if(!stockMap.has(code))stockMap.set(code,{stockPL:0,locations:[]});const x=stockMap.get(code);x.stockPL+=qty;if(loc)x.locations.push(loc)});
+    const stockMap=new Map();let excludedOtherZone=0;
+    stock.forEach(r=>{
+      const code=normCode(r[pkCode]);if(!code)return;
+      const zone=pkZone?norm(r[pkZone]):'';
+      if(isExplicitlyOtherZone(zone)){excludedOtherZone++;return}
+      const loc=norm(r[pkLoc]),qty=toNum(r[pkQty]);
+      if(!stockMap.has(code))stockMap.set(code,{stockPL:0,locations:[]});
+      const x=stockMap.get(code);x.stockPL+=qty;
+      if(loc)x.locations.push(loc);
+    });
     const codes=new Set(stockMap.keys());saleMap.forEach((v,k)=>{if(v.sale>0)codes.add(k)});orderMap.forEach((v,k)=>{if(PRIORITY_OFFERS.has(v.offer)||hasPage(v))codes.add(k)});
     const missingOrderCodes=[...codes].filter(code=>!orderMap.has(code));
     consolidated=[...codes].map(code=>{const o=orderMap.get(code)||{},s=saleMap.get(code)||{},p=stockMap.get(code)||{stockPL:0,locations:[]};const locations=[...new Set(p.locations.filter(x=>!isInvalidLoc(x)))];return {code,description:o.description||s.description||'',orderDescription:o.description||'',saleDescription:s.description||'',location:locations.join(' | '),stockPL:p.stockPL||0,available:o.available??0,sale:s.sale||0,frc:o.frc??0,offer:o.offer||'',page:o.page||''}});
     const excluded=consolidated.filter(isProtectedProduct).length;
     localBuckets=classifyRows(consolidated);renderLocalSummary();fillListSelect();$('publishBtn').disabled=false;
-    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Excluidos por protección: ${excluded} · Mandar a T/M/R: ${(localBuckets.enviar_t||[]).length} · Candidatos a Bulk: ${(localBuckets.bulk||[]).length}. Page = NF se considera sin página; ingresar nuevos exige Reserved > 0 y Stock PL = 0.`;
+    const diagnosed=`Order Lite leído: ${orderMap.size} códigos · Cruces con Order Lite: ${codes.size-missingOrderCodes.length}/${codes.size} · Filas de otras zonas excluidas: ${excludedOtherZone} · Excluidos por protección: ${excluded} · Faltantes PL: ${(localBuckets.faltantes_pl||[]).length} · Ingresar nuevos: ${(localBuckets.ingresar_nuevo||[]).length} · Sacar de T/M/R: ${(localBuckets.sacar_baja||[]).length} · Mandar a T/M/R: ${(localBuckets.enviar_t||[]).length} · Bulk: ${(localBuckets.bulk||[]).length}. Reglas: Sacar T/M/R exige venta > 0; Mandar a T/M/R admite stock PL de 1 a 100; Liberar ubicaciones B/C/K/L admite venta 0 a 70; FULL PRICE tiene prioridad en Venta Max; Faltantes/Ingresar nuevos exigen stock PL = 0.`;
     noteNotice('importNotice',diagnosed+(missingOrderCodes.length?` ATENCIÓN: ${missingOrderCodes.length} códigos no aparecen en Order Lite y por eso no tienen Page/FRC. Ej.: ${missingOrderCodes.slice(0,8).join(', ')}.`:''),missingOrderCodes.length?'warning':'');
     openTab('listsTab',document.querySelectorAll('.tab-btn')[2]);
   }catch(error){
@@ -235,20 +283,25 @@ function generateLists(){
 function classifyRows(rows){
   const clean=rows.filter(r=>!isProtectedProduct(r));
   const assigned=new Set(),take=items=>items.filter(row=>{if(assigned.has(row.code))return false;assigned.add(row.code);return true});
-  // Prioridad de actividad: Reserved > Oferta prioritaria > Page.
-  // Ingresar nuevos: venta confirmada (Reserved > 0) sin una sola unidad física en PL.
-  // Faltantes: hay unidades en PL, pero NO alcanzan para cubrir la venta.
-  // Ambas listas son mutuamente excluyentes, sin usar Page ni Oferta para decidir el ingreso.
-  const nuevos=take(clean.filter(r=>hasReserved(r)&&r.stockPL<=0));
-  const faltantes=take(clean.filter(r=>hasReserved(r)&&r.stockPL>0&&r.sale>r.stockPL));
-  const ventaMax=take(clean.filter(r=>validLocs(r).length&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
-  const sacarT=take(clean.filter(r=>rowInLow(r)&&(hasReserved(r)||priorityOffer(r)||(hasPage(r)&&r.frc>=5)||r.frc>1000)));
+  // REGLAS OPERATIVAS ACORDADAS (referencia ABC antigua):
+  // 1. Faltante PL: Reserved > 0 y AUSENCIA física en Picking Line, NO "venta > stock".
+  // 2. Ingresar nuevos: también Reserved > 0 y stock físico PL = 0,
+  //    pero es lanzamiento (OFFER-NEW o Page real sin posición). Así no se duplica.
+  // 3. Sacar T/M/R: está físicamente en T/M/R y SIEMPRE tiene Reserved > 0.
+  const nuevos=take(clean.filter(r=>hasReserved(r)&&r.stockPL<=0&&isNewArrival(r)));
+  const faltantes=take(clean.filter(r=>hasReserved(r)&&r.stockPL<=0));
+  // Sacar T/M/R tiene prioridad sobre Venta Max para que los vendidos en T
+  // no se desvíen a otra actividad y nunca se recomiende sacar productos sin venta.
+  const sacarT=take(clean.filter(r=>r.stockPL>0&&rowInLow(r)&&hasReserved(r)));
+  // FULL PRICE se considera oferta prioritaria aunque Reserved = 0.
+  const ventaMax=take(clean.filter(r=>r.stockPL>0&&hasMainLoc(r)&&!rowInLow(r)&&!hasGoodLoc(r)&&((hasReserved(r)&&r.sale>70)||priorityOffer(r)||(hasPage(r)&&r.frc>1000))));
   const bulk=take(clean.filter(r=>r.stockPL>100&&!hasReserved(r)&&r.frc>=0&&r.frc<=4&&!hasAnyOffer(r)&&!hasPage(r)&&!isArmado(r)&&!isCatalog(r)));
-  // Baja rotación: stock físico en PL principal; sin venta/Reserved, Oferta ni página real.
-  // Se priorizan previamente Candidatos a Bulk (>100 unidades); los demás elegibles
-  // se asignan a Mandar a T/M/R. NF NO cuenta como página.
-  const enviarT=take(clean.filter(r=>r.stockPL>0&&hasMainLoc(r)&&!hasReserved(r)&&!hasAnyOffer(r)&&!hasPage(r)&&r.frc>=0&&r.frc<=4&&!isArmado(r)&&!isCatalog(r)));
-  const liberar=take(clean.filter(r=>hasMainLoc(r)&&!hasReserved(r)&&!hasAnyOffer(r)&&!hasPage(r)&&r.frc<=300&&!isArmado(r)&&!isCatalog(r)));
+  // Liberar ubicaciones B/C/K/L: venta de 0 a 70 inclusive; sin página, oferta
+  // ni artículos excluidos. Esta actividad gana frente a Mandar a T/M/R.
+  const liberar=take(clean.filter(canLiberarPrime));
+  // Mandar a T/M/R: únicamente 1 a 100 unidades. Más de 100 => nunca T/M/R;
+  // los aptos se asignan a Candidatos a Bulk. Se conservan las exclusiones J10.
+  const enviarT=take(clean.filter(canMandarT));
   return {faltantes_pl:faltantes,ingresar_nuevo:nuevos,reubicar_prioridad:ventaMax,sacar_baja:sacarT,enviar_t:enviarT,liberar_prime:liberar,bulk};
 }
 
@@ -305,7 +358,7 @@ async function publishLists(){
       const rows=localBuckets[activity.id]||[];
       batch.set(ACTIVITIES_REF.doc(activity.id),{activity:activity.id,name:activity.name,status:'deshabilitada',operator:'',total:rows.length,completed:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});count++;
       for(const row of rows){
-        if(isProtectedProduct(row))continue;
+        if(!isEligibleTask({...row,activity:activity.id}))continue;
         const id=activity.id+'__'+encodeURIComponent(row.code);
         batch.set(TASKS_REF.doc(id),{activity:activity.id,code:row.code,description:row.description||'',location:row.location||'Sin ubicación',stockPL:Number(row.stockPL||0),available:Number(row.available||0),sale:Number(row.sale||0),frc:Number(row.frc||0),page:row.page||'',offer:row.offer||'',status:'pendiente',completedBy:'',completedAt:null,createdAt:firebase.firestore.FieldValue.serverTimestamp()});count++;total++;
         if(count>=350){await batch.commit();batch=db.batch();count=0}
@@ -381,7 +434,7 @@ function loadPublishedLists(){
   return TASKS_REF.get().then(s=>{
     if(revision!==loadRevision||operationBusy||isPlanBusy()||consolidated.length)return;
     const grouped=Object.fromEntries(ACTIVITY_CONFIG.map(a=>[a.id,[]]));
-    s.docs.forEach(d=>{const x=d.data();if(grouped[x.activity]&&!isProtectedProduct(x))grouped[x.activity].push({code:x.code,description:x.description,location:x.location,stockPL:x.stockPL,available:x.available??0,sale:x.sale,frc:x.frc,page:x.page,offer:x.offer})});
+    s.docs.forEach(d=>{const x=d.data();if(grouped[x.activity]&&isEligibleTask(x))grouped[x.activity].push({code:x.code,description:x.description,location:x.location,stockPL:x.stockPL,available:x.available??0,sale:x.sale,frc:x.frc,page:x.page,offer:x.offer})});
     localBuckets=grouped;loadedPublishedOnce=true;fillListSelect();
   }).catch(err=>{console.error(err);noteNotice('operationNotice','No se pudieron leer las listas publicadas.','error')});
 }
@@ -399,7 +452,7 @@ async function auditPublishedTasks(){
   try{
     const snapshot=await TASKS_REF.get({source:'server'});
     const totals=Object.fromEntries(ACTIVITY_CONFIG.map(a=>[a.id,{total:0,done:0}]));
-    snapshot.docs.forEach(doc=>{const x=doc.data();if(!totals[x.activity]||isProtectedProduct(x))return;totals[x.activity].total++;if(x.status==='completado')totals[x.activity].done++});
+    snapshot.docs.forEach(doc=>{const x=doc.data();if(!totals[x.activity]||!isEligibleTask(x))return;totals[x.activity].total++;if(x.status==='completado')totals[x.activity].done++});
     const issues=[];
     for(const a of ACTIVITY_CONFIG){const expected=activityState[a.id]||{},actual=totals[a.id];if(Number(expected.total||0)!==actual.total||Number(expected.completed||0)!==actual.done)issues.push(`${a.name}: contador ${Number(expected.total||0)-Number(expected.completed||0)} pendiente(s), realmente ${actual.total-actual.done}`)}
     if(issues.length)noteNotice('operationNotice','⚠️ Contadores y tareas no coinciden: '+issues.join(' · ')+'. Se debe generar y publicar nuevamente la carga para corregirlos.','warning');
@@ -447,7 +500,7 @@ function startOperatorList(){
   unsubOperatorTasks=query.onSnapshot({includeMetadataChanges:true},snap=>{
     if(!operatorViewActive||activeActivityId!==activityAtStart)return;
     const raw=snap.docs.map(d=>({id:d.id,...d.data()}));
-    operatorRows=raw.filter(x=>!isProtectedProduct(x));
+    operatorRows=raw.filter(isEligibleTask);
     operatorSnapshotSource=snap.metadata&&snap.metadata.fromCache?'cache':'servidor';operatorLoadError='';renderOperatorList();
     // Si el contador indica pendientes pero la consulta está vacía, reconfirmar
     // una vez con el servidor antes de señalar un error de publicación.
@@ -455,7 +508,7 @@ function startOperatorList(){
       operatorAuditInFlight=true;
       query.get({source:'server'}).then(verified=>{
         if(!operatorViewActive||activeActivityId!==activityAtStart)return;
-        operatorRows=verified.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!isProtectedProduct(x));operatorSnapshotSource='servidor';renderOperatorList();
+        operatorRows=verified.docs.map(d=>({id:d.id,...d.data()})).filter(isEligibleTask);operatorSnapshotSource='servidor';renderOperatorList();
       }).catch(err=>{if(operatorViewActive&&activeActivityId===activityAtStart){operatorLoadError='No se pudo confirmar la lista con Firebase: '+err.message;renderOperatorList()}});
     }
   },err=>{console.error(err);if(activeActivityId!==activityAtStart)return;operatorLoadError='Error consultando tareas de Firebase: '+err.message;operatorSnapshotSource='error';renderOperatorList()});
@@ -471,17 +524,17 @@ function renderOperatorList(){
   if(operatorSnapshotSource==='cargando'){ $('operatorList').innerHTML='<div class="operator-card empty">Consultando códigos publicados en Firebase…</div>';return}
   if(operatorSnapshotSource==='cache'&&!all.length){$('operatorList').innerHTML='<div class="operator-card empty">Esperando confirmación del servidor. La caché local todavía no contiene los códigos.</div>';return}
   const mismatch=operatorSnapshotSource==='servidor'&&((stats.total>0&&all.length!==stats.total)||(stats.pending>0&&!pending.length));
-  const warn=mismatch?`<div class="task-warning">⚠️ La actividad muestra ${stats.pending} pendientes en Control, pero Firebase devolvió ${pending.length} códigos pendientes (${all.length} registros en total, frente a ${stats.total} esperados). No se marcará como completada: el supervisor debe verificar y volver a publicar las listas.</div>`:'';
+  const warn=mismatch?`<div class="task-warning">⚠️ La actividad muestra ${stats.pending} pendientes en Control, pero solo ${pending.length} cumplen las reglas vigentes (${all.length} tareas válidas, frente a ${stats.total} registradas). Hay códigos antiguos o datos inconsistentes. El supervisor debe generar y publicar las listas de nuevo.</div>`:'';
   const visible=rows.slice(0,operatorRenderLimit);
-  const cards=visible.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div><div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div><div class="fact"><span>Disponible</span><b>${escapeHtml(x.available??0)}</b></div><div class="fact"><span>Oferta</span><b>${escapeHtml(x.offer||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join('');
+  const cards=visible.map(x=>`<article class="product-card"><div class="product-top"><span class="code">${escapeHtml(x.code)}</span><span class="badge b-on">Pendiente</span></div><div class="description">${escapeHtml(x.description||'Sin descripción')}</div>${activeActivityId==='reubicar_prioridad'&&isFullPrice(x)?'<div class="priority-full-price">⭐ PRIORIDAD · FULL PRICE</div>':''}<div class="location">📍 ${escapeHtml(x.location||'Sin ubicación')}</div><div class="facts"><div class="fact"><span>Stock PL</span><b>${escapeHtml(x.stockPL??0)}</b></div><div class="fact"><span>Venta</span><b>${escapeHtml(x.sale??0)}</b></div><div class="fact"><span>FRC</span><b>${escapeHtml(x.frc??0)}</b></div><div class="fact"><span>Page</span><b>${escapeHtml(x.page||'—')}</b></div><div class="fact"><span>Disponible</span><b>${escapeHtml(x.available??0)}</b></div><div class="fact"><span>Oferta</span><b>${escapeHtml(x.offer||'—')}</b></div></div><button class="primary complete" onclick="completeCode('${escapeHtml(x.id)}',this)">✓ Completado</button></article>`).join('');
   const more=rows.length>visible.length?`<button class="load-more" onclick="showMoreOperatorRows()">Mostrar ${Math.min(OPERATOR_PAGE_SIZE,rows.length-visible.length)} más · ${rows.length-visible.length} por visualizar</button>`:'';
-  const none=pending.length?(q?'No hay coincidencias con la búsqueda.':'No hay códigos disponibles.'):all.length&&all.length===done?'Actividad completada. No quedan códigos pendientes.':'No hay tareas publicadas para esta actividad.';
+  const none=pending.length?(q?'No hay coincidencias con la búsqueda.':'No hay códigos disponibles.'):stats.pending>0?'No hay códigos válidos para esta actividad. Se requiere republicar las listas.':all.length&&all.length===done?'Actividad completada. No quedan códigos pendientes.':'No hay tareas publicadas para esta actividad.';
   $('operatorList').innerHTML=warn+(rows.length?cards+more:`<div class="operator-card empty">${none}</div>`);
 }
 async function completeCode(id,button){
-  const name=norm($('operatorName').value),row=operatorRows.find(x=>x.id===id);if(!row||isProtectedProduct(row)||isPlanBusy())return;
+  const name=norm($('operatorName').value),row=operatorRows.find(x=>x.id===id);if(!row||!isEligibleTask(row)||isPlanBusy())return;
   if(button){button.disabled=true;button.textContent='Guardando…'}
-  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(activeActivityId),taskRef=TASKS_REF.doc(id),plan=await tx.get(PLAN_REF),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!plan.exists||plan.data().mode!=='listas_operativas')throw new Error('sin_carga');if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(isProtectedProduct(task.data()))throw new Error('excluido');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
+  try{await db.runTransaction(async tx=>{const activityRef=ACTIVITIES_REF.doc(activeActivityId),taskRef=TASKS_REF.doc(id),plan=await tx.get(PLAN_REF),activity=await tx.get(activityRef),task=await tx.get(taskRef);if(!plan.exists||plan.data().mode!=='listas_operativas')throw new Error('sin_carga');if(!activity.exists||activity.data().status!=='habilitada')throw new Error('actividad');if(!task.exists)throw new Error('sin_codigo');if(!isEligibleTask(task.data()))throw new Error('excluido');if(task.data().status==='completado')throw new Error('ya_completado');const data=activity.data(),completed=Number(data.completed||0)+1,total=Number(data.total||0);tx.update(taskRef,{status:'completado',completedBy:name,completedAt:firebase.firestore.FieldValue.serverTimestamp()});tx.update(activityRef,{completed,status:completed>=total?'cerrada':'habilitada',completedAt:completed>=total?firebase.firestore.FieldValue.serverTimestamp():null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})});operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();showToast('Movimiento completado')}catch(err){console.error(err);if(err.message==='ya_completado'){operatorRows=operatorRows.map(x=>x.id===id?{...x,status:'completado'}:x);renderOperatorList();alert('Este código ya fue completado por otro operario.')}else alert('No se pudo completar el código. Revisa que la actividad continúe habilitada.');if(button)button.disabled=false}
 }
 function leaveActivityView(){operatorViewActive=false;activeActivityId='';operatorLoadError='';operatorSnapshotSource='cargando';if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
 function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)}
