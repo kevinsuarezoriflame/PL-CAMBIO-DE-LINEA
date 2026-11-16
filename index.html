@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Picking Line · Listas operativas V6</title>
+  <title>Picking Line · Listas operativas V7 · Recuperación de reinicio</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -65,7 +65,7 @@
           <div class="actions" style="margin-top:15px"><button id="auditTasksBtn" class="secondary" onclick="auditPublishedTasks()">🔎 Verificar listas publicadas</button></div>
           <div class="reset-panel">
             <div><b>🗑️ Reiniciar toda la operación</b><p class="note">Elimina únicamente las tareas, avances y actividades publicadas de Picking Line. La limpieza se sincroniza con todos los equipos. No afecta a otras aplicaciones.</p></div>
-            <button id="resetAllBtn" class="danger" onclick="resetAllData()">🗑️ Eliminar todo</button>
+            <div class="actions"><button id="resetAllBtn" class="danger" onclick="resetAllData()">🗑️ Eliminar todo</button><button id="recoverResetBtn" class="warning hidden" onclick="recoverInterruptedReset()">🔄 Recuperar reinicio</button></div>
           </div>
           <div id="operationNotice" class="operation-notice hidden" role="status" aria-live="polite"></div>
         </article>
@@ -131,6 +131,9 @@ let unsubActivities=null,unsubOperatorTasks=null,unsubPlan=null;
 let planState={},operationBusy=false,loadedPublishedOnce=false,loadRevision=0;
 let operatorViewActive=false,activeActivityId='',operatorSnapshotSource='cargando',operatorLoadError='',operatorRenderLimit=40,operatorAuditInFlight=false;
 let supervisorRenderTimer=null;
+// Protegemos reinicios incompletos; nunca se recupera sin una acción del supervisor.
+const RESET_RECOVERY_MS=5*60*1000, RESET_BATCH_SIZE=175;
+let resetOwner='', resetUiTicker=null, resetLastProgressAt=0, resetUiMessage='';
 const MAX_SUPERVISOR_ROWS=150, OPERATOR_PAGE_SIZE=40;
 // La autenticación de Supervisor depende de las reglas de Firestore, no de ocultar botones.
 // Sin credenciales/cuentas provisionadas no se cambia el acceso existente (ver aviso de entrega).
@@ -323,28 +326,92 @@ function renderSupervisorList(){
 async function copyVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para copiar.');const keys=Object.keys(rows[0]),text=[keys.join('\t'),...rows.map(r=>keys.map(k=>r[k]??'').join('\t'))].join('\n');try{await navigator.clipboard.writeText(text);showToast('Lista copiada')}catch{return alert('No se pudo copiar. Usa la descarga de Excel.')}}
 function downloadVisibleList(){const rows=currentVisibleRows();if(!rows.length)return alert('No hay códigos para descargar.');const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Lista');XLSX.writeFile(wb,($('listSelect').selectedOptions[0]?.textContent||'Lista_PL').replace(/[\\/:*?"<>|]/g,'')+'.xlsx')}
 
-async function deleteCollection(ref){
+// Borrado paginado, auditado, siempre consultando al servidor (no caché local).
+// El progreso confirmado se guarda en el documento del plan en cada lote.
+async function deleteCollection(ref,onBatch=null){
   let deleted=0;
   while(true){
-    const snap=await ref.limit(350).get();
+    if(onBatch)await assertResetOwnership();
+    const snap=await ref.limit(onBatch?RESET_BATCH_SIZE:350).get({source:'server'});
     if(snap.empty)break;
-    const batch=db.batch();snap.docs.forEach(doc=>batch.delete(doc.ref));await batch.commit();deleted+=snap.size;
+    const batch=db.batch();
+    snap.docs.forEach(doc=>batch.delete(doc.ref));
+    await batch.commit();
+    deleted+=snap.size;
+    if(onBatch)await onBatch(deleted);
   }
   return deleted;
 }
-async function beginExclusiveOperation(mode){
+function timestampMs(v){
+  if(v&&typeof v.toMillis==='function')return v.toMillis();
+  if(v&&Number.isFinite(v.seconds))return v.seconds*1000;
+  if(typeof v==='number'&&Number.isFinite(v))return v;
+  return NaN;
+}
+function resetLastHeartbeatMs(data){
+  return Number.isFinite(Number(data?.resetHeartbeatMs))?Number(data.resetHeartbeatMs):timestampMs(data?.updatedAt);
+}
+function resetIsStale(data){
+  const ms=resetLastHeartbeatMs(data);
+  return Number.isFinite(ms)&&Date.now()-ms>=RESET_RECOVERY_MS;
+}
+function refreshResetRecoveryButton(){
+  const button=$('recoverResetBtn');if(!button)return;
+  const recoverable=planState.mode==='error_reinicio'||(planState.mode==='limpiando'&&resetIsStale(planState));
+  button.classList.toggle('hidden',!recoverable||operationBusy);
+  const reset=$('resetAllBtn');
+  if(!operationBusy){
+    reset.disabled=['limpiando','publicando'].includes(planState.mode);
+    $('publishBtn').disabled=(!consolidated.length)||['limpiando','publicando','error_reinicio'].includes(planState.mode);
+    reset.textContent=planState.mode==='limpiando'?'🔄 Reinicio en progreso…':'🗑️ Eliminar todo';
+  }
+}
+// Un nuevo supervisor puede retomar SOLO un reinicio fallido o abandonado
+// después de 5 minutos sin señales de actividad. La toma de control se valida
+// dentro de una transacción contra el estado actual del servidor.
+async function beginExclusiveOperation(mode,recover=false){
+  const myOwner=resetOwner;
   await db.runTransaction(async tx=>{
     const snap=await tx.get(PLAN_REF),data=snap.exists?snap.data():{};
-    if(['limpiando','publicando'].includes(data.mode))throw new Error('Ya se está ejecutando un reinicio o publicación desde otro equipo.');
-    tx.set(PLAN_REF,{mode,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    if(recover){
+      if(!['limpiando','error_reinicio'].includes(data.mode))throw new Error('El reinicio ya no requiere recuperación. Actualiza la página.');
+      if(data.mode==='limpiando'&&!resetIsStale(data))throw new Error('Otro equipo está reiniciando o aún no han pasado 5 minutos sin avances. Cierra la sesión anterior y verifica el progreso.');
+    }else if(['limpiando','publicando'].includes(data.mode)||(mode==='publicando'&&data.mode==='error_reinicio')){
+      throw new Error('Ya existe una publicación o un reinicio pendiente. No se puede comenzar otro.');
+    }
+    const extra=mode==='limpiando'?{resetOwner:myOwner,resetHeartbeatMs:Date.now(),resetProgress:{phase:recover?'Recuperación iniciada':'Iniciando reinicio',tasks:0,activities:0}}:{};
+    tx.set(PLAN_REF,{mode,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),...extra},{merge:true});
   });
 }
+async function assertResetOwnership(){
+  const snap=await PLAN_REF.get({source:'server'});
+  if(!snap.exists||snap.data().mode!=='limpiando'||snap.data().resetOwner!==resetOwner)throw new Error('Otro proceso tomó el control del reinicio. Se detuvo esta sesión para proteger la información.');
+}
+async function updateResetProgress(phase,tasks,activities){
+  await db.runTransaction(async tx=>{
+    const snap=await tx.get(PLAN_REF),data=snap.exists?snap.data():{};
+    if(data.mode!=='limpiando'||data.resetOwner!==resetOwner)throw new Error('El reinicio dejó de ser propiedad de esta sesión.');
+    tx.update(PLAN_REF,{resetHeartbeatMs:Date.now(),resetProgress:{phase,tasks,activities},updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  });
+  resetLastProgressAt=Date.now();
+  resetUiMessage=`${phase} · ${tasks} tareas y ${activities} actividades eliminadas.`;
+  noteNotice('operationNotice',resetUiMessage);
+}
+function startResetUiTicker(){
+  stopResetUiTicker();resetLastProgressAt=Date.now();
+  resetUiTicker=setInterval(()=>{
+    if(!operationBusy||!resetOwner)return;
+    const elapsed=Math.floor((Date.now()-resetLastProgressAt)/1000);
+    if(elapsed>=25)noteNotice('operationNotice',resetUiMessage+' ⚠️ Sin confirmación de avance durante '+elapsed+' s. Comprueba la conexión a Firebase. Si se interrumpió el proceso, la V7 permite recuperarlo desde otra sesión cuando quede inactivo.','warning');
+  },5000);
+}
+function stopResetUiTicker(){if(resetUiTicker){clearInterval(resetUiTicker);resetUiTicker=null}}
 async function disableAllActivities(){
-  const snap=await ACTIVITIES_REF.get();if(snap.empty)return;
+  const snap=await ACTIVITIES_REF.get({source:'server'});if(snap.empty)return;
   const batch=db.batch();snap.docs.forEach(doc=>batch.set(doc.ref,{status:'deshabilitada',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}));await batch.commit();
 }
 async function publishLists(){
-  if(operationBusy||['limpiando','publicando'].includes(planState.mode))return alert('Hay otra operación de publicación o reinicio pendiente.');
+  if(operationBusy||['limpiando','publicando','error_reinicio'].includes(planState.mode))return alert('El reinicio está pendiente o incompleto. Recupera y confirma la limpieza antes de publicar.');
   if(!consolidated.length)return alert('Genera las listas antes de publicar.');
   if(!confirm('¿Publicar esta carga? Se reemplazarán las listas operativas y sus avances anteriores en todos los equipos.'))return;
   operationBusy=true;$('publishBtn').disabled=true;$('resetAllBtn').disabled=true;loadRevision++;
@@ -365,10 +432,9 @@ async function publishLists(){
       }
     }
     if(count)await batch.commit();
-    // Confirmar el total antes de declarar publicada la carga. Si falla, modo error_publicacion.
     const auditSnap=await TASKS_REF.get({source:'server'});
     if(auditSnap.size!==total)throw new Error(`Publicación parcial: se esperaban ${total} tareas y el servidor confirma ${auditSnap.size}.`);
-    await PLAN_REF.set({mode:'listas_operativas',total,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    await PLAN_REF.set({mode:'listas_operativas',total,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),resetOwner:'',resetProgress:null,resetHeartbeatMs:0},{merge:true});
     noteNotice('operationNotice',`✅ Se publicaron ${total} códigos. Todas las actividades quedan bloqueadas hasta que el supervisor las habilite.`);
     loadedPublishedOnce=false;showToast('Listas publicadas');openTab('controlTab',document.querySelectorAll('.tab-btn')[1]);
   }catch(err){
@@ -376,30 +442,57 @@ async function publishLists(){
     if(locked)await PLAN_REF.set({mode:'error_publicacion',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(console.error);
     noteNotice('operationNotice','Publicación incompleta. Verifica los permisos o la conexión antes de volver a publicar.','error');
     alert('No se pudieron publicar todas las listas: '+err.message);
-  }finally{operationBusy=false;$('publishBtn').disabled=!consolidated.length;$('resetAllBtn').disabled=false}
+  }finally{operationBusy=false;$('publishBtn').disabled=!consolidated.length;refreshResetRecoveryButton()}
 }
 async function resetAllData(){
   if(operationBusy||['limpiando','publicando'].includes(planState.mode))return alert('Ya hay una publicación o reinicio pendiente.');
   if(!confirm('PRIMERA CONFIRMACIÓN: ¿Eliminar todas las listas, conteos de avance y actividades de Picking Line para comenzar una nueva carga? Se reflejará en TODOS los equipos.'))return;
   if(prompt('SEGUNDA CONFIRMACIÓN: escribe ELIMINAR para borrar permanentemente toda la operación actual.')!=='ELIMINAR')return;
-  operationBusy=true;loadRevision++;$('resetAllBtn').disabled=true;$('publishBtn').disabled=true;
-  let locked=false;
+  await runResetOperation(false);
+}
+async function recoverInterruptedReset(){
+  if(operationBusy)return;
+  if(!['limpiando','error_reinicio'].includes(planState.mode))return alert('No hay un reinicio pendiente para recuperar.');
+  if(!confirm('¿CONFIRMAS RECUPERAR EL REINICIO? Debes haber cerrado la pestaña donde quedó detenido. Se continuará borrando SOLO las tareas y actividades de Picking Line que aún estén en Firebase.'))return;
+  if(prompt('Escribe REANUDAR para confirmar que deseas completar el borrado.')!=='REANUDAR')return;
+  await runResetOperation(true);
+}
+async function runResetOperation(recover){
+  if(operationBusy)return;
+  operationBusy=true;loadRevision++;$('resetAllBtn').disabled=true;$('recoverResetBtn').classList.add('hidden');$('publishBtn').disabled=true;
+  resetOwner='pl-reset-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+  let locked=false,tasks=0,activities=0;
+  resetUiMessage=recover?'Iniciando recuperación…':'Iniciando reinicio…';
+  noteNotice('operationNotice',resetUiMessage);
+  startResetUiTicker();
   try{
-    await beginExclusiveOperation('limpiando');locked=true;
-    noteNotice('operationNotice','Borrando la operación de Picking Line en Firebase…');
+    await beginExclusiveOperation('limpiando',recover);locked=true;
+    await updateResetProgress('Bloqueando actividades',0,0);
     await disableAllActivities();
-    const tasks=await deleteCollection(TASKS_REF);
-    const activities=await deleteCollection(ACTIVITIES_REF);
-    await PLAN_REF.set({mode:'sin_carga',total:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:false});
+    tasks=await deleteCollection(TASKS_REF,async count=>updateResetProgress('Eliminando tareas',count,activities));
+    await updateResetProgress('Eliminando actividades',tasks,0);
+    activities=await deleteCollection(ACTIVITIES_REF,async count=>updateResetProgress('Eliminando actividades',tasks,count));
+    await updateResetProgress('Verificando borrado en el servidor',tasks,activities);
+    await assertResetOwnership();
+    const [checkTasks,checkActivities]=await Promise.all([TASKS_REF.limit(1).get({source:'server'}),ACTIVITIES_REF.limit(1).get({source:'server'})]);
+    if(!checkTasks.empty||!checkActivities.empty)throw new Error('Aún quedan tareas o actividades en el servidor. La limpieza no puede marcarse completa.');
+    await PLAN_REF.set({mode:'sin_carga',total:0,resetOwner:'',resetHeartbeatMs:0,resetProgress:null,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
     activityState={};operatorRows=[];leaveActivityView();clearLocalData();renderActivityAdmin();renderOperatorActivities();
-    noteNotice('operationNotice',`✅ Reinicio completo: ${tasks} tareas y ${activities} actividades eliminadas. Ya puedes pegar una nueva data.`);
+    noteNotice('operationNotice',`✅ Reinicio confirmado por Firebase: ${tasks} tareas y ${activities} actividades eliminadas en esta ejecución. Ya puedes cargar nuevos reportes.`);
     showToast('Operación eliminada');
   }catch(err){
     console.error(err);
-    if(locked)await PLAN_REF.set({mode:'error_reinicio',updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}).catch(console.error);
-    noteNotice('operationNotice','El reinicio NO terminó. Algunas tareas pueden seguir presentes. No publiques ni habilites actividades hasta resolver el error y repetir el reinicio.','error');
-    alert('No se completó el reinicio: '+err.message);
-  }finally{operationBusy=false;$('resetAllBtn').disabled=false}
+    if(locked){
+      try{await db.runTransaction(async tx=>{
+        const plan=await tx.get(PLAN_REF);
+        if(plan.exists&&plan.data().mode==='limpiando'&&plan.data().resetOwner===resetOwner)tx.update(PLAN_REF,{mode:'error_reinicio',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+      })}catch(e){console.error('No se pudo registrar el error del reinicio:',e)}
+    }
+    noteNotice('operationNotice','⚠️ El reinicio no se pudo confirmar en Firebase. Pueden quedar tareas. No publiques nuevas listas. Error: '+(err.message||err),'error');
+    alert('El reinicio no se completó: '+(err.message||err));
+  }finally{
+    stopResetUiTicker();resetOwner='';operationBusy=false;refreshResetRecoveryButton();$('publishBtn').disabled=!consolidated.length;
+  }
 }
 function onPlanSnapshot(snapshot){
   const priorMode=planState.mode;
@@ -412,7 +505,9 @@ function onPlanSnapshot(snapshot){
       renderActivityAdmin();renderOperatorActivities();
     }
     if(['limpiando','publicando'].includes(planState.mode)){
-      noteNotice('operationNotice','Sincronizando cambios desde Firebase. Las actividades quedan temporalmente bloqueadas.');
+      const progress=planState.resetProgress;
+      const details=planState.mode==='limpiando'&&progress?` ${progress.phase||'Borrando'} · ${Number(progress.tasks||0)} tareas / ${Number(progress.activities||0)} actividades eliminadas.`:'';
+      if(!operationBusy)noteNotice('operationNotice','Sincronizando cambios desde Firebase. Las actividades quedan bloqueadas.'+details+(planState.mode==='limpiando'?' Si lleva más de 5 minutos sin avances, usa «Recuperar reinicio».':''));
     }
     if(['error_reinicio','error_publicacion'].includes(planState.mode)){
       noteNotice('operationNotice','Se detectó una operación incompleta en Firebase. Requiere revisión del supervisor.','error');
@@ -422,6 +517,7 @@ function onPlanSnapshot(snapshot){
   if(planState.mode==='listas_operativas'&&['sin_carga','limpiando','publicando'].includes(priorMode)){
     loadedPublishedOnce=false;if(!$('supervisorShell').classList.contains('hidden'))loadPublishedLists();
   }
+  refreshResetRecoveryButton();
   renderOperatorActivities();
 }
 function watchPlan(){
@@ -539,7 +635,7 @@ async function completeCode(id,button){
 function leaveActivityView(){operatorViewActive=false;activeActivityId='';operatorLoadError='';operatorSnapshotSource='cargando';if(unsubOperatorTasks){unsubOperatorTasks();unsubOperatorTasks=null}operatorRows=[];selectedActivity='';$('operatorWork').classList.add('hidden');$('operatorSetup').classList.remove('hidden');renderOperatorActivities()}
 function showToast(message){const el=$('toast');el.textContent=message;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1500)}
 
-window.addEventListener('load',()=>{setCloud(false);clearNotice('importNotice')});
+window.addEventListener('load',()=>{setCloud(false);clearNotice('importNotice');setInterval(()=>{if(!operationBusy&&planState.mode==='limpiando')refreshResetRecoveryButton()},12000)});
 </script>
 </body>
 </html>
